@@ -85,7 +85,7 @@ hakoniwa-mbody-registry/
 │   ├── urdf2mjcf.py      # URDF -> canonical MuJoCo XML
 │   ├── urdf2glb.py       # URDF -> single GLB scene
 │   ├── mjcf2glb.py       # MuJoCo XML -> split GLB assets
-│   └── forge.sh          # Convenience pipeline wrapper
+│   └── forge.sh          # Full pipeline wrapper
 ├── bodies/               # Registry-managed source snapshots and generated artifacts
 │   └── turtlebot3/
 │       ├── source/       # Fetched upstream files, not committed
@@ -124,16 +124,12 @@ Running `tools/fetch.py` reads these files and performs a sparse checkout of onl
 
 Fetch only the robot files you need from an upstream Git repository.
 
-Fetches robot description assets from an upstream Git repository using sparse checkout.
-
 - Input: `sources/*.yaml`
 - Output: `bodies/{name}/source/...`
 
 ### `tools/xacro2urdf.py`
 
 Turn a xacro-based robot description into a plain URDF file.
-
-Expands xacro into plain URDF without ROS.
 
 - Input: `.xacro` or xacro-enabled `.urdf`
 - Output: `bodies/{name}/generated/{stem}.urdf` by default when the input is under `bodies/{name}/`
@@ -151,8 +147,6 @@ python3 tools/xacro2urdf.py \
 
 Convert a plain URDF into canonical MuJoCo XML using MuJoCo's official compiler.
 
-Uses the official MuJoCo Python bindings to load URDF and save canonical MuJoCo XML.
-
 - Input: plain URDF
 - Output: `bodies/{name}/generated/{stem}.xml` by default when the input is under `bodies/{name}/`
 - Rewrites `package://...` mesh references before invoking MuJoCo
@@ -168,8 +162,6 @@ python3 tools/urdf2mjcf.py \
 ### `tools/urdf2glb.py`
 
 Export the robot's visual geometry as one GLB scene.
-
-Loads URDF visual geometry into a `trimesh.Scene` and exports a single GLB scene.
 
 - Input: plain URDF
 - Output: `bodies/{name}/generated/{stem}.glb` by default when the input is under `bodies/{name}/`
@@ -187,8 +179,6 @@ python3 tools/urdf2glb.py \
 
 Split a MuJoCo XML model into smaller GLB assets that match its body or geom structure.
 
-Splits a canonical MuJoCo XML model into multiple GLB files.
-
 - Input: canonical MuJoCo XML produced by `urdf2mjcf.py`
 - Output: `bodies/{name}/generated/parts/*.glb` by default when the input is under `bodies/{name}/`
 - Default: `--split-by body`
@@ -201,31 +191,30 @@ python3 tools/mjcf2glb.py \
   bodies/turtlebot3/generated/turtlebot3_burger.xml
 ```
 
+### `tools/forge.sh`
+
+Run the whole TB3 conversion flow in one command when you already know the entry URDF path.
+
+- Input: `sources/*.yaml` and an entry URDF path relative to `source/`
+- Output: `bodies/{name}/generated/`
+
+Example:
+
+```bash
+./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
+```
+
 ## Quick Start
 
 ```bash
 # 1. Install dependencies
 python3 -m pip install -r requirements.txt
 
-# 2. Fetch robot source files
-python3 tools/fetch.py sources/tb3.yaml
-
-TB3_URDF=bodies/turtlebot3/source/turtlebot3_description/urdf/turtlebot3_burger.urdf
-
-# 3. Expand xacro / xacro-enabled URDF
-python3 tools/xacro2urdf.py $TB3_URDF
-
-# 4. Convert URDF to canonical MuJoCo XML
-python3 tools/urdf2mjcf.py bodies/turtlebot3/generated/turtlebot3_burger.urdf
-
-# 5. Convert URDF to a single GLB scene
-python3 tools/urdf2glb.py bodies/turtlebot3/generated/turtlebot3_burger.urdf
-
-# 6. Split MuJoCo XML into per-body GLB assets
-python3 tools/mjcf2glb.py bodies/turtlebot3/generated/turtlebot3_burger.xml
+# 2. Run the full TurtleBot3 Burger pipeline
+./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
-Typical outputs for TurtleBot3 Burger are created under `bodies/turtlebot3/generated/`:
+Typical outputs are created under `bodies/turtlebot3/generated/`:
 
 - `turtlebot3_burger.urdf`
 - `turtlebot3_burger.xml`
@@ -300,7 +289,7 @@ Expected output files:
 - [x] TB3 の変換検証（MJCF, GLB）
 
 ### In Progress
-- [ ] `tools/forge.sh` or `tools/forge.py` — full pipeline runner
+- [ ] `tools/forge.sh` — full pipeline runner improvements
 
 ### Planned
 - [ ] CI/CD: push 時に自動変換・成果物アップロード
