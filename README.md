@@ -64,6 +64,8 @@ files:
 
 Running `tools/fetch.py` reads these files and performs a sparse checkout of only the listed paths into `bodies/{name}/`, preserving the upstream relative paths.
 
+`tools/urdf2mjcf.py` uses the official MuJoCo Python bindings to load URDF and save canonical MJCF. If the URDF contains `package://...` mesh references, the tool rewrites them to local relative paths before invoking MuJoCo. When the package root cannot be inferred from the input path, pass `--package-root PACKAGE=PATH`.
+
 ## Quick Start
 
 ```bash
@@ -91,8 +93,8 @@ Output is generated under `bodies/{name}/generated/`.
 
 ### In Progress
 - [x] `tools/fetch.py` — sparse fetch from upstream repos
-- [ ] `tools/xacro2urdf.py` — ROS-free xacro → URDF conversion
-- [ ] `tools/urdf2mjcf.py` — URDF → MJCF conversion
+- [x] `tools/xacro2urdf.py` — ROS-free xacro → URDF conversion
+- [x] `tools/urdf2mjcf.py` — URDF → MJCF conversion via MuJoCo
 - [ ] `tools/urdf2glb.py` — URDF → GLB conversion
 - [ ] `tools/forge.sh` — full pipeline runner
 
