@@ -62,6 +62,14 @@ urdf2glb.py
 mjcf2glb.py
   -> canonical MuJoCo XML
   -> bodies/{name}/generated/parts/*.glb
+
+mjcf_add_actuators.py
+  -> canonical MuJoCo XML + actuator YAML
+  -> actuated MuJoCo XML
+
+mjcf2pdu.py
+  -> canonical MuJoCo XML + body-to-PDU YAML
+  -> Hakoniwa pdutypes.json
 ```
 
 All tools are bundled in `tools/` and are intended to work without a ROS installation.
@@ -85,9 +93,12 @@ hakoniwa-mbody-registry/
 │   ├── urdf2mjcf.py      # URDF -> canonical MuJoCo XML
 │   ├── urdf2glb.py       # URDF -> single GLB scene
 │   ├── mjcf2glb.py       # MuJoCo XML -> split GLB assets
+│   ├── mjcf_add_actuators.py # Actuator YAML -> actuated MuJoCo XML
+│   ├── mjcf2pdu.py       # MJCF body list -> Hakoniwa pdutypes.json
 │   └── forge.sh          # Full pipeline wrapper
 ├── bodies/               # Registry-managed source snapshots and generated artifacts
 │   └── turtlebot3/
+│       ├── config/       # Robot-specific actuator or postprocess settings, committed
 │       ├── source/       # Fetched upstream files, not committed
 │       └── generated/    # Converted artifacts, committed
 ├── docs/
@@ -117,6 +128,8 @@ Running `tools/fetch.py` reads these files and performs a sparse checkout of onl
   Fetched from upstream. This is a local snapshot used as conversion input and is not committed.
 - `bodies/{name}/generated/`
   Generated artifacts. These are committed as registry outputs for downstream users.
+- `bodies/{name}/config/`
+  Robot-specific settings such as actuator mappings and body-to-PDU mappings that are not present in standard URDF.
 
 ## Tools
 
@@ -191,12 +204,81 @@ python3 tools/mjcf2glb.py \
   bodies/turtlebot3/generated/turtlebot3_burger.xml
 ```
 
+### `tools/mjcf_add_actuators.py`
+
+Add control definitions to a structural MuJoCo XML model using a YAML mapping file.
+
+- Input: canonical MuJoCo XML and an actuator YAML file
+- Output: `bodies/{name}/generated/{stem}.actuated.xml` by default when the input is under `bodies/{name}/`
+- Validates that referenced joints exist before writing output
+
+Example:
+
+```bash
+python3 tools/mjcf_add_actuators.py \
+  bodies/turtlebot3/generated/turtlebot3_burger.xml \
+  bodies/turtlebot3/config/actuators.yaml
+```
+
+Example YAML:
+
+```yaml
+actuators:
+  - type: motor
+    name: left_motor
+    joint: wheel_left_joint
+    ctrllimited: true
+    ctrlrange: [-10, 10]
+    gear: 1.0
+
+  - type: motor
+    name: right_motor
+    joint: wheel_right_joint
+    ctrllimited: true
+    ctrlrange: [-10, 10]
+    gear: 1.0
+```
+
+### `tools/mjcf2pdu.py`
+
+Generate Hakoniwa `pdutypes.json` from a selected list of MJCF bodies.
+
+- Input: canonical MuJoCo XML and a PDU YAML file
+- Output: `bodies/{name}/generated/pdutypes.json` by default when the input is under `bodies/{name}/`
+- Auto-assigns `channel_id` values starting from `base_channel_id`
+- Validates that referenced body names exist in the MJCF
+
+Example:
+
+```bash
+python3 tools/mjcf2pdu.py \
+  bodies/turtlebot3/generated/turtlebot3_burger.xml \
+  bodies/turtlebot3/config/pdu_bodies.yaml
+```
+
+Example YAML:
+
+```yaml
+base_channel_id: 0
+default_pdu_size: 72
+default_type: geometry_msgs/Twist
+default_name_suffix: pos
+
+bodies:
+  - base_link
+  - base_scan
+  - wheel_left_link
+  - wheel_right_link
+  - caster_back_link
+```
+
 ### `tools/forge.sh`
 
-Run the whole TB3 conversion flow in one command when you already know the entry URDF path.
+Run the whole robot conversion flow in one command when you already know the entry URDF path.
 
 - Input: `sources/*.yaml` and an entry URDF path relative to `source/`
 - Output: `bodies/{name}/generated/`
+- If `bodies/{name}/config/actuators.yaml` exists, also generates an actuated MuJoCo XML file
 
 Example:
 
@@ -218,7 +300,9 @@ Typical outputs are created under `bodies/turtlebot3/generated/`:
 
 - `turtlebot3_burger.urdf`
 - `turtlebot3_burger.xml`
+- `turtlebot3_burger.actuated.xml`
 - `turtlebot3_burger.glb`
+- `pdutypes.json`
 - `parts/*.glb`
 
 ## Walkthrough: TurtleBot3 Burger
@@ -246,7 +330,17 @@ python3 tools/urdf2mjcf.py \
 python3 tools/urdf2glb.py \
   bodies/turtlebot3/generated/turtlebot3_burger.urdf
 
-# Step 5: Split MuJoCo XML into per-body GLB assets
+# Step 5: Add actuators from YAML
+python3 tools/mjcf_add_actuators.py \
+  bodies/turtlebot3/generated/turtlebot3_burger.xml \
+  bodies/turtlebot3/config/actuators.yaml
+
+# Step 6: Generate Hakoniwa body-state PDU definitions
+python3 tools/mjcf2pdu.py \
+  bodies/turtlebot3/generated/turtlebot3_burger.xml \
+  bodies/turtlebot3/config/pdu_bodies.yaml
+
+# Step 7: Split MuJoCo XML into per-body GLB assets
 python3 tools/mjcf2glb.py \
   bodies/turtlebot3/generated/turtlebot3_burger.xml
 ```
@@ -255,7 +349,9 @@ Expected output files:
 
 - `bodies/turtlebot3/generated/turtlebot3_burger.urdf`
 - `bodies/turtlebot3/generated/turtlebot3_burger.xml`
+- `bodies/turtlebot3/generated/turtlebot3_burger.actuated.xml`
 - `bodies/turtlebot3/generated/turtlebot3_burger.glb`
+- `bodies/turtlebot3/generated/pdutypes.json`
 - `bodies/turtlebot3/generated/parts/*.glb`
 
 ## Gallery
@@ -286,6 +382,8 @@ Expected output files:
 - [x] `tools/urdf2mjcf.py` — URDF → MJCF conversion via MuJoCo
 - [x] `tools/urdf2glb.py` — URDF → GLB conversion
 - [x] `tools/mjcf2glb.py` — MJCF → split GLB conversion
+- [x] `tools/mjcf_add_actuators.py` — actuator YAML → actuated MJCF conversion
+- [x] `tools/mjcf2pdu.py` — MJCF body list → Hakoniwa pdutypes.json conversion
 - [x] TB3 の変換検証（MJCF, GLB）
 
 ### In Progress

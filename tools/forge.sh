@@ -27,8 +27,16 @@ PY
 SOURCE_URDF="$REPO_ROOT/bodies/$ROBOT_NAME/source/$ENTRY_URDF_REL"
 GENERATED_URDF="$REPO_ROOT/bodies/$ROBOT_NAME/generated/$(basename "${ENTRY_URDF_REL%.*}").urdf"
 GENERATED_XML="$REPO_ROOT/bodies/$ROBOT_NAME/generated/$(basename "${ENTRY_URDF_REL%.*}").xml"
+ACTUATOR_CONFIG="$REPO_ROOT/bodies/$ROBOT_NAME/config/actuators.yaml"
+PDU_CONFIG="$REPO_ROOT/bodies/$ROBOT_NAME/config/pdu_bodies.yaml"
 
 python3 "$SCRIPT_DIR/xacro2urdf.py" "$SOURCE_URDF"
 python3 "$SCRIPT_DIR/urdf2mjcf.py" "$GENERATED_URDF"
+if [ -f "$ACTUATOR_CONFIG" ]; then
+    python3 "$SCRIPT_DIR/mjcf_add_actuators.py" "$GENERATED_XML" "$ACTUATOR_CONFIG"
+fi
 python3 "$SCRIPT_DIR/urdf2glb.py" "$GENERATED_URDF"
 python3 "$SCRIPT_DIR/mjcf2glb.py" "$GENERATED_XML"
+if [ -f "$PDU_CONFIG" ]; then
+    python3 "$SCRIPT_DIR/mjcf2pdu.py" "$GENERATED_XML" "$PDU_CONFIG"
+fi

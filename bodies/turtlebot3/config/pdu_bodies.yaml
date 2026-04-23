@@ -1,0 +1,11 @@
+base_channel_id: 0
+default_pdu_size: 72
+default_type: geometry_msgs/Twist
+default_name_suffix: pos
+
+bodies:
+  - base_link
+  - base_scan
+  - wheel_left_link
+  - wheel_right_link
+  - caster_back_link

@@ -1,0 +1,14 @@
+actuators:
+  - type: motor
+    name: left_motor
+    joint: wheel_left_joint
+    ctrllimited: true
+    ctrlrange: [-10, 10]
+    gear: 1.0
+
+  - type: motor
+    name: right_motor
+    joint: wheel_right_joint
+    ctrllimited: true
+    ctrlrange: [-10, 10]
+    gear: 1.0

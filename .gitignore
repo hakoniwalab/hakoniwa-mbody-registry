@@ -218,3 +218,9 @@ bodies/*/source/
 # keep generated artifacts
 !bodies/*/generated/
 !bodies/*/generated/**
+bodies/*/generated/.DS_Store
+bodies/*/generated/**/.DS_Store
+
+# keep committed robot-specific configuration
+!bodies/*/config/
+!bodies/*/config/**
