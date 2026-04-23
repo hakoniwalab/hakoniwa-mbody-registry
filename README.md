@@ -26,10 +26,10 @@ All conversion tools are bundled in `tools/` and operate without a ROS installat
 
 ## Dependencies
 
-The `xacro2urdf.py` tool requires the `xacro` Python package. Install it using pip:
+The tools require these Python packages:
 
 ```bash
-pip install xacro
+pip install xacro PyYAML
 ```
 
 ## Repository Structure
@@ -37,7 +37,7 @@ pip install xacro
 ```
 hakoniwa-mbody-registry/
 ├── tools/
-│   ├── fetch.sh          # Fetch robot source files from upstream repos
+│   ├── fetch.py          # Fetch robot source files from upstream repos
 │   ├── xacro2urdf.py     # xacro → URDF
 │   ├── urdf2mjcf.py      # URDF → MJCF
 │   ├── urdf2glb.py       # URDF → GLB
@@ -62,13 +62,13 @@ files:
   - turtlebot3_description/meshes/
 ```
 
-Running `tools/fetch.sh` reads these files and performs a sparse checkout of only the listed paths into `bodies/{name}/`.
+Running `tools/fetch.py` reads these files and performs a sparse checkout of only the listed paths into `bodies/{name}/`, preserving the upstream relative paths.
 
 ## Quick Start
 
 ```bash
 # 1. Fetch robot source files
-./tools/fetch.sh sources/tb3.yaml
+python3 tools/fetch.py sources/tb3.yaml
 
 # 2. Run full pipeline
 ./tools/forge.sh sources/tb3.yaml
@@ -90,7 +90,7 @@ Output is generated under `bodies/{name}/generated/`.
 - [x] `sources/tb3.yaml` — TB3 fetch definition
 
 ### In Progress
-- [ ] `tools/fetch.sh` — sparse fetch from upstream repos
+- [x] `tools/fetch.py` — sparse fetch from upstream repos
 - [ ] `tools/xacro2urdf.py` — ROS-free xacro → URDF conversion
 - [ ] `tools/urdf2mjcf.py` — URDF → MJCF conversion
 - [ ] `tools/urdf2glb.py` — URDF → GLB conversion
