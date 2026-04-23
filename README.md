@@ -64,7 +64,11 @@ files:
 
 Running `tools/fetch.py` reads these files and performs a sparse checkout of only the listed paths into `bodies/{name}/`, preserving the upstream relative paths.
 
-`tools/urdf2mjcf.py` uses the official MuJoCo Python bindings to load URDF and save canonical MJCF. If the URDF contains `package://...` mesh references, the tool rewrites them to local relative paths before invoking MuJoCo. When the package root cannot be inferred from the input path, pass `--package-root PACKAGE=PATH`.
+`tools/urdf2mjcf.py` uses the official MuJoCo Python bindings to load URDF and save canonical MJCF as an `.xml` file. If the URDF contains `package://...` mesh references, the tool rewrites them to local relative paths before invoking MuJoCo. When the package root cannot be inferred from the input path, pass `--package-root PACKAGE=PATH`.
+
+`tools/urdf2glb.py` loads URDF visual geometry into a `trimesh.Scene` and exports it as GLB. It supports mesh, box, cylinder, and sphere visuals. As with `urdf2mjcf.py`, `package://...` mesh references can be resolved with `--package-root PACKAGE=PATH`.
+
+`tools/mjcf2glb.py` splits a canonical MJCF XML model into multiple GLB files. The default mode is `--split-by body`, which groups direct geoms under each MJCF body into one GLB per body. `--split-by geom` exports one GLB per geom.
 
 ## Quick Start
 
@@ -95,7 +99,7 @@ Output is generated under `bodies/{name}/generated/`.
 - [x] `tools/fetch.py` — sparse fetch from upstream repos
 - [x] `tools/xacro2urdf.py` — ROS-free xacro → URDF conversion
 - [x] `tools/urdf2mjcf.py` — URDF → MJCF conversion via MuJoCo
-- [ ] `tools/urdf2glb.py` — URDF → GLB conversion
+- [x] `tools/urdf2glb.py` — URDF → GLB conversion
 - [ ] `tools/forge.sh` — full pipeline runner
 
 ### Planned

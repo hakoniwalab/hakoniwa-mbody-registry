@@ -44,7 +44,7 @@ def parse_package_roots(raw_args: list[str]) -> dict[str, Path]:
 def build_output_path(input_file: Path, output_arg: str | None) -> Path:
     if output_arg:
         return Path(output_arg)
-    return input_file.with_suffix(".mjcf")
+    return input_file.with_suffix(".xml")
 
 
 def discover_package_root(package_name: str, input_file: Path, explicit_roots: dict[str, Path]) -> Path | None:
@@ -148,7 +148,7 @@ def main() -> None:
     parser.add_argument(
         "-o",
         "--output",
-        help="Path to the output MJCF file. Defaults to INPUT.mjcf.",
+        help="Path to the output MJCF XML file. Defaults to INPUT.xml.",
     )
     parser.add_argument(
         "--package-root",

@@ -1,3 +1,4 @@
 xacro
 PyYAML
 mujoco
+trimesh
