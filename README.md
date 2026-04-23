@@ -282,9 +282,9 @@ Expected output files:
 
 ## Registered Robots
 
-| Name | Source | Formats |
-|---|---|---|
-| TurtleBot3 (TB3) | [ROBOTIS-GIT/turtlebot3](https://github.com/ROBOTIS-GIT/turtlebot3) | URDF, MJCF, GLB |
+| Name | Source | Formats | License |
+|---|---|---|---|
+| TurtleBot3 (TB3) | [ROBOTIS-GIT/turtlebot3](https://github.com/ROBOTIS-GIT/turtlebot3) | URDF, MJCF, GLB | Apache License 2.0 |
 
 ## Status & TODO
 
