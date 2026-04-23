@@ -1,6 +1,5 @@
 name: turtlebot3
 repo: https://github.com/ROBOTIS-GIT/turtlebot3
-branch: main
+branch: humble
 files:
-  - turtlebot3_description/urdf/
-  - turtlebot3_description/meshes/
+  - turtlebot3_description/

@@ -24,6 +24,14 @@ xacro  →  URDF  →  MJCF
 
 All conversion tools are bundled in `tools/` and operate without a ROS installation.
 
+## Dependencies
+
+The `xacro2urdf.py` tool requires the `xacro` Python package. Install it using pip:
+
+```bash
+pip install xacro
+```
+
 ## Repository Structure
 
 ```
