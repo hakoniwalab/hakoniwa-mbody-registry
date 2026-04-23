@@ -8,6 +8,8 @@ import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from path_utils import default_generated_file, discover_package_dir
+
 
 PACKAGE_URI_PATTERN = re.compile(r"^package://([^/]+)/(.+)$")
 
@@ -44,12 +46,16 @@ def parse_package_roots(raw_args: list[str]) -> dict[str, Path]:
 def build_output_path(input_file: Path, output_arg: str | None) -> Path:
     if output_arg:
         return Path(output_arg)
-    return input_file.with_suffix(".xml")
+    return default_generated_file(input_file, ".xml")
 
 
 def discover_package_root(package_name: str, input_file: Path, explicit_roots: dict[str, Path]) -> Path | None:
     if package_name in explicit_roots:
         return explicit_roots[package_name]
+
+    registry_match = discover_package_dir(input_file, package_name)
+    if registry_match is not None:
+        return registry_match
 
     resolved_input = input_file.resolve()
     for parent in resolved_input.parents:
@@ -104,6 +110,8 @@ def ensure_mujoco_compiler_block(root: ET.Element) -> None:
 
     if "discardvisual" not in compiler_element.attrib:
         compiler_element.set("discardvisual", "false")
+    if "fusestatic" not in compiler_element.attrib:
+        compiler_element.set("fusestatic", "false")
 
 
 def prepare_urdf_for_mujoco(input_file: Path, explicit_roots: dict[str, Path]) -> Path:
@@ -148,7 +156,7 @@ def main() -> None:
     parser.add_argument(
         "-o",
         "--output",
-        help="Path to the output MJCF XML file. Defaults to INPUT.xml.",
+        help="Path to the output MJCF XML file. Defaults to bodies/{name}/generated/{stem}.xml when the input is under bodies/{name}/.",
     )
     parser.add_argument(
         "--package-root",

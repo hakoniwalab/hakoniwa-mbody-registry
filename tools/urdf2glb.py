@@ -10,6 +10,8 @@ from pathlib import Path
 
 import numpy as np
 
+from path_utils import default_generated_file, discover_package_dir
+
 
 PACKAGE_URI_PATTERN = re.compile(r"^package://([^/]+)/(.+)$")
 
@@ -62,7 +64,7 @@ def parse_package_roots(raw_args: list[str]) -> dict[str, Path]:
 def build_output_path(input_file: Path, output_arg: str | None) -> Path:
     if output_arg:
         return Path(output_arg)
-    return input_file.with_suffix(".glb")
+    return default_generated_file(input_file, ".glb")
 
 
 def parse_xyz(value: str | None, default: tuple[float, float, float] = (0.0, 0.0, 0.0)) -> np.ndarray:
@@ -99,6 +101,10 @@ def origin_to_transform(origin: ET.Element | None) -> np.ndarray:
 def discover_package_root(package_name: str, input_file: Path, explicit_roots: dict[str, Path]) -> Path | None:
     if package_name in explicit_roots:
         return explicit_roots[package_name]
+
+    registry_match = discover_package_dir(input_file, package_name)
+    if registry_match is not None:
+        return registry_match
 
     resolved_input = input_file.resolve()
     for parent in resolved_input.parents:
@@ -333,7 +339,11 @@ def main() -> None:
         description="Convert a URDF file into a GLB scene using trimesh."
     )
     parser.add_argument("input", help="Path to the input URDF file.")
-    parser.add_argument("-o", "--output", help="Path to the output GLB file. Defaults to INPUT.glb.")
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Path to the output GLB file. Defaults to bodies/{name}/generated/{stem}.glb when the input is under bodies/{name}/.",
+    )
     parser.add_argument(
         "--package-root",
         action="append",

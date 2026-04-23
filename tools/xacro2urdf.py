@@ -5,6 +5,8 @@ import re
 import sys
 from pathlib import Path
 
+from path_utils import default_generated_file
+
 
 COMMENT_PATTERN = re.compile(r"<!--.*?-->", re.DOTALL)
 ROS_FIND_PATTERN = re.compile(r"\$\(\s*find\s+([^)]+?)\s*\)")
@@ -82,9 +84,7 @@ def import_xacro_module():
 def build_output_path(input_file: Path, output_arg: str | None) -> Path:
     if output_arg:
         return Path(output_arg)
-    if input_file.suffix == ".urdf":
-        return input_file.with_name(f"{input_file.stem}.generated.urdf")
-    return input_file.with_suffix(".urdf")
+    return default_generated_file(input_file, ".urdf")
 
 
 def convert_xacro_to_urdf(input_file: Path, output_file: Path, mappings: dict[str, str]) -> None:
@@ -124,7 +124,7 @@ def main() -> None:
     parser.add_argument(
         "-o",
         "--output",
-        help="Path to the output .urdf file. Defaults to INPUT.urdf, or INPUT.generated.urdf when INPUT already ends with .urdf.",
+        help="Path to the output .urdf file. Defaults to bodies/{name}/generated/{stem}.urdf when the input is under bodies/{name}/.",
     )
     parser.add_argument(
         "--arg",

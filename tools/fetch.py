@@ -100,7 +100,8 @@ def fetch_robot_sources(yaml_file: Path) -> Path:
     name, repo, branch, files_to_fetch = load_config(yaml_file)
 
     repo_root = Path(__file__).resolve().parent.parent
-    dest_dir = repo_root / "bodies" / name
+    robot_root = repo_root / "bodies" / name
+    dest_dir = robot_root / "source"
 
     print(f"Fetching robot source for: {name}")
     print(f"  - Repo:        {repo}")
@@ -111,6 +112,7 @@ def fetch_robot_sources(yaml_file: Path) -> Path:
     if dest_dir.exists():
         print(f"  - Cleaning up existing directory: {dest_dir}")
         shutil.rmtree(dest_dir)
+    robot_root.mkdir(parents=True, exist_ok=True)
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmpdir:

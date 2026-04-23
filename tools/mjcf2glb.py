@@ -10,6 +10,8 @@ from pathlib import Path
 
 import numpy as np
 
+from path_utils import default_generated_parts_dir
+
 
 def fail(message: str) -> None:
     print(f"Error: {message}", file=sys.stderr)
@@ -269,7 +271,7 @@ def main() -> None:
     parser.add_argument(
         "-o",
         "--output-dir",
-        help="Directory for generated GLB files. Defaults to INPUT_stem_parts/ beside the MJCF file.",
+        help="Directory for generated GLB files. Defaults to bodies/{name}/generated/parts when the input is under bodies/{name}/.",
     )
     parser.add_argument(
         "--split-by",
@@ -286,8 +288,7 @@ def main() -> None:
     if args.output_dir:
         output_dir = Path(args.output_dir)
     else:
-        output_dir = input_file.with_suffix("")
-        output_dir = output_dir.parent / f"{output_dir.name}_parts"
+        output_dir = default_generated_parts_dir(input_file)
 
     print(f"Splitting {input_file} -> {output_dir} ({args.split_by})")
     export_parts(input_file, output_dir, args.split_by)
