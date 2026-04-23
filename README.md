@@ -29,7 +29,7 @@ All conversion tools are bundled in `tools/` and operate without a ROS installat
 The tools require these Python packages:
 
 ```bash
-pip install xacro PyYAML
+python3 -m pip install -r requirements.txt
 ```
 
 ## Repository Structure
