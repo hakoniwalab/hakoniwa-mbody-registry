@@ -140,7 +140,9 @@ def emit_ext_resources(
     if sync_script:
         rid = f"{counter}_sync"
         resource_ids["__sync_script__"] = rid
-        path = to_godot_res_path(sync_script, res_root)
+        # Use only the filename of the sync script for the Godot resource path.
+        script_filename = Path(sync_script).name
+        path = to_godot_res_path(script_filename, res_root)
         lines.append(f'[ext_resource type="Script" path="{path}" id="{rid}"]')
 
     lines.append("")

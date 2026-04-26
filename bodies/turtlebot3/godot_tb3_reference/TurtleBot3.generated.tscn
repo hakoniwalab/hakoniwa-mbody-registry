@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://parts/wheel_left_link.glb" id="2_wheel_left_link"]
 [ext_resource type="PackedScene" path="res://parts/wheel_right_link.glb" id="3_wheel_right_link"]
 [ext_resource type="PackedScene" path="res://parts/base_scan.glb" id="4_base_scan"]
-[ext_resource type="Script" path="res://bodies/turtlebot3/godot_tb3_reference/tb3_reference_sync.gd" id="5_sync"]
+[ext_resource type="Script" path="res://tb3_reference_sync.gd" id="5_sync"]
 
 [node name="turtlebot3_burger" type="Node3D"]
 
