@@ -253,6 +253,20 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
             },
         })
 
+    fixed_body_names = recipe.get("fixed_bodies", [])
+    fixed_parts = []
+    for body_name in fixed_body_names:
+        body = index.get_body(body_name)
+        fixed_parts.append({
+            "name": body.name,
+            "parent": body.parent,
+            "asset": make_asset_id(body.name),
+            "mount": {
+                "xyz": round_vec(body.pos),
+                "rpy": round_vec(quat_to_rpy(body.quat)),
+            },
+        })
+
     model: Dict[str, Any] = {
         "format": "hako_viewer_model",
         "version": str(recipe.get("version", "0.1")),
@@ -273,6 +287,9 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
         },
         "movable_parts": movable_parts,
     }
+
+    if fixed_parts:
+        model["fixed_parts"] = fixed_parts
 
     pdu = recipe.get("pdu")
     if pdu:

@@ -142,7 +142,7 @@ format: hako_viewer_model_recipe
 version: 0.1
 
 robot: turtlebot3_burger
-mjcf: turtlebot3_burger.actuated.xml
+mjcf: ../generated/turtlebot3_burger.actuated.xml
 
 assets:
   glb_dir: parts
@@ -153,6 +153,9 @@ base: base_link
 movables:
   - wheel_left_joint
   - wheel_right_joint
+
+fixed_bodies:
+  - base_scan
 
 pdu:
   pose: tb3_pose
@@ -295,6 +298,19 @@ movable_joints:
 
 v0.1 実装では、`movable_joints` があればそれを優先し、なければ `movables` を読む方針が望ましい。
 
+### `fixed_bodies`
+
+```yaml
+fixed_bodies:
+  - base_scan
+```
+
+固定表示対象とする body 名のリスト。
+
+`base` 以外で、`movables` にも含まれない固定部品を指定する。
+
+generator は body 名から parent と mount transform を解決する。
+
 ### `pdu`
 
 ```yaml
@@ -390,7 +406,7 @@ Godot / three.js / Unity / OpenUSD exporter は、この JSON を入力として
       "asset": "wheel_left_link",
       "mount": {
         "xyz": [0.0, 0.08, 0.023],
-        "rpy": [-1.5708, 0.0, 0.0]
+        "rpy": [-1.569999, 0.0, 0.0]
       },
       "motion": {
         "type": "continuous",
@@ -404,11 +420,22 @@ Godot / three.js / Unity / OpenUSD exporter は、この JSON を入力として
       "asset": "wheel_right_link",
       "mount": {
         "xyz": [0.0, -0.08, 0.023],
-        "rpy": [-1.5708, 0.0, 0.0]
+        "rpy": [-1.569999, 0.0, 0.0]
       },
       "motion": {
         "type": "continuous",
         "axis": [0.0, 0.0, 1.0]
+      }
+    }
+  ],
+  "fixed_parts": [
+    {
+      "name": "base_scan",
+      "parent": "base_link",
+      "asset": "base_scan",
+      "mount": {
+        "xyz": [-0.032, 0.0, 0.172],
+        "rpy": [0.0, 0.0, 0.0]
       }
     }
   ],
@@ -610,6 +637,30 @@ MJCF joint の `axis` を出力する。
 
 v0.1 では、MJCF/ROS座標系の値をそのまま出力する。
 
+### `fixed_parts`
+
+```json
+"fixed_parts": [
+  {
+    "name": "base_scan",
+    "parent": "base_link",
+    "asset": "base_scan",
+    "mount": {
+      "xyz": [-0.032, 0.0, 0.172],
+      "rpy": [0.0, 0.0, 0.0]
+    }
+  }
+]
+```
+
+固定表示対象。
+
+recipe の `fixed_bodies` に指定された body から生成する。
+
+`base` や `movable_parts` に含まれない、静的な body を定義する。
+
+`movable_parts` と似た構造を持つが、`joint` と `motion` を持たない。
+
 ### `pdu_bindings`
 
 ```json
@@ -794,24 +845,20 @@ for joint_name in recipe.movables:
     movable_part.motion.type = motion_type_from_joint(joint)
 ```
 
-## 3.9 pdu_bindings 生成ルール
+## 3.9 fixed_parts 生成ルール
+
+recipe の `fixed_bodies` に指定された body 名ごとに、以下を行う。
+
+```text
+1. body name から BodyInfo を取得
+2. body.parent を parent とする
+3. body.pos / body.quat から mount を生成
+4. body.name から asset を解決
+```
+
+## 3.10 pdu_bindings 生成ルール
 
 recipe の `pdu` が存在する場合、出力 JSON の `pdu_bindings` にそのまま転記する。
-
-```yaml
-pdu:
-  pose: tb3_pose
-  joint_state: tb3_joint_state
-```
-
-↓
-
-```json
-"pdu_bindings": {
-  "pose": "tb3_pose",
-  "joint_state": "tb3_joint_state"
-}
-```
 
 ---
 
@@ -850,6 +897,7 @@ PyYAML
 - joint index 作成
 - base 生成
 - movable_parts 生成
+- fixed_parts 生成
 - GLB assets 生成
 - pdu_bindings 転記
 - body quat → rpy 変換
@@ -869,6 +917,7 @@ assets.map
 base
 movables
 movable_joints
+fixed_bodies
 pdu
 ```
 
@@ -897,7 +946,6 @@ slide:
 
 ```text
 - sensors.yaml
-- fixed_parts
 - body transform の base-relative 合成
 - body 階層の全展開
 - geom 単位の visual origin
@@ -1036,6 +1084,7 @@ hako_viewer_model.schema.json
 - assets が配列である
 - base が存在する
 - movable_parts が配列である
+- fixed_parts が optional 配列である
 - movable_parts[].joint が存在する
 - movable_parts[].motion.axis が vec3 である
 - pdu_bindings が optional object である
@@ -1043,49 +1092,21 @@ hako_viewer_model.schema.json
 
 ---
 
-# 7. sensors.yaml との将来統合
+# 7. fixed_parts と sensors の責務分担
 
-v0.1 の最小実装では sensors は未対応である。
+`fixed_parts` と `sensors` は、責務が異なる。
 
-ただし、構想上は以下の形を想定する。
+- **fixed_parts**:
+  ビューア上に **静的な見た目** を配置するための定義。
+  `base_scan` のように、ロボットの一部として描画されるが、可動ではない部品が対象。
 
-```yaml
-format: hako_sensors
-version: 0.1
+- **sensors**:
+  `base_scan` body に「これはLIDARである」といった **意味づけ** を追加するための定義。
+  センサーとしての可視化（例：レーザー光線を描画する）や、データシートスペック、PDUとの対応などを定義する。
 
-sensors:
-  - name: lidar
-    type: lidar_2d
-    body: base_scan
-    spec: sensors/lds_01.yaml
-    pdu: tb3_scan
+将来的には、同じ `base_scan` body が `fixed_parts` と `sensors` の両方で参照されることになる。
 
-  - name: imu
-    type: imu
-    body: imu_link
-    spec: sensors/imu.yaml
-    pdu: tb3_imu
-```
-
-generator は MJCF から `body` または `site` の transform を取得し、Viewer Model に展開する。
-
-```json
-"sensors": [
-  {
-    "name": "lidar",
-    "type": "lidar_2d",
-    "body": "base_scan",
-    "parent": "base_link",
-    "asset": "base_scan",
-    "mount": {
-      "xyz": [-0.032, 0.0, 0.172],
-      "rpy": [0.0, 0.0, 0.0]
-    },
-    "spec": "sensors/lds_01.yaml",
-    "pdu": "tb3_scan"
-  }
-]
-```
+今回は `sensors` は未対応であり、`fixed_parts` のみ実装する。
 
 ---
 
@@ -1116,11 +1137,12 @@ Godot 上の構造例。
 ```text
 TurtleBot3
   HakoSync
-  Visuals
-    base_link
-      wheel_left_link
-      wheel_right_link
-      base_scan
+  RosToGodot
+    Visuals
+      base_link
+        wheel_left_link
+        wheel_right_link
+        base_scan
 ```
 
 Godot generator の責務。
@@ -1130,6 +1152,7 @@ Godot generator の責務。
 - ROS座標系からGodot座標系へ変換する
 - GLB asset を instance 化する
 - movable_parts の mount を Node3D transform に変換する
+- fixed_parts の mount を Node3D transform に変換する
 - joint_state PDU と joint 名を対応させる
 - base pose PDU で root を動かす
 ```
@@ -1168,6 +1191,9 @@ base
 
 movable_parts
   → USD Xform + joint / articulation mapping
+
+fixed_parts
+  → USD Xform
 
 assets
   → USD reference / payload / converted mesh
