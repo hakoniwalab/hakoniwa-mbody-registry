@@ -1,0 +1,105 @@
+{
+  "format": "hako_viewer_model",
+  "version": "0.1",
+  "coordinate_system": "ros",
+  "robot": {
+    "name": "turtlebot3_burger",
+    "root": "base_link"
+  },
+  "assets": [
+    {
+      "id": "base_link",
+      "type": "glb",
+      "path": "parts/base_link.glb"
+    },
+    {
+      "id": "wheel_left_link",
+      "type": "glb",
+      "path": "parts/wheel_left_link.glb"
+    },
+    {
+      "id": "wheel_right_link",
+      "type": "glb",
+      "path": "parts/wheel_right_link.glb"
+    },
+    {
+      "id": "base_scan",
+      "type": "glb",
+      "path": "parts/base_scan.glb"
+    }
+  ],
+  "base": {
+    "name": "base_link",
+    "asset": "base_link",
+    "mount": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "movable_parts": [
+    {
+      "name": "wheel_left_link",
+      "joint": "wheel_left_joint",
+      "parent": "base_link",
+      "asset": "wheel_left_link",
+      "mount": {
+        "xyz": [
+          0.0,
+          0.08,
+          0.023
+        ],
+        "rpy": [
+          -1.5708,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "wheel_right_link",
+      "joint": "wheel_right_joint",
+      "parent": "base_link",
+      "asset": "wheel_right_link",
+      "mount": {
+        "xyz": [
+          0.0,
+          -0.08,
+          0.023
+        ],
+        "rpy": [
+          -1.5708,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    }
+  ],
+  "pdu_bindings": {
+    "pose": "tb3_pose",
+    "joint_state": "tb3_joint_state"
+  }
+}

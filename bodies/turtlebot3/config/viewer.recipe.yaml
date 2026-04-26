@@ -1,0 +1,21 @@
+format: hako_viewer_model_recipe
+version: 0.1
+
+robot: turtlebot3_burger
+mjcf: turtlebot3_burger.actuated.xml
+
+assets:
+  # mjcf2glb.py の出力先ディレクトリと合わせる
+  glb_dir: parts
+  # body名とglbファイル名が一致するルール
+  map: body_name
+
+base: base_link
+
+movables:
+  - wheel_left_joint
+  - wheel_right_joint
+
+pdu:
+  pose: tb3_pose
+  joint_state: tb3_joint_state
