@@ -2,7 +2,7 @@ format: hako_viewer_model_recipe
 version: 0.1
 
 robot: turtlebot3_burger
-mjcf: turtlebot3_burger.actuated.xml
+mjcf: ../generated/turtlebot3_burger.actuated.xml
 
 assets:
   # mjcf2glb.py の出力先ディレクトリと合わせる
