@@ -217,7 +217,6 @@ def parse_robot(input_file: Path) -> tuple[dict[str, list[Visual]], dict[str, Jo
 
     visuals_by_link: dict[str, list[Visual]] = {}
     child_links: set[str] = set()
-    joints_by_parent: dict[str, Joint] = {}
 
     for link in root.findall("link"):
         link_name = link.get("name")
@@ -313,6 +312,17 @@ def create_geometry(trimesh, visual: Visual, input_file: Path, explicit_roots: d
 
 
 def convert_urdf_to_glb(input_file: Path, output_file: Path, explicit_roots: dict[str, Path]) -> None:
+    """
+    Export the entire robot as one GLB scene.
+
+    This mode preserves the existing behavior:
+      visual transform = root_to_link_transform @ visual_origin_transform
+
+    Therefore every link mesh is baked into the root-link/world-like robot frame.
+    This is good for a standalone complete robot GLB, but not suitable for
+    per-link viewer animation because movable parts already include their mount
+    offsets in the vertex data.
+    """
     trimesh = import_trimesh_module()
     visuals_by_link, joints, root_link = parse_robot(input_file)
     link_transforms = build_link_transforms(root_link, joints)
@@ -334,15 +344,86 @@ def convert_urdf_to_glb(input_file: Path, output_file: Path, explicit_roots: dic
     print(f"Successfully wrote {output_file}")
 
 
+def convert_urdf_to_link_local_glbs(input_file: Path, output_dir: Path, explicit_roots: dict[str, Path]) -> None:
+    """
+    Export one GLB per URDF link in link-local coordinates.
+
+    This mode is intended for Hakoniwa Viewer Model / Godot scene generation.
+
+    Important rule:
+      visual transform = visual_origin_transform
+
+    The root_to_link transform is intentionally NOT applied. As a result:
+      - wheel_left_link.glb is centered in the wheel_left_link frame.
+      - wheel_right_link.glb is centered in the wheel_right_link frame.
+      - base_scan.glb is centered in the base_scan frame.
+      - The viewer applies MJCF/ViewerModel mount transforms later.
+
+    This avoids double-applying link placement in Godot or other viewers.
+    """
+    trimesh = import_trimesh_module()
+    visuals_by_link, _joints, _root_link = parse_robot(input_file)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    wrote_any = False
+    for link_name, visuals in visuals_by_link.items():
+        if not visuals:
+            continue
+
+        scene = trimesh.Scene(base_frame=link_name)
+
+        for visual in visuals:
+            geometry = create_geometry(trimesh, visual, input_file, explicit_roots)
+
+            # Link-local export:
+            # Do not apply root_to_link transform here.
+            # Only apply the visual origin defined inside the link frame.
+            transform = visual.transform
+
+            scene.add_geometry(
+                geometry,
+                node_name=visual.name,
+                transform=transform,
+            )
+
+        if not scene.geometry:
+            continue
+
+        output_file = output_dir / f"{link_name}.glb"
+        glb_bytes = scene.export(file_type="glb")
+        output_file.write_bytes(glb_bytes)
+        wrote_any = True
+        print(f"Successfully wrote {output_file}")
+
+    if not wrote_any:
+        fail("No visual geometry found in the URDF.")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Convert a URDF file into a GLB scene using trimesh."
+        description=(
+            "Convert a URDF file into GLB. "
+            "By default, exports one complete robot GLB. "
+            "With --parts-dir, exports one link-local GLB per URDF link."
+        )
     )
     parser.add_argument("input", help="Path to the input URDF file.")
     parser.add_argument(
         "-o",
         "--output",
-        help="Path to the output GLB file. Defaults to bodies/{name}/generated/{stem}.glb when the input is under bodies/{name}/.",
+        help=(
+            "Path to the output complete GLB file. "
+            "Defaults to bodies/{name}/generated/{stem}.glb when the input is under bodies/{name}/. "
+            "Ignored when --parts-dir is specified."
+        ),
+    )
+    parser.add_argument(
+        "--parts-dir",
+        help=(
+            "Output per-link GLB files into this directory. "
+            "Each GLB is exported in link-local coordinates and is suitable for viewer model based scene generation."
+        ),
     )
     parser.add_argument(
         "--package-root",
@@ -358,6 +439,13 @@ def main() -> None:
         fail(f"Input file not found at {input_file}")
 
     package_roots = parse_package_roots(args.package_root)
+
+    if args.parts_dir:
+        parts_dir = Path(args.parts_dir)
+        print(f"Converting {input_file} -> {parts_dir}/<link_name>.glb")
+        convert_urdf_to_link_local_glbs(input_file, parts_dir, package_roots)
+        return
+
     output_file = build_output_path(input_file, args.output)
     print(f"Converting {input_file} -> {output_file}")
     convert_urdf_to_glb(input_file, output_file, package_roots)

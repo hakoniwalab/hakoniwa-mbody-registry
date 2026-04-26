@@ -9,28 +9,42 @@
 
 [node name="HakoSync" type="Node" parent="."]
 
-[node name="Visuals" type="Node3D" parent="."]
+; ROS -> Godot coordinate conversion wrapper.
+; Desired vector mapping:
+;   godot_x = -ros_y
+;   godot_y =  ros_z
+;   godot_z = -ros_x
+;
+; The Transform3D values below are serialized in the order Godot expects in .tscn.
+; This is the same mapping as the matrix:
+;   [ 0 -1  0 ]
+;   [ 0  0  1 ]
+;   [-1  0  0 ]
+[node name="RosToGodot" type="Node3D" parent="."]
+transform = Transform3D(0, -1, 0, 0, 0, 1, -1, 0, 0, 0, 0, 0)
 
-[node name="base_link" type="Node3D" parent="Visuals"]
+[node name="Visuals" type="Node3D" parent="RosToGodot"]
+
+[node name="base_link" type="Node3D" parent="RosToGodot/Visuals"]
 position = Vector3(0, 0, 0)
 rotation = Vector3(0, 0, 0)
 
-[node name="model" parent="Visuals/base_link" instance=ExtResource("1_base")]
+[node name="model" parent="RosToGodot/Visuals/base_link" instance=ExtResource("1_base")]
 
-[node name="wheel_left_link" type="Node3D" parent="Visuals/base_link"]
+[node name="wheel_left_link" type="Node3D" parent="RosToGodot/Visuals/base_link"]
 position = Vector3(0, 0.08, 0.023)
 rotation = Vector3(-1.5708, 0, 0)
 
-[node name="model" parent="Visuals/base_link/wheel_left_link" instance=ExtResource("2_left")]
+[node name="model" parent="RosToGodot/Visuals/base_link/wheel_left_link" instance=ExtResource("2_left")]
 
-[node name="wheel_right_link" type="Node3D" parent="Visuals/base_link"]
+[node name="wheel_right_link" type="Node3D" parent="RosToGodot/Visuals/base_link"]
 position = Vector3(0, -0.08, 0.023)
 rotation = Vector3(-1.5708, 0, 0)
 
-[node name="model" parent="Visuals/base_link/wheel_right_link" instance=ExtResource("3_right")]
+[node name="model" parent="RosToGodot/Visuals/base_link/wheel_right_link" instance=ExtResource("3_right")]
 
-[node name="base_scan" type="Node3D" parent="Visuals/base_link"]
+[node name="base_scan" type="Node3D" parent="RosToGodot/Visuals/base_link"]
 position = Vector3(-0.032, 0, 0.172)
 rotation = Vector3(0, 0, 0)
 
-[node name="model" parent="Visuals/base_link/base_scan" instance=ExtResource("4_scan")]
+[node name="model" parent="RosToGodot/Visuals/base_link/base_scan" instance=ExtResource("4_scan")]
