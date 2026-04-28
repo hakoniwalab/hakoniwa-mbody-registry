@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
+from glb_material_utils import apply_material_rgba, debug_rgba_for_name, strip_mesh_metadata
 from path_utils import default_generated_parts_dir
 
 
@@ -149,14 +150,9 @@ def parse_geom(geom: ET.Element, index: int, body_name: str, mesh_assets: dict[s
     return None
 
 
-def apply_rgba(mesh, rgba: np.ndarray | None):
-    if rgba is None:
-        return
-    color = np.clip(np.round(rgba * 255), 0, 255).astype(np.uint8)
-    mesh.visual.face_colors = color
+def create_geometry(trimesh, geom: GeomSpec, debug_colors: bool):
+    color_rgba = debug_rgba_for_name(geom.name) if debug_colors else geom.rgba
 
-
-def create_geometry(trimesh, geom: GeomSpec):
     if geom.geometry_type == "mesh":
         loaded = trimesh.load(geom.params["file"], force="scene")
         scene = loaded if isinstance(loaded, trimesh.Scene) else trimesh.Scene(loaded)
@@ -166,12 +162,13 @@ def create_geometry(trimesh, geom: GeomSpec):
             scale_matrix[0, 0], scale_matrix[1, 1], scale_matrix[2, 2] = scale
             scene.apply_transform(scale_matrix)
         mesh = scene.to_mesh()
-        apply_rgba(mesh, geom.rgba)
+        strip_mesh_metadata(mesh)
+        apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     if geom.geometry_type == "box":
         mesh = trimesh.creation.box(extents=geom.params["size"] * 2.0)
-        apply_rgba(mesh, geom.rgba)
+        apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     if geom.geometry_type == "cylinder":
@@ -179,12 +176,12 @@ def create_geometry(trimesh, geom: GeomSpec):
             radius=geom.params["radius"],
             height=geom.params["half_length"] * 2.0,
         )
-        apply_rgba(mesh, geom.rgba)
+        apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     if geom.geometry_type == "sphere":
         mesh = trimesh.creation.icosphere(radius=geom.params["radius"])
-        apply_rgba(mesh, geom.rgba)
+        apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     fail(f"Unsupported geom type: {geom.geometry_type}")
@@ -231,7 +228,7 @@ def collect_geom_parts(
         collect_geom_parts(child, world_transform, mesh_assets, parts)
 
 
-def export_parts(input_file: Path, output_dir: Path, split_by: str) -> None:
+def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors: bool) -> None:
     trimesh = import_trimesh_module()
 
     root = ET.parse(input_file).getroot()
@@ -256,7 +253,7 @@ def export_parts(input_file: Path, output_dir: Path, split_by: str) -> None:
     for part_name, geoms in parts.items():
         scene = trimesh.Scene(base_frame="part")
         for geom, transform in geoms:
-            geometry = create_geometry(trimesh, geom)
+            geometry = create_geometry(trimesh, geom, debug_colors)
             scene.add_geometry(geometry, node_name=geom.name, transform=transform)
         output_path = output_dir / f"{sanitize_name(part_name)}.glb"
         output_path.write_bytes(scene.export(file_type="glb"))
@@ -279,6 +276,11 @@ def main() -> None:
         default="body",
         help="Split GLB files by direct MJCF body geoms or by individual geoms. Default: body.",
     )
+    parser.add_argument(
+        "--debug-colors",
+        action="store_true",
+        help="Override source colors with high-contrast debug materials to verify viewer import behavior.",
+    )
     args = parser.parse_args()
 
     input_file = Path(args.input)
@@ -291,7 +293,7 @@ def main() -> None:
         output_dir = default_generated_parts_dir(input_file)
 
     print(f"Splitting {input_file} -> {output_dir} ({args.split_by})")
-    export_parts(input_file, output_dir, args.split_by)
+    export_parts(input_file, output_dir, args.split_by, args.debug_colors)
 
 
 if __name__ == "__main__":

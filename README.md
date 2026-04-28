@@ -354,6 +354,83 @@ Expected output files:
 - `bodies/turtlebot3/generated/pdutypes.json`
 - `bodies/turtlebot3/generated/parts/*.glb`
 
+## Godot Export
+
+To build a Godot scene from the generated TurtleBot3 assets, first generate the viewer model JSON and then generate the `.tscn` scene.
+
+```bash
+# Generate the viewer model JSON from recipe + actuated MJCF
+python3 tools/hako_viewer_model_gen.py \
+  bodies/turtlebot3/config/viewer.recipe.yaml \
+  -o bodies/turtlebot3/view/turtlebot3.json \
+  --pretty
+
+# Generate the Godot scene
+python3 tools/hako_godot_scene_gen.py \
+  bodies/turtlebot3/view/turtlebot3.json \
+  -o bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn \
+  --res-root res:// \
+  --sync-script tb3_reference_sync.gd
+```
+
+The generated scene expects the split GLB assets under `res://parts/`.
+
+One practical way to stage everything into a Godot project is:
+
+```bash
+export GODOT_PROJECT_DIR=/path/to/your/godot/project
+
+mkdir -p "$GODOT_PROJECT_DIR/parts"
+cp -f bodies/turtlebot3/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
+cp -f bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
+```
+
+If you want to regenerate and stage in one flow:
+
+```bash
+python3 tools/urdf2glb.py \
+  bodies/turtlebot3/generated/turtlebot3_burger.urdf \
+  --parts-dir bodies/turtlebot3/generated/parts
+
+python3 tools/hako_viewer_model_gen.py \
+  bodies/turtlebot3/config/viewer.recipe.yaml \
+  -o bodies/turtlebot3/view/turtlebot3.json \
+  --pretty
+
+python3 tools/hako_godot_scene_gen.py \
+  bodies/turtlebot3/view/turtlebot3.json \
+  -o bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn \
+  --res-root res:// \
+  --sync-script tb3_reference_sync.gd
+
+mkdir -p "$GODOT_PROJECT_DIR/parts"
+cp -f bodies/turtlebot3/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
+cp -f bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
+```
+
+The resulting Godot node structure is:
+
+```text
+TurtleBot3
+  HakoSync
+  RosToGodot
+    Visuals
+      base_link
+        wheel_left_link
+        wheel_right_link
+        base_scan
+```
+
+The ROS-to-Godot coordinate conversion used by the generated scene is:
+
+```text
+godot_x = -ros_y
+godot_y =  ros_z
+godot_z = -ros_x
+```
+
 ## Gallery
 
 ### TurtleBot3 Burger — MJCF (MuJoCo Viewer)

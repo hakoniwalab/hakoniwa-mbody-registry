@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
+from glb_material_utils import apply_material_rgba, debug_rgba_for_name, strip_mesh_metadata
 from path_utils import default_generated_file, discover_package_dir
 
 
@@ -268,14 +269,15 @@ def build_link_transforms(root_link: str, joints: dict[str, Joint]) -> dict[str,
     return transforms
 
 
-def apply_rgba(mesh, rgba: np.ndarray | None):
-    if rgba is None:
-        return
-    color = np.clip(np.round(rgba * 255), 0, 255).astype(np.uint8)
-    mesh.visual.face_colors = color
+def create_geometry(
+    trimesh,
+    visual: Visual,
+    input_file: Path,
+    explicit_roots: dict[str, Path],
+    debug_colors: bool,
+):
+    color_rgba = debug_rgba_for_name(visual.name) if debug_colors else visual.material_rgba
 
-
-def create_geometry(trimesh, visual: Visual, input_file: Path, explicit_roots: dict[str, Path]):
     if visual.geometry_type == "mesh":
         mesh_path = resolve_mesh_path(visual.params["filename"], input_file, explicit_roots)
         loaded = trimesh.load(mesh_path, force="scene")
@@ -286,13 +288,14 @@ def create_geometry(trimesh, visual: Visual, input_file: Path, explicit_roots: d
             scale_matrix[0, 0], scale_matrix[1, 1], scale_matrix[2, 2] = scale
             scene.apply_transform(scale_matrix)
         mesh = scene.to_mesh()
-        if visual.material_rgba is not None:
-            apply_rgba(mesh, visual.material_rgba)
+        strip_mesh_metadata(mesh)
+        if color_rgba is not None:
+            apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     if visual.geometry_type == "box":
         mesh = trimesh.creation.box(extents=visual.params["size"])
-        apply_rgba(mesh, visual.material_rgba)
+        apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     if visual.geometry_type == "cylinder":
@@ -300,18 +303,23 @@ def create_geometry(trimesh, visual: Visual, input_file: Path, explicit_roots: d
             radius=visual.params["radius"],
             height=visual.params["length"],
         )
-        apply_rgba(mesh, visual.material_rgba)
+        apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     if visual.geometry_type == "sphere":
         mesh = trimesh.creation.icosphere(radius=visual.params["radius"])
-        apply_rgba(mesh, visual.material_rgba)
+        apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
     fail(f"Unsupported visual geometry type: {visual.geometry_type}")
 
 
-def convert_urdf_to_glb(input_file: Path, output_file: Path, explicit_roots: dict[str, Path]) -> None:
+def convert_urdf_to_glb(
+    input_file: Path,
+    output_file: Path,
+    explicit_roots: dict[str, Path],
+    debug_colors: bool,
+) -> None:
     """
     Export the entire robot as one GLB scene.
 
@@ -331,7 +339,7 @@ def convert_urdf_to_glb(input_file: Path, output_file: Path, explicit_roots: dic
     for link_name, visuals in visuals_by_link.items():
         link_transform = link_transforms.get(link_name, np.eye(4))
         for visual in visuals:
-            geometry = create_geometry(trimesh, visual, input_file, explicit_roots)
+            geometry = create_geometry(trimesh, visual, input_file, explicit_roots, debug_colors)
             transform = link_transform @ visual.transform
             scene.add_geometry(geometry, node_name=visual.name, transform=transform)
 
@@ -344,7 +352,12 @@ def convert_urdf_to_glb(input_file: Path, output_file: Path, explicit_roots: dic
     print(f"Successfully wrote {output_file}")
 
 
-def convert_urdf_to_link_local_glbs(input_file: Path, output_dir: Path, explicit_roots: dict[str, Path]) -> None:
+def convert_urdf_to_link_local_glbs(
+    input_file: Path,
+    output_dir: Path,
+    explicit_roots: dict[str, Path],
+    debug_colors: bool,
+) -> None:
     """
     Export one GLB per URDF link in link-local coordinates.
 
@@ -374,7 +387,7 @@ def convert_urdf_to_link_local_glbs(input_file: Path, output_dir: Path, explicit
         scene = trimesh.Scene(base_frame=link_name)
 
         for visual in visuals:
-            geometry = create_geometry(trimesh, visual, input_file, explicit_roots)
+            geometry = create_geometry(trimesh, visual, input_file, explicit_roots, debug_colors)
 
             # Link-local export:
             # Do not apply root_to_link transform here.
@@ -432,6 +445,11 @@ def main() -> None:
         metavar="PACKAGE=PATH",
         help="Resolve package://PACKAGE/... URIs against PATH. Repeat for multiple packages.",
     )
+    parser.add_argument(
+        "--debug-colors",
+        action="store_true",
+        help="Override source colors with high-contrast debug materials to verify viewer import behavior.",
+    )
     args = parser.parse_args()
 
     input_file = Path(args.input)
@@ -443,12 +461,12 @@ def main() -> None:
     if args.parts_dir:
         parts_dir = Path(args.parts_dir)
         print(f"Converting {input_file} -> {parts_dir}/<link_name>.glb")
-        convert_urdf_to_link_local_glbs(input_file, parts_dir, package_roots)
+        convert_urdf_to_link_local_glbs(input_file, parts_dir, package_roots, args.debug_colors)
         return
 
     output_file = build_output_path(input_file, args.output)
     print(f"Converting {input_file} -> {output_file}")
-    convert_urdf_to_glb(input_file, output_file, package_roots)
+    convert_urdf_to_glb(input_file, output_file, package_roots, args.debug_colors)
 
 
 if __name__ == "__main__":
