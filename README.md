@@ -373,6 +373,8 @@ python3 tools/hako_godot_scene_gen.py \
   --sync-script tb3_reference_sync.gd
 ```
 
+When `--sync-script` is specified, the generator also writes a placeholder GDScript file with the same basename next to the output `.tscn`.
+
 The generated scene expects the split GLB assets under `res://parts/`.
 
 One practical way to stage everything into a Godot project is:

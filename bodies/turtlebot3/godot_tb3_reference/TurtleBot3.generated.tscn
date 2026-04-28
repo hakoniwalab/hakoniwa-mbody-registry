@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" path="res://parts/base_link.glb" id="1_base_link"]
 [ext_resource type="PackedScene" path="res://parts/wheel_left_link.glb" id="2_wheel_left_link"]
@@ -6,7 +6,25 @@
 [ext_resource type="PackedScene" path="res://parts/base_scan.glb" id="4_base_scan"]
 [ext_resource type="Script" path="res://tb3_reference_sync.gd" id="5_sync"]
 
+[sub_resource type="Environment" id="Environment_default"]
+background_mode = 2
+sky_custom_fov = 45.0
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.18
+tonemap_mode = 0
+glow_enabled = false
+
 [node name="turtlebot3_burger" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_default")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.55, 0.95, 0.15)
+light_energy = 0.95
+light_indirect_energy = 0.2
+shadow_enabled = true
 
 [node name="HakoSync" type="Node" parent="."]
 script = ExtResource("5_sync")

@@ -93,6 +93,17 @@ def transform_ros_to_godot_line() -> str:
     return "Transform3D(0, -1, 0, 0, 0, 1, -1, 0, 0, 0, 0, 0)"
 
 
+def default_sync_script_text() -> str:
+    return """extends Node
+
+# Placeholder sync hook for generated Hakoniwa viewer scenes.
+# Replace or extend this script to apply external robot state updates.
+
+func _ready() -> void:
+\tpass
+"""
+
+
 def load_model(path: Path) -> Dict[str, Any]:
     with path.open("r", encoding="utf-8") as f:
         model = json.load(f)
@@ -116,6 +127,18 @@ def build_asset_map(model: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
 
 def emit_header(lines: List[str], load_steps: int) -> None:
     lines.append(f"[gd_scene load_steps={load_steps} format=3]")
+    lines.append("")
+
+
+def emit_default_environment(lines: List[str], env_id: str) -> None:
+    lines.append(f'[sub_resource type="Environment" id="{env_id}"]')
+    lines.append("background_mode = 2")
+    lines.append("sky_custom_fov = 45.0")
+    lines.append("ambient_light_source = 2")
+    lines.append("ambient_light_color = Color(1, 1, 1, 1)")
+    lines.append("ambient_light_energy = 0.18")
+    lines.append("tonemap_mode = 0")
+    lines.append("glow_enabled = false")
     lines.append("")
 
 
@@ -171,6 +194,21 @@ def emit_transform(lines: List[str], mount: Dict[str, Any]) -> None:
     rpy = mount.get("rpy", [0.0, 0.0, 0.0])
     lines.append(f"position = {vec3(xyz)}")
     lines.append(f"rotation = {vec3(rpy)}")
+
+
+def emit_default_lighting(lines: List[str], env_id: str) -> None:
+    emit_node(lines, "WorldEnvironment", "WorldEnvironment", parent=".")
+    lines.append(f'environment = SubResource("{env_id}")')
+    lines.append("")
+
+    emit_node(lines, "Sun", "DirectionalLight3D", parent=".")
+    # DirectionalLight3D is controlled by rotation, not position.
+    # Use a more diagonal key light so dark materials keep visible shading contrast.
+    lines.append("rotation = Vector3(-0.55, 0.95, 0.15)")
+    lines.append("light_energy = 0.95")
+    lines.append("light_indirect_energy = 0.2")
+    lines.append("shadow_enabled = true")
+    lines.append("")
 
 
 def emit_model_instance(
@@ -276,22 +314,29 @@ def build_scene(
     res_root: str,
     sync_script: Optional[str],
     include_unused_assets_as_fixed: bool,
+    include_default_lighting: bool,
 ) -> str:
     asset_map = build_asset_map(model)
 
     robot = model.get("robot", {})
     root_name = node_name(scene_name or robot.get("name", "HakoniwaRobot"))
 
-    # load_steps = 1 implicit scene + ext_resources count.
+    # load_steps = 1 implicit scene + ext_resources count + optional subresources.
     ext_count = len(model.get("assets", [])) + (1 if sync_script else 0)
-    load_steps = ext_count + 1
+    sub_count = 1 if include_default_lighting else 0
+    load_steps = ext_count + sub_count + 1
 
     lines: List[str] = []
     emit_header(lines, load_steps)
     resource_ids = emit_ext_resources(lines, model, asset_map, res_root, sync_script)
+    if include_default_lighting:
+        emit_default_environment(lines, "Environment_default")
 
     emit_node(lines, root_name, "Node3D")
     lines.append("")
+
+    if include_default_lighting:
+        emit_default_lighting(lines, "Environment_default")
 
     emit_node(lines, "HakoSync", "Node", parent=".")
     if sync_script:
@@ -375,6 +420,14 @@ def build_scene(
     return "\n".join(lines).rstrip() + "\n"
 
 
+def write_sync_script(output_scene: Path, sync_script: str) -> Path:
+    sync_path = Path(sync_script)
+    script_path = sync_path if sync_path.is_absolute() else output_scene.parent / sync_path.name
+    script_path.parent.mkdir(parents=True, exist_ok=True)
+    script_path.write_text(default_sync_script_text(), encoding="utf-8")
+    return script_path
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generate a Godot .tscn scene from hako_viewer_model.json"
@@ -389,6 +442,11 @@ def main() -> int:
         action="store_true",
         help="Do not attach assets that are not referenced by base/movable_parts/fixed_parts",
     )
+    parser.add_argument(
+        "--no-default-lighting",
+        action="store_true",
+        help="Do not add generated WorldEnvironment and DirectionalLight3D nodes.",
+    )
     args = parser.parse_args()
 
     model = load_model(args.model)
@@ -398,10 +456,14 @@ def main() -> int:
         res_root=args.res_root,
         sync_script=args.sync_script,
         include_unused_assets_as_fixed=not args.no_unused_assets,
+        include_default_lighting=not args.no_default_lighting,
     )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(scene, encoding="utf-8")
+    if args.sync_script:
+        script_path = write_sync_script(args.out, args.sync_script)
+        print(f"Successfully wrote {script_path}")
     print(f"Successfully wrote {args.out}")
     return 0
 
