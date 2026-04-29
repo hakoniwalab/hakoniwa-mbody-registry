@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3]
 
-[ext_resource type="PackedScene" path="res://parts/base_link.glb" id="1_base_link"]
-[ext_resource type="PackedScene" path="res://parts/wheel_left_link.glb" id="2_wheel_left_link"]
-[ext_resource type="PackedScene" path="res://parts/wheel_right_link.glb" id="3_wheel_right_link"]
-[ext_resource type="PackedScene" path="res://parts/base_scan.glb" id="4_base_scan"]
-[ext_resource type="Script" path="res://tb3_reference_sync.gd" id="5_sync"]
+[ext_resource type="PackedScene" path="res://assets/parts/base_link.glb" id="1_base_link"]
+[ext_resource type="PackedScene" path="res://assets/parts/wheel_left_link.glb" id="2_wheel_left_link"]
+[ext_resource type="PackedScene" path="res://assets/parts/wheel_right_link.glb" id="3_wheel_right_link"]
+[ext_resource type="PackedScene" path="res://assets/parts/base_scan.glb" id="4_base_scan"]
+[ext_resource type="Script" path="res://assets/tb3_reference_sync.gd" id="5_sync"]
 
 [sub_resource type="Environment" id="Environment_default"]
 background_mode = 2
