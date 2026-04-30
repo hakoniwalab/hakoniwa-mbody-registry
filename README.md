@@ -2,6 +2,8 @@
 
 Robot body definitions as molds — convert to URDF, MJCF, and GLB for Hakoniwa simulations.
 
+For Godot runtime integration, this repository now also generates the config artifacts consumed by [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot).
+
 ## What is this?
 
 This repository helps you take an existing robot description and turn it into simulation-ready assets you can actually use.
@@ -40,6 +42,15 @@ It is the physical counterpart to [`hakoniwa-pdu-registry`](https://github.com/h
 
 Each robot body is defined as a **mold** (mbody) — a xacro-based source definition that can be cast into multiple simulation formats.
 
+When targeting Godot, the intended split is:
+
+- `hakoniwa-mbody-registry`
+  - user-facing robot inputs
+  - generated URDF / MJCF / GLB / PDU / Godot profile outputs
+- [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot)
+  - runtime addon and endpoint integration
+  - consumes generated `robot_sync.profile.json` and endpoint configs
+
 ## Toolchain
 
 ```text
@@ -67,7 +78,31 @@ mjcf_add_actuators.py
   -> canonical MuJoCo XML + actuator YAML
   -> actuated MuJoCo XML
 
-mjcf2pdu.py
+pdu_manifest2types.py
+  -> pdu-manifest.yaml
+  -> canonical pdutypes.json
+
+pdu_manifest2def.py
+  -> pdu-manifest.yaml
+  -> compact pdu_def.json
+
+godot_sync2endpoint.py
+  -> godot_sync.yaml
+  -> Godot endpoint_shm_with_pdu.json
+
+godot_sync2profile.py
+  -> godot_sync.yaml + viewer model JSON
+  -> robot_sync.profile.json
+
+hako_viewer_model_gen.py
+  -> viewer.recipe.yaml + actuated MuJoCo XML
+  -> viewer model JSON
+
+hako_godot_scene_gen.py
+  -> viewer model JSON
+  -> Godot .tscn scene
+
+mjcf2pdu.py (legacy)
   -> canonical MuJoCo XML + body-to-PDU YAML
   -> Hakoniwa pdutypes.json
 ```
@@ -82,6 +117,26 @@ The tools require these Python packages:
 python3 -m pip install -r requirements.txt
 ```
 
+## Quick Start
+
+```bash
+# 1. Install dependencies
+python3 -m pip install -r requirements.txt
+
+# 2. Run the full TurtleBot3 Burger pipeline
+./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
+```
+
+Typical outputs are created under `bodies/turtlebot3/generated/`:
+
+- `turtlebot3_burger.urdf`
+- `turtlebot3_burger.xml`
+- `turtlebot3_burger.actuated.xml`
+- `turtlebot3_burger.glb`
+- `pdutypes.json`
+- `pdu_def.json`
+- `parts/*.glb`
+
 ## Repository Structure
 
 ```
@@ -95,12 +150,20 @@ hakoniwa-mbody-registry/
 │   ├── mjcf2glb.py       # MuJoCo XML -> split GLB assets
 │   ├── mjcf_add_actuators.py # Actuator YAML -> actuated MuJoCo XML
 │   ├── mjcf2pdu.py       # MJCF body list -> Hakoniwa pdutypes.json
+│   ├── pdu_manifest2types.py # pdu-manifest.yaml -> canonical pdutypes.json
+│   ├── pdu_manifest2def.py # pdu-manifest.yaml -> compact pdu_def.json
+│   ├── godot_sync2endpoint.py # godot_sync.yaml -> Godot endpoint config
+│   ├── godot_sync2profile.py # godot_sync.yaml + viewer model -> robot sync profile
+│   ├── hako_viewer_model_gen.py # viewer.recipe.yaml + MJCF -> viewer model JSON
+│   ├── hako_godot_scene_gen.py # viewer model JSON -> Godot .tscn
 │   └── forge.sh          # Full pipeline wrapper
 ├── bodies/               # Registry-managed source snapshots and generated artifacts
 │   └── turtlebot3/
 │       ├── config/       # Robot-specific actuator or postprocess settings, committed
 │       ├── source/       # Fetched upstream files, not committed
-│       └── generated/    # Converted artifacts, committed
+│       ├── generated/    # Converted artifacts, committed
+│       ├── view/         # Optional generated viewer model JSON outputs
+│       └── godot_tb3_reference/ # Optional generated Godot scene staging area
 ├── docs/
 │   └── images/           # Placeholder location for README screenshots
 ├── sources/              # Declarative fetch definitions per robot
@@ -129,7 +192,11 @@ Running `tools/fetch.py` reads these files and performs a sparse checkout of onl
 - `bodies/{name}/generated/`
   Generated artifacts. These are committed as registry outputs for downstream users.
 - `bodies/{name}/config/`
-  Robot-specific settings such as actuator mappings and body-to-PDU mappings that are not present in standard URDF.
+  Robot-specific settings such as actuator mappings, `pdu-manifest.yaml`, and `godot_sync.yaml` that are not present in standard URDF.
+- `bodies/{name}/view/`
+  Optional generated viewer model JSON outputs used before Godot scene/profile generation.
+- `bodies/{name}/godot_tb3_reference/`
+  Optional local staging area for generated Godot scene outputs and wrapper scripts.
 
 ## Tools
 
@@ -256,6 +323,10 @@ python3 tools/mjcf2pdu.py \
   bodies/turtlebot3/config/pdu_bodies.yaml
 ```
 
+This is now considered a legacy / body-list-oriented helper.
+For canonical robot PDU definitions, prefer `pdu-manifest.yaml` with
+`tools/pdu_manifest2types.py` and `tools/pdu_manifest2def.py`.
+
 Example YAML:
 
 ```yaml
@@ -361,25 +432,6 @@ Example:
 ./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
-## Quick Start
-
-```bash
-# 1. Install dependencies
-python3 -m pip install -r requirements.txt
-
-# 2. Run the full TurtleBot3 Burger pipeline
-./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
-```
-
-Typical outputs are created under `bodies/turtlebot3/generated/`:
-
-- `turtlebot3_burger.urdf`
-- `turtlebot3_burger.xml`
-- `turtlebot3_burger.actuated.xml`
-- `turtlebot3_burger.glb`
-- `pdutypes.json`
-- `parts/*.glb`
-
 ## Walkthrough: TurtleBot3 Burger
 
 This is the simplest end-to-end example in the repository. It starts from the upstream TurtleBot3 description and produces:
@@ -410,12 +462,15 @@ python3 tools/mjcf_add_actuators.py \
   bodies/turtlebot3/generated/turtlebot3_burger.xml \
   bodies/turtlebot3/config/actuators.yaml
 
-# Step 6: Generate Hakoniwa body-state PDU definitions
-python3 tools/mjcf2pdu.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.xml \
-  bodies/turtlebot3/config/pdu_bodies.yaml
+# Step 6: Generate canonical Hakoniwa pdutypes.json from pdu-manifest.yaml
+python3 tools/pdu_manifest2types.py \
+  bodies/turtlebot3/config/pdu-manifest.yaml
 
-# Step 7: Split MuJoCo XML into per-body GLB assets
+# Step 7: Generate compact pdu_def.json
+python3 tools/pdu_manifest2def.py \
+  bodies/turtlebot3/config/pdu-manifest.yaml
+
+# Step 8: Split MuJoCo XML into per-body GLB assets
 python3 tools/mjcf2glb.py \
   bodies/turtlebot3/generated/turtlebot3_burger.xml
 ```
@@ -427,11 +482,27 @@ Expected output files:
 - `bodies/turtlebot3/generated/turtlebot3_burger.actuated.xml`
 - `bodies/turtlebot3/generated/turtlebot3_burger.glb`
 - `bodies/turtlebot3/generated/pdutypes.json`
+- `bodies/turtlebot3/generated/pdu_def.json`
 - `bodies/turtlebot3/generated/parts/*.glb`
 
 ## Godot Export
 
-To build a Godot scene from the generated TurtleBot3 assets, first generate the viewer model JSON and then generate the `.tscn` scene.
+To build a Godot scene and runtime configs for TurtleBot3, first generate the viewer model JSON and then generate:
+
+- the `.tscn` scene
+- `endpoint_shm_with_pdu.json`
+- `robot_sync.profile.json`
+
+These outputs are intended to be consumed by [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot).
+
+Recommended path:
+
+```text
+pdu-manifest.yaml -> pdu_manifest2types.py / pdu_manifest2def.py
+godot_sync.yaml -> godot_sync2endpoint.py
+viewer.recipe.yaml + MJCF -> hako_viewer_model_gen.py
+viewer model JSON + godot_sync.yaml -> godot_sync2profile.py / hako_godot_scene_gen.py
+```
 
 ```bash
 # Generate the viewer model JSON from recipe + actuated MJCF
@@ -446,6 +517,15 @@ python3 tools/hako_godot_scene_gen.py \
   -o bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn \
   --res-root res:// \
   --sync-script tb3_reference_sync.gd
+
+# Generate Godot endpoint config
+python3 tools/godot_sync2endpoint.py \
+  bodies/turtlebot3/config/godot_sync.yaml
+
+# Generate Godot robot sync profile
+python3 tools/godot_sync2profile.py \
+  bodies/turtlebot3/config/godot_sync.yaml \
+  bodies/turtlebot3/view/turtlebot3.json
 ```
 
 When `--sync-script` is specified, the generator also writes a placeholder GDScript file with the same basename next to the output `.tscn`.
@@ -461,6 +541,8 @@ mkdir -p "$GODOT_PROJECT_DIR/parts"
 cp -f bodies/turtlebot3/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
 cp -f bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
 cp -f bodies/turtlebot3/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
+cp -f bodies/turtlebot3/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
 ```
 
 If you want to regenerate and stage in one flow:
@@ -481,10 +563,20 @@ python3 tools/hako_godot_scene_gen.py \
   --res-root res:// \
   --sync-script tb3_reference_sync.gd
 
+python3 tools/godot_sync2endpoint.py \
+  bodies/turtlebot3/config/godot_sync.yaml
+
+python3 tools/godot_sync2profile.py \
+  bodies/turtlebot3/config/godot_sync.yaml \
+  bodies/turtlebot3/view/turtlebot3.json
+
 mkdir -p "$GODOT_PROJECT_DIR/parts"
+mkdir -p "$GODOT_PROJECT_DIR/config"
 cp -f bodies/turtlebot3/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
 cp -f bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
 cp -f bodies/turtlebot3/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
+cp -f bodies/turtlebot3/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
 ```
 
 The resulting Godot node structure is:
@@ -507,6 +599,21 @@ godot_x = -ros_y
 godot_y =  ros_z
 godot_z = -ros_x
 ```
+
+From the `hakoniwa-godot` side, the example scene can now be driven by a thin wrapper that subclasses `HakoniwaRobotSyncController`, instead of embedding robot-specific sync logic directly in the example script.
+
+See:
+
+- [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot)
+- `examples/mujoco/assets/tb3_reference_sync.gd`
+- `examples/mujoco/config/robot_sync.profile.json`
+
+Note on `forge.sh`:
+
+- today, `forge.sh` covers the core robot conversion flow up to URDF / MJCF / GLB style artifacts
+- it does not yet cover the newer Godot-specific generators
+  (`pdu_manifest2types.py`, `pdu_manifest2def.py`, `godot_sync2endpoint.py`, `godot_sync2profile.py`, `hako_viewer_model_gen.py`, `hako_godot_scene_gen.py`)
+- integrating those into `forge.sh` is the next step
 
 ## Gallery
 
@@ -538,14 +645,19 @@ godot_z = -ros_x
 - [x] `tools/mjcf2glb.py` — MJCF → split GLB conversion
 - [x] `tools/mjcf_add_actuators.py` — actuator YAML → actuated MJCF conversion
 - [x] `tools/mjcf2pdu.py` — MJCF body list → Hakoniwa pdutypes.json conversion
-- [x] TB3 の変換検証（MJCF, GLB）
+- [x] `tools/pdu_manifest2types.py` — canonical `pdu-manifest.yaml` → `pdutypes.json`
+- [x] `tools/pdu_manifest2def.py` — canonical `pdu-manifest.yaml` → compact `pdu_def.json`
+- [x] `tools/godot_sync2endpoint.py` — `godot_sync.yaml` → Godot endpoint config
+- [x] `tools/godot_sync2profile.py` — `godot_sync.yaml` + viewer model → `robot_sync.profile.json`
+- [x] TB3 conversion verification (MJCF, GLB)
+- [x] `hakoniwa-godot` example integration verified (TB3 / robot sync addon)
 
 ### In Progress
 - [ ] `tools/forge.sh` — full pipeline runner improvements
 
 ### Planned
-- [ ] CI/CD: push 時に自動変換・成果物アップロード
-- [ ] 追加ロボットの登録
+- [ ] CI/CD: auto-convert and upload artifacts on push
+- [ ] Register additional robots
 
 ## License
 
