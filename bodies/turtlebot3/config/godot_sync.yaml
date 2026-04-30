@@ -1,0 +1,32 @@
+format: hako_godot_sync
+version: 0.1
+
+robot_name: TB3
+
+pdu:
+  # Existing mbody-generated pose-style PDU for the base body.
+  base: base_link_pos
+  # Expected joint-state PDU name for Godot runtime sync.
+  # This assumes the future PDU generator will emit a matching entry.
+  joints: joint_states
+
+coordinate_system:
+  position_rule: hakoniwa_to_godot
+  rotation_rule: hakoniwa_to_godot
+
+endpoint:
+  comm_path: ../comm/shm_poll_comm.json
+  endpoint_name: tb3_godot_endpoint
+
+joints:
+  - joint_name: wheel_left_joint
+    body_name: wheel_left_link
+    axis: z
+    sign: 1.0
+    offset_rad: 0.0
+
+  - joint_name: wheel_right_joint
+    body_name: wheel_right_link
+    axis: z
+    sign: 1.0
+    offset_rad: 0.0

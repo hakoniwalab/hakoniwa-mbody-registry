@@ -1,0 +1,63 @@
+format: hako_pdu_manifest
+version: 0.1
+
+robot_name: TB3
+
+bodies:
+  base:
+    pdu_name: base_link_pos
+    pdu_type: geometry_msgs/Twist
+    body_name: base_link
+    channel_id: 1
+    pdu_size: 72
+
+  joints:
+    pdu_name: joint_states
+    pdu_type: sensor_msgs/JointState
+    channel_id: 5
+    pdu_size: 1024
+    joint_names:
+      - wheel_left_joint
+      - wheel_right_joint
+
+sensors:
+  - name: lidar
+    pdu_name: laser_scan
+    pdu_type: sensor_msgs/LaserScan
+    channel_id: 3
+    pdu_size: 8192
+    body_name: base_scan
+
+  - name: imu
+    pdu_name: imu
+    pdu_type: sensor_msgs/Imu
+    channel_id: 4
+    pdu_size: 456
+    body_name: imu_link
+
+  - name: odometry
+    pdu_name: odom
+    pdu_type: nav_msgs/Odometry
+    channel_id: 6
+    pdu_size: 1024
+    body_name: base_link
+
+extras:
+  - name: game_controller_command
+    pdu_name: hako_cmd_game
+    pdu_type: hako_msgs/GameControllerOperation
+    channel_id: 0
+    pdu_size: 136
+
+  - name: base_scan_pose
+    pdu_name: base_scan_pos
+    pdu_type: geometry_msgs/Twist
+    channel_id: 2
+    pdu_size: 72
+    body_name: base_scan
+
+  - name: tf
+    pdu_name: tf
+    pdu_type: tf2_msgs/TFMessage
+    channel_id: 7
+    pdu_size: 2048
