@@ -116,9 +116,5 @@
         ]
       }
     }
-  ],
-  "pdu_bindings": {
-    "pose": "tb3_pose",
-    "joint_state": "tb3_joint_state"
-  }
+  ]
 }

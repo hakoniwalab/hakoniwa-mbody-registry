@@ -226,10 +226,6 @@ movables:
   - wheel_right_joint
 
 sensors: sensors.yaml
-
-pdu:
-  pose: tb3_pose
-  joint_state: tb3_joint_state
 ```
 
 ### hako_viewer_model.json
@@ -439,12 +435,7 @@ v0.1 では以下を対象とする。
       "spec": "sensors/imu.yaml",
       "pdu": "tb3_imu"
     }
-  ],
-
-  "pdu_bindings": {
-    "pose": "tb3_pose",
-    "joint_state": "tb3_joint_state"
-  }
+  ]
 }
 ```
 
@@ -492,10 +483,6 @@ movables:
   - wheel_right_joint
 
 sensors: sensors.yaml
-
-pdu:
-  pose: tb3_pose
-  joint_state: tb3_joint_state
 ```
 
 ### assets.map
@@ -744,8 +731,8 @@ assets
 sensors
   → sensor mount Prim / Isaac Sim sensor Prim
 
-pdu_bindings
-  → Hakoniwa custom metadata
+godot_sync.yaml / pdu-manifest.yaml
+  → Hakoniwa runtime / communication metadata
 ```
 
 ### 方針
@@ -770,7 +757,6 @@ OpenUSD 変換を見据えて、以下の情報は Viewer Model に保持する�
 - mount transform
 - movable joint
 - sensor mount
-- Hakoniwa PDU metadata
 ```
 
 ---
@@ -797,10 +783,6 @@ movables:
   - wheel_right_joint
 
 sensors: sensors.yaml
-
-pdu:
-  pose: tb3_pose
-  joint_state: tb3_joint_state
 ```
 
 ### Step 2: sensors.yaml を作成

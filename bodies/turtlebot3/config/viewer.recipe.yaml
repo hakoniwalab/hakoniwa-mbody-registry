@@ -18,7 +18,3 @@ movables:
 
 fixed_bodies:
   - base_scan
-
-pdu:
-  pose: tb3_pose
-  joint_state: tb3_joint_state

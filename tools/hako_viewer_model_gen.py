@@ -10,7 +10,6 @@ v0.1 scope:
   - base
   - movable_parts from MJCF joints
   - GLB assets by body name
-  - simple PDU bindings
   - ROS coordinate output
 """
 
@@ -290,10 +289,6 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
 
     if fixed_parts:
         model["fixed_parts"] = fixed_parts
-
-    pdu = recipe.get("pdu")
-    if pdu:
-        model["pdu_bindings"] = pdu
 
     return model
 
