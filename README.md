@@ -295,14 +295,24 @@ Export the robot's visual geometry as one GLB scene.
 
 - Input: plain URDF
 - Output: `bodies/{name}/generated/{stem}.glb` by default when the input is under `bodies/{name}/`
+- With `--parts-dir`, exports one GLB per link in link-local coordinates
 - Supports mesh, box, cylinder, and sphere visuals
 - Supports `package://...` mesh references
+- Do not pass MuJoCo XML (`*.xml`) here. Use `mjcf2glb.py` for MJCF input.
 
 Example:
 
 ```bash
 python3 tools/urdf2glb.py \
   bodies/turtlebot3/generated/turtlebot3_burger.urdf
+```
+
+Per-link example:
+
+```bash
+python3 tools/urdf2glb.py \
+  bodies/turtlebot3/generated/turtlebot3_burger.urdf \
+  --parts-dir bodies/turtlebot3/generated/parts
 ```
 
 ### `tools/mjcf2glb.py`
@@ -601,6 +611,9 @@ If you want to regenerate and stage in one flow:
 python3 tools/urdf2glb.py \
   bodies/turtlebot3/generated/turtlebot3_burger.urdf \
   --parts-dir bodies/turtlebot3/generated/parts
+
+# Note: this input must be a URDF.
+# If you have turtlebot3_burger.xml, use tools/mjcf2glb.py instead.
 
 python3 tools/hako_viewer_model_gen.py \
   bodies/turtlebot3/config/viewer.recipe.yaml \

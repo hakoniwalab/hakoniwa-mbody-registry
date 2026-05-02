@@ -79,6 +79,13 @@ class GeomSpec:
     rgba: np.ndarray | None
 
 
+@dataclass
+class PartSpec:
+    name: str
+    frame_transform: np.ndarray
+    geoms: list[tuple[GeomSpec, np.ndarray]]
+
+
 def parse_mesh_assets(root: ET.Element) -> dict[str, MeshAsset]:
     assets: dict[str, MeshAsset] = {}
     asset_element = root.find("asset")
@@ -191,7 +198,7 @@ def collect_body_parts(
     body: ET.Element,
     parent_transform: np.ndarray,
     mesh_assets: dict[str, MeshAsset],
-    parts: dict[str, list[tuple[GeomSpec, np.ndarray]]],
+    parts: dict[str, PartSpec],
 ) -> None:
     body_name = body.get("name", "worldbody")
     world_transform = parent_transform @ pose_to_transform(body.get("pos"), body.get("quat"))
@@ -203,7 +210,11 @@ def collect_body_parts(
             direct_geoms.append((spec, world_transform @ spec.transform))
 
     if direct_geoms:
-        parts[body_name] = direct_geoms
+        parts[body_name] = PartSpec(
+            name=body_name,
+            frame_transform=world_transform,
+            geoms=direct_geoms,
+        )
 
     for child in body.findall("body"):
         collect_body_parts(child, world_transform, mesh_assets, parts)
@@ -213,7 +224,7 @@ def collect_geom_parts(
     body: ET.Element,
     parent_transform: np.ndarray,
     mesh_assets: dict[str, MeshAsset],
-    parts: dict[str, list[tuple[GeomSpec, np.ndarray]]],
+    parts: dict[str, PartSpec],
 ) -> None:
     body_name = body.get("name", "worldbody")
     world_transform = parent_transform @ pose_to_transform(body.get("pos"), body.get("quat"))
@@ -222,7 +233,12 @@ def collect_geom_parts(
         spec = parse_geom(geom, index, body_name, mesh_assets)
         if spec is not None:
             part_name = spec.name
-            parts[part_name] = [(spec, world_transform @ spec.transform)]
+            geom_world_transform = world_transform @ spec.transform
+            parts[part_name] = PartSpec(
+                name=part_name,
+                frame_transform=geom_world_transform,
+                geoms=[(spec, geom_world_transform)],
+            )
 
     for child in body.findall("body"):
         collect_geom_parts(child, world_transform, mesh_assets, parts)
@@ -237,7 +253,7 @@ def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors
         fail("MJCF is missing <worldbody>.")
 
     mesh_assets = parse_mesh_assets(root)
-    parts: dict[str, list[tuple[GeomSpec, np.ndarray]]] = {}
+    parts: dict[str, PartSpec] = {}
 
     if split_by == "body":
         collect_body_parts(worldbody, np.eye(4), mesh_assets, parts)
@@ -250,11 +266,14 @@ def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors
         fail("No exportable geoms found in the MJCF.")
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    for part_name, geoms in parts.items():
-        scene = trimesh.Scene(base_frame="part")
-        for geom, transform in geoms:
+    for part_name, part in parts.items():
+        scene = trimesh.Scene(base_frame=part_name)
+        inverse_part_transform = np.linalg.inv(part.frame_transform)
+        for geom, world_transform in part.geoms:
             geometry = create_geometry(trimesh, geom, debug_colors)
-            scene.add_geometry(geometry, node_name=geom.name, transform=transform)
+            # Export each GLB in its own local frame instead of baking parent/world placement.
+            local_transform = inverse_part_transform @ world_transform
+            scene.add_geometry(geometry, node_name=geom.name, transform=local_transform)
         output_path = output_dir / f"{sanitize_name(part_name)}.glb"
         output_path.write_bytes(scene.export(file_type="glb"))
         print(f"Wrote {output_path}")
