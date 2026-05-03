@@ -1,0 +1,21 @@
+format: hako_godot_scene
+version: 0.1
+
+scene:
+  root_name: turtlebot3_burger
+  output_scene: TurtleBot3.generated.tscn
+  sync_script_name: tb3_reference_sync.gd
+
+paths:
+  asset_root: res://assets
+  parts_dir: res://assets/parts
+  sync_script: res://assets/tb3_reference_sync.gd
+  robot_sync_profile: res://config/robot_sync.profile.json
+  endpoint_config: res://config/endpoint_shm_poll_with_pdu.json
+
+nodes:
+  generate_sim_node: true
+  generate_codec_node: true
+
+materials:
+  apply_default_materials: true

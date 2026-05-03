@@ -62,9 +62,8 @@ def resolve_reference_path(raw_path: str, config_dir: Path, output_dir: Path) ->
     source_path = Path(raw_path)
     if source_path.is_absolute():
         resolved = source_path
-    else:
-        resolved = (config_dir / source_path).resolve()
-    return os.path.relpath(resolved, output_dir)
+        return os.path.relpath(resolved, output_dir)
+    return raw_path
 
 
 def normalize_pdudef_path(raw_path: str, output_dir: Path) -> str:

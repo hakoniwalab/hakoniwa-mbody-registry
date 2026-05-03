@@ -15,7 +15,7 @@ coordinate_system:
   rotation_rule: hakoniwa_to_godot
 
 endpoint:
-  comm_path: ../comm/shm_poll_comm.json
+  comm_path: comm/shm_poll_comm.json
   endpoint_name: tb3_godot_endpoint
 
 joints:
