@@ -2,3 +2,5 @@ xacro
 PyYAML
 mujoco
 trimesh
+hakoniwa-pdu
+hakoniwa-pdu-endpoint
