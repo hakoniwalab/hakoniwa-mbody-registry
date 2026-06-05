@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/hakoniwalab/hakoniwa-mbody-registry)
+
 # hakoniwa-mbody-registry
 
 Robot body definitions as molds — convert to URDF, MJCF, and GLB for Hakoniwa simulations.
