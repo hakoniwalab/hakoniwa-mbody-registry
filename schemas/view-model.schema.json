@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hakoniwa-lab.net/schemas/view-model.schema.json",
+  "title": "Hakoniwa View Model",
+  "description": "View-only manifest derived from MJCF and generated visual assets.",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "coordinate_system",
+    "robot",
+    "assets",
+    "base"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "hako_viewer_model"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "coordinate_system": {
+      "type": "string",
+      "minLength": 1
+    },
+    "robot": {
+      "type": "object",
+      "required": [
+        "name",
+        "root"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "root": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "base": {
+      "$ref": "#/$defs/part"
+    },
+    "movable_parts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/movable_part"
+      }
+    },
+    "fixed_parts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/part"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "asset": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "path"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "glb"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "mount": {
+      "type": "object",
+      "required": [
+        "xyz",
+        "rpy"
+      ],
+      "properties": {
+        "xyz": {
+          "$ref": "#/$defs/vec3"
+        },
+        "rpy": {
+          "$ref": "#/$defs/vec3"
+        }
+      },
+      "additionalProperties": false
+    },
+    "part": {
+      "type": "object",
+      "required": [
+        "name",
+        "asset",
+        "mount"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mount": {
+          "$ref": "#/$defs/mount"
+        }
+      },
+      "additionalProperties": false
+    },
+    "movable_part": {
+      "type": "object",
+      "required": [
+        "name",
+        "joint",
+        "asset",
+        "mount",
+        "motion"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "joint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mount": {
+          "$ref": "#/$defs/mount"
+        },
+        "motion": {
+          "$ref": "#/$defs/motion"
+        }
+      },
+      "additionalProperties": false
+    },
+    "motion": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "continuous",
+            "revolute",
+            "prismatic",
+            "free",
+            "ball"
+          ]
+        },
+        "axis": {
+          "$ref": "#/$defs/vec3"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "continuous",
+                  "revolute",
+                  "prismatic"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "axis"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}
