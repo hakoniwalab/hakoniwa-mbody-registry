@@ -28,6 +28,8 @@ view-model = view-only manifest that maps body / joint semantics to visual asset
 
 The authority remains in the MJCF. The view-model is an index optimized for consumers that need to assemble, display, or synchronize the visual body.
 
+The human-authored input used to generate this file is documented separately in [view-model-recipe.md](view-model-recipe.md).
+
 ## Scope
 
 The view-model may describe:
