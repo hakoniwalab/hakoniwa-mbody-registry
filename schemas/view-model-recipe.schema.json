@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hakoniwa-lab.net/schemas/view-model-recipe.schema.json",
+  "title": "Hakoniwa View Model Recipe",
+  "description": "Human-authored input for generating Hakoniwa view-model files from MJCF.",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "mjcf",
+    "assets",
+    "base"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "hako_viewer_model_recipe"
+    },
+    "version": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "robot": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mjcf": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assets": {
+      "type": "object",
+      "required": [
+        "glb_dir",
+        "map"
+      ],
+      "properties": {
+        "glb_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "map": {
+          "type": "string",
+          "const": "body_name"
+        }
+      },
+      "additionalProperties": false
+    },
+    "base": {
+      "type": "string",
+      "minLength": 1
+    },
+    "movables": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "movable_joints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "fixed_bodies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "coordinate_system": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coordinate": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}
