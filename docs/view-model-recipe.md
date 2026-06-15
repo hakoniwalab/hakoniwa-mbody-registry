@@ -236,9 +236,19 @@ The recipe must not contain:
 
 If a downstream runtime needs those values, define them in a runtime-specific config or profile outside the mbody view-model recipe.
 
+## Schema
+
+The JSON Schema for parsed recipe YAML lives at:
+
+```text
+schemas/view-model-recipe.schema.json
+```
+
+The recipe is YAML, but it should be treated as a JSON-compatible object after parsing.
+
 ## Validation rules
 
-A generator should validate at least the following:
+A generator or validator should validate at least the following:
 
 - `format` is `hako_viewer_model_recipe`
 - `version` is supported
@@ -248,6 +258,14 @@ A generator should validate at least the following:
 - every `movables[]` or `movable_joints[]` item exists as an MJCF joint
 - every `fixed_bodies[]` item exists as an MJCF body
 - generated asset paths are deterministic
+
+Example validation:
+
+```bash
+python3 tools/validate_view_model_recipe.py \
+  --schema schemas/view-model-recipe.schema.json \
+  bodies/turtlebot3/config/viewer.recipe.yaml
+```
 
 ## Design rule
 
