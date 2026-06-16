@@ -7,10 +7,12 @@ Generate a minimal Hakoniwa Viewer Model JSON from:
   - MJCF XML
 
 v0.1 scope:
+  - one robot body rooted at recipe.base
   - base
-  - movable_parts from MJCF joints
+  - movable_parts from selected MJCF joints
+  - fixed_parts from selected MJCF bodies
   - GLB assets by body name
-  - ROS coordinate output
+  - ROS coordinate output by default
 """
 
 from __future__ import annotations
@@ -18,10 +20,11 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 import xml.etree.ElementTree as ET
 
 try:
@@ -34,6 +37,10 @@ except ImportError as exc:
 
 Vec3 = Tuple[float, float, float]
 Quat = Tuple[float, float, float, float]  # MJCF order: w, x, y, z
+
+
+class RecipeError(ValueError):
+    """Raised when viewer.recipe.yaml is invalid for generation."""
 
 
 def parse_vec3(value: Optional[str], default: Vec3 = (0.0, 0.0, 0.0)) -> Vec3:
@@ -113,6 +120,7 @@ class MjcfIndex:
         self.mjcf_path = mjcf_path
         self.bodies: Dict[str, BodyInfo] = {}
         self.joints: Dict[str, JointInfo] = {}
+        self.children: Dict[Optional[str], List[str]] = {}
         self.root = ET.parse(mjcf_path).getroot()
         self._index()
 
@@ -121,6 +129,7 @@ class MjcfIndex:
         if worldbody is None:
             raise ValueError("MJCF has no <worldbody>")
 
+        self.children.setdefault(None, [])
         for body_elem in worldbody.findall("body"):
             self._walk_body(body_elem, parent=None)
 
@@ -128,6 +137,9 @@ class MjcfIndex:
         name = elem.get("name")
         if not name:
             raise ValueError("All <body> elements must have a name for viewer model generation")
+
+        self.children.setdefault(parent, []).append(name)
+        self.children.setdefault(name, [])
 
         body = BodyInfo(
             name=name,
@@ -174,6 +186,16 @@ class MjcfIndex:
         except KeyError as exc:
             raise KeyError(f"Joint not found in MJCF: {name}") from exc
 
+    def iter_body_subtree(self, root_body: str) -> Iterable[str]:
+        self.get_body(root_body)
+
+        def walk(name: str) -> Iterable[str]:
+            yield name
+            for child_name in self.children.get(name, []):
+                yield from walk(child_name)
+
+        return walk(root_body)
+
 
 def resolve_path(path_value: str, base_dir: Path) -> Path:
     path = Path(path_value)
@@ -205,37 +227,92 @@ def has_visual_asset(body: BodyInfo) -> bool:
     return bool(body.mesh_names)
 
 
+def normalize_version(value: Any) -> str:
+    text = str(value if value is not None else "0.1")
+    if re.match(r"^[0-9]+$", text):
+        text = f"{text}.0"
+    if not re.match(r"^[0-9]+\.[0-9]+$", text):
+        raise RecipeError(f"version must be MAJOR.MINOR, got: {text}")
+    return text
+
+
+def unique_ordered(values: Iterable[str]) -> List[str]:
+    seen: Set[str] = set()
+    out: List[str] = []
+    for value in values:
+        if value not in seen:
+            seen.add(value)
+            out.append(value)
+    return out
+
+
+def get_movable_joint_names(recipe: Dict[str, Any]) -> List[str]:
+    names: List[str] = []
+    names.extend(recipe.get("movables", []) or [])
+    names.extend(recipe.get("movable_joints", []) or [])
+    return unique_ordered(names)
+
+
+def require_asset(asset_body_names: Set[str], body_name: str, context: str) -> None:
+    if body_name not in asset_body_names:
+        raise RecipeError(
+            f"{context}: body '{body_name}' has no generated visual asset; "
+            "remove it from the recipe or generate a GLB for it"
+        )
+
+
 def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, Any]:
+    if not isinstance(recipe, dict):
+        raise RecipeError("viewer recipe must be a YAML object")
+
+    recipe_format = recipe.get("format")
+    if recipe_format and recipe_format != "hako_viewer_model_recipe":
+        raise RecipeError(
+            f"format must be 'hako_viewer_model_recipe', got: {recipe_format}"
+        )
+
     recipe_dir = recipe_path.parent
     mjcf_path = resolve_path(recipe["mjcf"], recipe_dir)
     index = MjcfIndex(mjcf_path)
 
     robot_name = recipe.get("robot") or index.root.get("model") or mjcf_path.stem
     base_name = recipe["base"]
-    base_body = index.get_body(base_name)
+    index.get_body(base_name)
+
+    body_names = list(index.iter_body_subtree(base_name))
+    body_name_set = set(body_names)
 
     assets_cfg = recipe.get("assets", {})
     glb_dir = assets_cfg.get("glb_dir", "parts")
     asset_map = assets_cfg.get("map", "body_name")
     if asset_map != "body_name":
-        raise ValueError(f"Unsupported assets.map for v0.1: {asset_map}")
+        raise RecipeError(f"Unsupported assets.map for v0.1: {asset_map}")
 
-    # Include all MJCF bodies that have mesh geoms.
+    # Include only visual assets under the selected robot root.
     assets = []
-    for body_name in index.bodies:
+    asset_body_names: Set[str] = set()
+    for body_name in body_names:
         body = index.bodies[body_name]
         if has_visual_asset(body):
+            asset_body_names.add(body_name)
             assets.append({
                 "id": make_asset_id(body_name),
                 "type": "glb",
                 "path": make_asset_path(glb_dir, body_name),
             })
 
-    movable_joint_names = recipe.get("movable_joints", recipe.get("movables", []))
+    require_asset(asset_body_names, base_name, "base")
+
     movable_parts = []
-    for joint_name in movable_joint_names:
+    for joint_name in get_movable_joint_names(recipe):
         joint = index.get_joint(joint_name)
+        if joint.body not in body_name_set:
+            raise RecipeError(
+                f"movable joint '{joint_name}' belongs to body '{joint.body}', "
+                f"which is outside base subtree '{base_name}'"
+            )
         body = index.get_body(joint.body)
+        require_asset(asset_body_names, body.name, f"movable joint '{joint_name}'")
 
         movable_parts.append({
             "name": body.name,
@@ -252,10 +329,14 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
             },
         })
 
-    fixed_body_names = recipe.get("fixed_bodies", [])
     fixed_parts = []
-    for body_name in fixed_body_names:
+    for body_name in recipe.get("fixed_bodies", []) or []:
+        if body_name not in body_name_set:
+            raise RecipeError(
+                f"fixed body '{body_name}' is outside base subtree '{base_name}'"
+            )
         body = index.get_body(body_name)
+        require_asset(asset_body_names, body.name, f"fixed body '{body_name}'")
         fixed_parts.append({
             "name": body.name,
             "parent": body.parent,
@@ -268,7 +349,7 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
 
     model: Dict[str, Any] = {
         "format": "hako_viewer_model",
-        "version": str(recipe.get("version", "0.1")),
+        "version": normalize_version(recipe.get("version", "0.1")),
         "coordinate_system": recipe.get("coordinate_system", recipe.get("coordinate", "ros")),
         "robot": {
             "name": robot_name,
