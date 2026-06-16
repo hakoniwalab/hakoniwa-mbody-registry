@@ -56,13 +56,55 @@ The view-model must not describe:
 - actuator configuration
 - sensor runtime configuration
 - controller behavior
+- robot instance IDs
+- multi-robot name prefixes
+- multi-robot composition
+- scene / world layout
+- obstacles or environment objects
 - Godot `NodePath`
 - Godot scene files such as `.tscn`
 - GDScript wrappers
 - MuJoCo solver parameters
 - physics execution behavior
 
-In short, the view-model is view-only. It does not define control, communication, or runtime execution.
+In short, the view-model is view-only. It does not define control, communication, runtime execution, or scene composition.
+
+## Single-robot model
+
+A Hakoniwa view-model represents a single robot body.
+
+`robot.root` is the root body for that one robot. `base` is the visual part corresponding to that root. `movable_parts` are the view-side movable parts inside that same robot body.
+
+Multi-robot composition is outside the scope of the view-model. If a runtime needs to display multiple robots, it should instantiate multiple view-models and bind each instance to its own runtime context.
+
+```text
+robot A:
+  view-model instance A
+  runtime / PDU context A
+
+robot B:
+  view-model instance B
+  runtime / PDU context B
+```
+
+The view-model itself does not define robot instance names, endpoint names, PDU channel names, or name prefixes for multi-robot scenarios.
+
+## Default sync convention
+
+The view-model does not define PDU channels or endpoint configuration.
+
+However, a runtime adapter may use the following default convention when synchronizing a single view-model instance:
+
+```text
+base pose        -> robot.root / base.name
+joint state name -> movable_parts[].joint
+```
+
+In other words, the view-model provides stable view targets. The runtime adapter is responsible for reading or writing PDU data and applying it to those targets.
+
+For the common case, no additional binding file is required if the joint names in the runtime data match `movable_parts[].joint`.
+
+If a runtime uses different names or a non-standard transport, that runtime may provide its own adapter-specific overlay. Such overlays should stay outside the view-model.
 
 ## File placement
 
@@ -165,6 +207,8 @@ A movable part extends a part with joint and motion metadata.
 
 `joint` is the MJCF joint name. `motion` describes how the part may move for view-side reconstruction and synchronization.
 
+A runtime adapter may use `joint` as the default lookup key for incoming or outgoing joint-state data.
+
 ## Motion model
 
 The motion model is intentionally limited to view-side semantics derived from MJCF joint types.
@@ -240,20 +284,18 @@ schemas/view-model.schema.json
 
 Generated view-model files should validate against this schema.
 
-Example validation with Python `jsonschema`:
+Example validation:
 
 ```bash
-python3 -m pip install jsonschema
-python3 - <<'PY'
-import json
-from pathlib import Path
-from jsonschema import validate
+python3 tools/validate_view_model.py \
+  --schema schemas/view-model.schema.json \
+  bodies/turtlebot3/view/turtlebot3.json
+```
 
-schema = json.loads(Path("schemas/view-model.schema.json").read_text())
-model = json.loads(Path("bodies/turtlebot3/view/turtlebot3.json").read_text())
-validate(instance=model, schema=schema)
-print("view-model schema validation OK")
-PY
+To validate the current TB3 recipe and generated view-model together:
+
+```bash
+bash tools/validate_view_model.bash
 ```
 
 ## Versioning policy
@@ -269,6 +311,7 @@ The view-model should remain small and mostly append-only.
 
 ```text
 view-model is view only.
+one view-model represents one robot body.
 motion is derived from MJCF joint semantics.
-control, communication, and runtime execution stay outside the view-model.
+control, communication, runtime execution, and scene composition stay outside the view-model.
 ```
