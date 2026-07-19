@@ -28,6 +28,20 @@ print(config["name"])
 PY
 )"
 
+SOURCE_DISCARD_VISUAL="$(python3 - <<'PY' "$YAML_FILE"
+from pathlib import Path
+import sys
+import yaml
+config = yaml.safe_load(Path(sys.argv[1]).read_text(encoding='utf-8'))
+value = (
+    config.get("forge", {})
+    .get("urdf2mjcf", {})
+    .get("discard_visual", False)
+)
+print("1" if value else "0")
+PY
+)"
+
 SOURCE_URDF="$REPO_ROOT/bodies/$ROBOT_NAME/source/$ENTRY_URDF_REL"
 GENERATED_URDF="$REPO_ROOT/bodies/$ROBOT_NAME/generated/$(basename "${ENTRY_URDF_REL%.*}").urdf"
 GENERATED_XML="$REPO_ROOT/bodies/$ROBOT_NAME/generated/$(basename "${ENTRY_URDF_REL%.*}").xml"
@@ -37,11 +51,11 @@ PDU_MANIFEST="$REPO_ROOT/bodies/$ROBOT_NAME/config/pdu-manifest.yaml"
 MUJOCO_WORLD_CONFIG="$REPO_ROOT/bodies/$ROBOT_NAME/config/mujoco_world.yaml"
 
 python3 "$SCRIPT_DIR/xacro2urdf.py" "$SOURCE_URDF"
-URDF2MJCF_ARGS=()
-if [ "${HAKO_URDF2MJCF_DISCARD_VISUAL:-0}" = "1" ]; then
-    URDF2MJCF_ARGS+=(--discard-visual)
+if [ "${HAKO_URDF2MJCF_DISCARD_VISUAL:-$SOURCE_DISCARD_VISUAL}" = "1" ]; then
+    python3 "$SCRIPT_DIR/urdf2mjcf.py" --discard-visual "$GENERATED_URDF"
+else
+    python3 "$SCRIPT_DIR/urdf2mjcf.py" "$GENERATED_URDF"
 fi
-python3 "$SCRIPT_DIR/urdf2mjcf.py" "${URDF2MJCF_ARGS[@]}" "$GENERATED_URDF"
 if [ -f "$ACTUATOR_CONFIG" ]; then
     python3 "$SCRIPT_DIR/mjcf_add_actuators.py" "$GENERATED_XML" "$ACTUATOR_CONFIG"
 fi

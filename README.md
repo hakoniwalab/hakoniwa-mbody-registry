@@ -200,17 +200,18 @@ PATH=$PWD/.venv/bin:$PATH HAKO_SKIP_FETCH=1 ./tools/forge.sh sources/turtlebot3_
 ```
 
 Some upstream robot descriptions contain visual mesh formats that are not
-accepted by MuJoCo's URDF compiler or by the local GLB conversion environment.
-For physics-only Recipe validation, you can discard URDF visuals during MJCF
-compilation and skip GLB generation:
+accepted by MuJoCo's URDF compiler. A source can request visual discard during
+MJCF compilation through its `forge.urdf2mjcf.discard_visual` setting.
+`sources/turtlebot3_waffle.yaml` uses this path, so Waffle can be forged with:
 
 ```bash
 PATH=$PWD/.venv/bin:$PATH \
 HAKO_SKIP_FETCH=1 \
-HAKO_URDF2MJCF_DISCARD_VISUAL=1 \
-HAKO_SKIP_GLB=1 \
   ./tools/forge.sh sources/turtlebot3_waffle.yaml turtlebot3_description/urdf/turtlebot3_waffle.urdf
 ```
+
+`HAKO_URDF2MJCF_DISCARD_VISUAL=1` can still be used as an explicit override,
+and `HAKO_SKIP_GLB=1` can skip GLB generation for physics-only checks.
 
 Typical outputs are created under `bodies/turtlebot3_burger/generated/`:
 
