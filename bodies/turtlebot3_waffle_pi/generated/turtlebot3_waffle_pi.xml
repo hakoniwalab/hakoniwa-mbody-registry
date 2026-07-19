@@ -1,0 +1,41 @@
+<mujoco model="turtlebot3_waffle_pi">
+  <compiler angle="radian"/>
+
+  <worldbody>
+    <body name="base_footprint">
+      <body name="base_link" pos="0 0 0.01">
+        <inertial pos="0 0 0" quat="0.602478 0.382697 -0.591491 0.375103" mass="1.37291" diaginertia="0.0146148 0.00872051 0.00859719"/>
+        <geom size="0.133 0.133 0.047" pos="-0.064 0 0.047" type="box" rgba="0.4 0.4 0.4 1"/>
+        <body name="wheel_left_link" pos="0 0.144 0.023" quat="0.707388 -0.706825 0 0">
+          <inertial pos="0 0 0" quat="-0.000890159 0.706886 0.000889646 0.707326" mass="0.0284989" diaginertia="2.07126e-05 1.11924e-05 1.11756e-05"/>
+          <joint name="wheel_left_joint" pos="0 0 0" axis="0 0 1"/>
+          <geom size="0.033 0.009" type="cylinder" rgba="0.3 0.3 0.3 1"/>
+        </body>
+        <body name="wheel_right_link" pos="0 -0.144 0.023" quat="0.707388 -0.706825 0 0">
+          <inertial pos="0 0 0" quat="-0.000890159 0.706886 0.000889646 0.707326" mass="0.0284989" diaginertia="2.07126e-05 1.11924e-05 1.11756e-05"/>
+          <joint name="wheel_right_joint" pos="0 0 0" axis="0 0 1"/>
+          <geom size="0.033 0.009" type="cylinder" rgba="0.3 0.3 0.3 1"/>
+        </body>
+        <body name="caster_back_right_link" pos="-0.177 -0.064 -0.004" quat="0.707388 -0.706825 0 0">
+          <inertial pos="0 0 0" mass="0.005" diaginertia="0.001 0.001 0.001"/>
+          <geom size="0.015 0.0045 0.01" pos="0 0.001 0" type="box"/>
+        </body>
+        <body name="caster_back_left_link" pos="-0.177 0.064 -0.004" quat="0.707388 -0.706825 0 0">
+          <inertial pos="0 0 0" mass="0.005" diaginertia="0.001 0.001 0.001"/>
+          <geom size="0.015 0.0045 0.01" pos="0 0.001 0" type="box"/>
+        </body>
+        <body name="imu_link" pos="0 0 0.068"/>
+        <body name="base_scan" pos="-0.064 0 0.122">
+          <inertial pos="0 0 0" mass="0.114" diaginertia="0.001 0.001 0.001"/>
+          <geom size="0.055 0.01575" pos="0.015 0 -0.0065" type="cylinder" rgba="0.3 0.3 0.3 1"/>
+        </body>
+        <body name="camera_link" pos="0.073 -0.011 0.084">
+          <geom size="0.0075 0.015 0.0135" pos="0.005 0.011 0.013" type="box"/>
+          <body name="camera_rgb_frame" pos="0.003 0.011 0.009">
+            <body name="camera_rgb_optical_frame" quat="0.500398 -0.5 0.499602 -0.5"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

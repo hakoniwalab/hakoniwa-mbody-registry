@@ -1,0 +1,8 @@
+name: turtlebot3_waffle_pi
+repo: https://github.com/ROBOTIS-GIT/turtlebot3
+branch: humble
+files:
+  - turtlebot3_description/
+forge:
+  urdf2mjcf:
+    discard_visual: true
