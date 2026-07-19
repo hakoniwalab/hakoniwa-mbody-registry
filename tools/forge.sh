@@ -13,7 +13,11 @@ ENTRY_URDF_REL="$2"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-python3 "$SCRIPT_DIR/fetch.py" "$YAML_FILE"
+if [ "${HAKO_SKIP_FETCH:-0}" = "1" ]; then
+    echo "Skipping fetch because HAKO_SKIP_FETCH=1"
+else
+    python3 "$SCRIPT_DIR/fetch.py" "$YAML_FILE"
+fi
 
 ROBOT_NAME="$(python3 - <<'PY' "$YAML_FILE"
 from pathlib import Path
@@ -30,6 +34,7 @@ GENERATED_XML="$REPO_ROOT/bodies/$ROBOT_NAME/generated/$(basename "${ENTRY_URDF_
 ACTUATOR_CONFIG="$REPO_ROOT/bodies/$ROBOT_NAME/config/actuators.yaml"
 PDU_CONFIG="$REPO_ROOT/bodies/$ROBOT_NAME/config/pdu_bodies.yaml"
 PDU_MANIFEST="$REPO_ROOT/bodies/$ROBOT_NAME/config/pdu-manifest.yaml"
+MUJOCO_WORLD_CONFIG="$REPO_ROOT/bodies/$ROBOT_NAME/config/mujoco_world.yaml"
 
 python3 "$SCRIPT_DIR/xacro2urdf.py" "$SOURCE_URDF"
 python3 "$SCRIPT_DIR/urdf2mjcf.py" "$GENERATED_URDF"
@@ -43,4 +48,12 @@ if [ -f "$PDU_MANIFEST" ]; then
     python3 "$SCRIPT_DIR/pdu_manifest2def.py" "$PDU_MANIFEST"
 elif [ -f "$PDU_CONFIG" ]; then
     python3 "$SCRIPT_DIR/mjcf2pdu.py" "$GENERATED_XML" "$PDU_CONFIG"
+fi
+if [ -f "$MUJOCO_WORLD_CONFIG" ]; then
+    WORLD_INPUT_XML="$GENERATED_XML"
+    if [ -f "${GENERATED_XML%.xml}.actuated.xml" ]; then
+        WORLD_INPUT_XML="${GENERATED_XML%.xml}.actuated.xml"
+    fi
+    python3 "$SCRIPT_DIR/mjcf_compose_world.py" "$WORLD_INPUT_XML" "$MUJOCO_WORLD_CONFIG" \
+        -o "${GENERATED_XML%.xml}.minimal_world.xml"
 fi

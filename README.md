@@ -70,7 +70,7 @@ The labels in the diagram correspond to the concrete files and tools in this rep
 
 | Diagram label | Actual tool or artifact |
 |---|---|
-| `TB3.xacro` | Upstream TurtleBot3 robot description fetched under `bodies/turtlebot3/source/` |
+| `TB3.xacro` | Upstream TurtleBot3 robot description fetched under `bodies/turtlebot3_burger/source/` |
 | `toURDF` | `tools/xacro2urdf.py` |
 | `TB3.urdf` | `bodies/{name}/generated/{model}.urdf` |
 | `toMJCF` | `tools/urdf2mjcf.py` |
@@ -130,6 +130,10 @@ mjcf_add_actuators.py
   -> canonical MuJoCo XML + actuator YAML
   -> actuated MuJoCo XML
 
+mjcf_compose_world.py
+  -> actuated MuJoCo XML + MuJoCo world YAML
+  -> minimal MuJoCo runtime world XML
+
 pdu_manifest2types.py
   -> pdu-manifest.yaml
   -> canonical pdutypes.json
@@ -184,14 +188,23 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 
 # 2. Run the full TurtleBot3 Burger pipeline
-PATH=$PWD/.venv/bin:$PATH ./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
+PATH=$PWD/.venv/bin:$PATH ./tools/forge.sh sources/turtlebot3_burger.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
-Typical outputs are created under `bodies/turtlebot3/generated/`:
+If `bodies/turtlebot3_burger/source/` is already populated and you want to
+regenerate artifacts without fetching from upstream again, set
+`HAKO_SKIP_FETCH=1`:
+
+```bash
+PATH=$PWD/.venv/bin:$PATH HAKO_SKIP_FETCH=1 ./tools/forge.sh sources/turtlebot3_burger.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
+```
+
+Typical outputs are created under `bodies/turtlebot3_burger/generated/`:
 
 - `turtlebot3_burger.urdf`
 - `turtlebot3_burger.xml`
 - `turtlebot3_burger.actuated.xml`
+- `turtlebot3_burger.minimal_world.xml`
 - `turtlebot3_burger.glb`
 - `pdutypes.json`
 - `pdu_def.json`
@@ -227,7 +240,8 @@ hakoniwa-mbody-registry/
 ├── docs/
 │   └── images/           # Placeholder location for README screenshots
 ├── sources/              # Declarative fetch definitions per robot
-│   └── tb3.yaml          # TurtleBot3
+│   ├── tb3.yaml          # Legacy TurtleBot3 package-level entry
+│   └── turtlebot3_burger.yaml # TurtleBot3 Burger robot variant
 └── README.md
 ```
 
@@ -280,7 +294,7 @@ Example:
 
 ```bash
 python3 tools/xacro2urdf.py \
-  bodies/turtlebot3/source/turtlebot3_description/urdf/turtlebot3_burger.urdf
+  bodies/turtlebot3_burger/source/turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
 ### `tools/urdf2mjcf.py`
@@ -296,7 +310,7 @@ Example:
 
 ```bash
 python3 tools/urdf2mjcf.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.urdf
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
 ```
 
 ### `tools/urdf2glb.py`
@@ -314,15 +328,15 @@ Example:
 
 ```bash
 python3 tools/urdf2glb.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.urdf
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
 ```
 
 Per-link example:
 
 ```bash
 python3 tools/urdf2glb.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.urdf \
-  --parts-dir bodies/turtlebot3/generated/parts
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf \
+  --parts-dir bodies/turtlebot3_burger/generated/parts
 ```
 
 ### `tools/mjcf2glb.py`
@@ -338,7 +352,7 @@ Example:
 
 ```bash
 python3 tools/mjcf2glb.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.xml
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml
 ```
 
 ### `tools/mjcf_add_actuators.py`
@@ -353,8 +367,8 @@ Example:
 
 ```bash
 python3 tools/mjcf_add_actuators.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.xml \
-  bodies/turtlebot3/config/actuators.yaml
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml \
+  bodies/turtlebot3_burger/config/actuators.yaml
 ```
 
 Example YAML:
@@ -376,6 +390,45 @@ actuators:
     gear: 1.0
 ```
 
+### `tools/mjcf_compose_world.py`
+
+Compose an MBody-generated robot MJCF into a minimal MuJoCo world.
+
+- Input: robot MJCF and a world composition YAML file
+- Output: `bodies/{name}/generated/{stem}.minimal_world.xml` when called from
+  `tools/forge.sh` for TurtleBot3
+- Copies robot assets, robot bodies, and actuator definitions from the generated
+  MJCF
+- Adds user-owned world elements such as ground, lights, cameras, initial pose,
+  and a top-level free joint
+- Rewrites mesh file paths relative to the generated world XML, so the output
+  does not contain local absolute paths
+
+Example:
+
+```bash
+python3 tools/mjcf_compose_world.py \
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.actuated.xml \
+  bodies/turtlebot3_burger/config/mujoco_world.yaml \
+  -o bodies/turtlebot3_burger/generated/turtlebot3_burger.minimal_world.xml
+```
+
+Validate the generated world with MuJoCo:
+
+```bash
+python3 -c "import mujoco; m = mujoco.MjModel.from_xml_path('bodies/turtlebot3_burger/generated/turtlebot3_burger.minimal_world.xml'); print(m.nbody, m.njnt, m.nu)"
+```
+
+Expected shape for the TurtleBot3 minimal world:
+
+```text
+8 3 2
+```
+
+This output is a minimal loadable world, not a runtime-grade driving world.
+Stable driving dynamics, contact/friction tuning, sensor layout, and runtime PDU
+mapping remain downstream world-design work.
+
 ### `tools/mjcf2pdu.py`
 
 Generate Hakoniwa `pdutypes.json` from a selected list of MJCF bodies.
@@ -389,8 +442,8 @@ Example:
 
 ```bash
 python3 tools/mjcf2pdu.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.xml \
-  bodies/turtlebot3/config/pdu_bodies.yaml
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml \
+  bodies/turtlebot3_burger/config/pdu_bodies.yaml
 ```
 
 This is now considered a legacy / body-list-oriented helper.
@@ -427,7 +480,7 @@ Example:
 
 ```bash
 python3 tools/pdu_manifest2types.py \
-  bodies/turtlebot3/config/pdu-manifest.yaml
+  bodies/turtlebot3_burger/config/pdu-manifest.yaml
 ```
 
 ### `tools/pdu_manifest2def.py`
@@ -443,7 +496,7 @@ Example:
 
 ```bash
 python3 tools/pdu_manifest2def.py \
-  bodies/turtlebot3/config/pdu-manifest.yaml \
+  bodies/turtlebot3_burger/config/pdu-manifest.yaml \
   --pdutypes-path tb3-pdutypes.json \
   --pdutypes-id tb3-endpoint
 ```
@@ -462,7 +515,7 @@ Example:
 
 ```bash
 python3 tools/godot_sync2endpoint.py \
-  bodies/turtlebot3/config/godot_sync.yaml
+  bodies/turtlebot3_burger/config/godot_sync.yaml
 ```
 
 ### `tools/godot_sync2profile.py`
@@ -479,12 +532,12 @@ Example:
 
 ```bash
 python3 tools/hako_viewer_model_gen.py \
-  bodies/turtlebot3/config/viewer.recipe.yaml \
+  bodies/turtlebot3_burger/config/viewer.recipe.yaml \
   -o /tmp/tb3-viewer.json \
   --pretty
 
 python3 tools/godot_sync2profile.py \
-  bodies/turtlebot3/config/godot_sync.yaml \
+  bodies/turtlebot3_burger/config/godot_sync.yaml \
   /tmp/tb3-viewer.json
 ```
 
@@ -499,7 +552,7 @@ Run the whole robot conversion flow in one command when you already know the ent
 Example:
 
 ```bash
-./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
+./tools/forge.sh sources/turtlebot3_burger.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
 ## Walkthrough: TurtleBot3 Burger
@@ -513,47 +566,47 @@ This is the simplest end-to-end example in the repository. It starts from the up
 
 ```bash
 # Step 1: Fetch TB3 description from upstream
-python3 tools/fetch.py sources/tb3.yaml
+python3 tools/fetch.py sources/turtlebot3_burger.yaml
 
 # Step 2: Expand xacro to plain URDF
 python3 tools/xacro2urdf.py \
-  bodies/turtlebot3/source/turtlebot3_description/urdf/turtlebot3_burger.urdf
+  bodies/turtlebot3_burger/source/turtlebot3_description/urdf/turtlebot3_burger.urdf
 
 # Step 3: Convert URDF to MuJoCo XML
 python3 tools/urdf2mjcf.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.urdf
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
 
 # Step 4: Convert URDF to GLB (single scene)
 python3 tools/urdf2glb.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.urdf
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
 
 # Step 5: Add actuators from YAML
 python3 tools/mjcf_add_actuators.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.xml \
-  bodies/turtlebot3/config/actuators.yaml
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml \
+  bodies/turtlebot3_burger/config/actuators.yaml
 
 # Step 6: Generate canonical Hakoniwa pdutypes.json from pdu-manifest.yaml
 python3 tools/pdu_manifest2types.py \
-  bodies/turtlebot3/config/pdu-manifest.yaml
+  bodies/turtlebot3_burger/config/pdu-manifest.yaml
 
 # Step 7: Generate compact pdu_def.json
 python3 tools/pdu_manifest2def.py \
-  bodies/turtlebot3/config/pdu-manifest.yaml
+  bodies/turtlebot3_burger/config/pdu-manifest.yaml
 
 # Step 8: Split MuJoCo XML into per-body GLB assets
 python3 tools/mjcf2glb.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.xml
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml
 ```
 
 Expected output files:
 
-- `bodies/turtlebot3/generated/turtlebot3_burger.urdf`
-- `bodies/turtlebot3/generated/turtlebot3_burger.xml`
-- `bodies/turtlebot3/generated/turtlebot3_burger.actuated.xml`
-- `bodies/turtlebot3/generated/turtlebot3_burger.glb`
-- `bodies/turtlebot3/generated/pdutypes.json`
-- `bodies/turtlebot3/generated/pdu_def.json`
-- `bodies/turtlebot3/generated/parts/*.glb`
+- `bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf`
+- `bodies/turtlebot3_burger/generated/turtlebot3_burger.xml`
+- `bodies/turtlebot3_burger/generated/turtlebot3_burger.actuated.xml`
+- `bodies/turtlebot3_burger/generated/turtlebot3_burger.glb`
+- `bodies/turtlebot3_burger/generated/pdutypes.json`
+- `bodies/turtlebot3_burger/generated/pdu_def.json`
+- `bodies/turtlebot3_burger/generated/parts/*.glb`
 
 ## Godot Export
 
@@ -577,25 +630,25 @@ viewer model JSON + godot_sync.yaml -> godot_sync2profile.py / hako_godot_scene_
 ```bash
 # Generate the viewer model JSON from recipe + actuated MJCF
 python3 tools/hako_viewer_model_gen.py \
-  bodies/turtlebot3/config/viewer.recipe.yaml \
-  -o bodies/turtlebot3/view/turtlebot3.json \
+  bodies/turtlebot3_burger/config/viewer.recipe.yaml \
+  -o bodies/turtlebot3_burger/view/turtlebot3.json \
   --pretty
 
 # Generate the Godot scene
 python3 tools/hako_godot_scene_gen.py \
-  bodies/turtlebot3/view/turtlebot3.json \
-  -o bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn \
+  bodies/turtlebot3_burger/view/turtlebot3.json \
+  -o bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn \
   --res-root res:// \
   --sync-script tb3_reference_sync.gd
 
 # Generate Godot endpoint config
 python3 tools/godot_sync2endpoint.py \
-  bodies/turtlebot3/config/godot_sync.yaml
+  bodies/turtlebot3_burger/config/godot_sync.yaml
 
 # Generate Godot robot sync profile
 python3 tools/godot_sync2profile.py \
-  bodies/turtlebot3/config/godot_sync.yaml \
-  bodies/turtlebot3/view/turtlebot3.json
+  bodies/turtlebot3_burger/config/godot_sync.yaml \
+  bodies/turtlebot3_burger/view/turtlebot3.json
 ```
 
 When `--sync-script` is specified, the generator also writes a placeholder GDScript file with the same basename next to the output `.tscn`.
@@ -608,48 +661,48 @@ One practical way to stage everything into a Godot project is:
 export GODOT_PROJECT_DIR=/path/to/your/godot/project
 
 mkdir -p "$GODOT_PROJECT_DIR/parts"
-cp -f bodies/turtlebot3/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
-cp -f bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
-cp -f bodies/turtlebot3/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
+cp -f bodies/turtlebot3_burger/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
+cp -f bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3_burger/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3_burger/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
+cp -f bodies/turtlebot3_burger/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
 ```
 
 If you want to regenerate and stage in one flow:
 
 ```bash
 python3 tools/urdf2glb.py \
-  bodies/turtlebot3/generated/turtlebot3_burger.urdf \
-  --parts-dir bodies/turtlebot3/generated/parts
+  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf \
+  --parts-dir bodies/turtlebot3_burger/generated/parts
 
 # Note: this input must be a URDF.
 # If you have turtlebot3_burger.xml, use tools/mjcf2glb.py instead.
 
 python3 tools/hako_viewer_model_gen.py \
-  bodies/turtlebot3/config/viewer.recipe.yaml \
-  -o bodies/turtlebot3/view/turtlebot3.json \
+  bodies/turtlebot3_burger/config/viewer.recipe.yaml \
+  -o bodies/turtlebot3_burger/view/turtlebot3.json \
   --pretty
 
 python3 tools/hako_godot_scene_gen.py \
-  bodies/turtlebot3/view/turtlebot3.json \
-  -o bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn \
+  bodies/turtlebot3_burger/view/turtlebot3.json \
+  -o bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn \
   --res-root res:// \
   --sync-script tb3_reference_sync.gd
 
 python3 tools/godot_sync2endpoint.py \
-  bodies/turtlebot3/config/godot_sync.yaml
+  bodies/turtlebot3_burger/config/godot_sync.yaml
 
 python3 tools/godot_sync2profile.py \
-  bodies/turtlebot3/config/godot_sync.yaml \
-  bodies/turtlebot3/view/turtlebot3.json
+  bodies/turtlebot3_burger/config/godot_sync.yaml \
+  bodies/turtlebot3_burger/view/turtlebot3.json
 
 mkdir -p "$GODOT_PROJECT_DIR/parts"
 mkdir -p "$GODOT_PROJECT_DIR/config"
-cp -f bodies/turtlebot3/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
-cp -f bodies/turtlebot3/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
-cp -f bodies/turtlebot3/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
+cp -f bodies/turtlebot3_burger/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
+cp -f bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3_burger/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
+cp -f bodies/turtlebot3_burger/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
+cp -f bodies/turtlebot3_burger/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
 ```
 
 The resulting Godot node structure is:
@@ -710,7 +763,7 @@ Note on `forge.sh`:
 ### Done
 - [x] Repository created
 - [x] Directory structure defined
-- [x] `sources/tb3.yaml` — TB3 fetch definition
+- [x] `sources/turtlebot3_burger.yaml` — TB3 fetch definition
 - [x] `tools/fetch.py` — sparse fetch from upstream repos
 - [x] `tools/xacro2urdf.py` — ROS-free xacro → URDF conversion
 - [x] `tools/urdf2mjcf.py` — URDF → MJCF conversion via MuJoCo

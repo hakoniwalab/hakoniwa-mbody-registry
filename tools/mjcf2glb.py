@@ -86,7 +86,7 @@ class PartSpec:
     geoms: list[tuple[GeomSpec, np.ndarray]]
 
 
-def parse_mesh_assets(root: ET.Element) -> dict[str, MeshAsset]:
+def parse_mesh_assets(root: ET.Element, mjcf_dir: Path) -> dict[str, MeshAsset]:
     assets: dict[str, MeshAsset] = {}
     asset_element = root.find("asset")
     if asset_element is None:
@@ -97,7 +97,10 @@ def parse_mesh_assets(root: ET.Element) -> dict[str, MeshAsset]:
         file_path = mesh.get("file")
         if not name or not file_path:
             continue
-        resolved = Path(file_path).expanduser().resolve()
+        mesh_path = Path(file_path).expanduser()
+        if not mesh_path.is_absolute():
+            mesh_path = mjcf_dir / mesh_path
+        resolved = mesh_path.resolve()
         if not resolved.exists():
             fail(f"MJCF mesh asset not found: {resolved}")
         assets[name] = MeshAsset(
@@ -252,7 +255,7 @@ def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors
     if worldbody is None:
         fail("MJCF is missing <worldbody>.")
 
-    mesh_assets = parse_mesh_assets(root)
+    mesh_assets = parse_mesh_assets(root, input_file.parent.resolve())
     parts: dict[str, PartSpec] = {}
 
     if split_by == "body":

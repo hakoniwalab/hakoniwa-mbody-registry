@@ -5,7 +5,7 @@ import re
 import sys
 from pathlib import Path
 
-from path_utils import default_generated_file
+from path_utils import default_generated_file, infer_robot_root
 
 
 COMMENT_PATTERN = re.compile(r"<!--.*?-->", re.DOTALL)
@@ -87,6 +87,24 @@ def build_output_path(input_file: Path, output_arg: str | None) -> Path:
     return default_generated_file(input_file, ".urdf")
 
 
+def display_input_path(input_file: Path) -> str:
+    inferred = infer_robot_root(input_file)
+    if inferred is None:
+        return input_file.as_posix()
+
+    robot_root, _ = inferred
+    try:
+        relative_to_robot = input_file.resolve().relative_to(robot_root.resolve())
+    except ValueError:
+        return input_file.name
+    return (Path("bodies") / robot_root.name / relative_to_robot).as_posix()
+
+
+def normalize_generated_comments(text: str, input_file: Path) -> str:
+    resolved_input = input_file.resolve().as_posix()
+    return text.replace(resolved_input, display_input_path(input_file))
+
+
 def convert_xacro_to_urdf(input_file: Path, output_file: Path, mappings: dict[str, str]) -> None:
     ros_find_usages = scan_for_ros_find(input_file)
     if ros_find_usages:
@@ -112,7 +130,8 @@ def convert_xacro_to_urdf(input_file: Path, output_file: Path, mappings: dict[st
         fail(f"xacro processing failed: {exc}")
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
-    output_file.write_text(document.toprettyxml(indent="  "), encoding="utf-8")
+    output_text = normalize_generated_comments(document.toprettyxml(indent="  "), input_file)
+    output_file.write_text(output_text, encoding="utf-8")
     print(f"Successfully wrote {output_file}")
 
 

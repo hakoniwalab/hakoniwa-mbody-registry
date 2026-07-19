@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import re
 import shutil
 import sys
@@ -129,6 +130,27 @@ def save_last_xml(mujoco, model, output_file: Path) -> None:
     mujoco.mj_saveLastXML(str(output_file), model)
 
 
+def normalize_mesh_paths(output_file: Path) -> None:
+    tree = ET.parse(output_file)
+    root = tree.getroot()
+    output_dir = output_file.parent.resolve()
+    modified = False
+
+    for mesh in root.findall("./asset/mesh"):
+        mesh_file = mesh.get("file")
+        if not mesh_file:
+            continue
+        mesh_path = Path(mesh_file)
+        if not mesh_path.is_absolute():
+            continue
+        mesh.set("file", os.path.relpath(mesh_path, output_dir))
+        modified = True
+
+    if modified:
+        ET.indent(tree)
+        tree.write(output_file, encoding="utf-8", xml_declaration=False)
+
+
 def convert_urdf_to_mjcf(input_file: Path, output_file: Path, explicit_roots: dict[str, Path]) -> None:
     mujoco = import_mujoco_module()
     prepared_urdf = prepare_urdf_for_mujoco(input_file, explicit_roots)
@@ -142,6 +164,7 @@ def convert_urdf_to_mjcf(input_file: Path, output_file: Path, explicit_roots: di
     output_file.parent.mkdir(parents=True, exist_ok=True)
     try:
         save_last_xml(mujoco, model, output_file)
+        normalize_mesh_paths(output_file)
     except Exception as exc:
         fail(f"MuJoCo failed to save MJCF: {exc}")
 

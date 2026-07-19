@@ -1,0 +1,59 @@
+name: turtlebot3_burger_minimal_world
+
+option:
+  timestep: "0.001"
+  gravity: "0 0 -9.81"
+  integrator: implicit
+
+visual:
+  global:
+    offwidth: 320
+    offheight: 240
+  map:
+    znear: 0.05
+    zfar: 10
+
+textures:
+  - name: minimal_grid
+    type: 2d
+    builtin: checker
+    width: 256
+    height: 256
+    rgb1: "0.92 0.92 0.92"
+    rgb2: "0.62 0.62 0.62"
+
+materials:
+  - name: minimal_grid
+    texture: minimal_grid
+    texrepeat: "4 4"
+    texuniform: true
+    reflectance: 0.1
+
+world_geoms:
+  - name: ground
+    type: plane
+    size: "3 3 0.05"
+    material: minimal_grid
+    friction: 1.0
+  - name: front_marker
+    type: box
+    pos: "0.8 0 0.05"
+    size: "0.05 0.25 0.05"
+    rgba: "0.85 0.2 0.2 1"
+
+lights:
+  - name: top_light
+    pos: "0 0 3"
+    dir: "0 0 -1"
+    diffuse: "0.8 0.8 0.8"
+
+cameras:
+  - name: overview
+    pos: "1.2 -1.6 1.1"
+    xyaxes: "0.8 0.6 0 -0.35 0.47 0.81"
+
+robot:
+  pos: "0 0 0.02"
+  add_freejoint: true
+
+copy_actuators: true

@@ -1,0 +1,5 @@
+name: turtlebot3_burger
+repo: https://github.com/ROBOTIS-GIT/turtlebot3
+branch: humble
+files:
+  - turtlebot3_description/
