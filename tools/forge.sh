@@ -37,12 +37,20 @@ PDU_MANIFEST="$REPO_ROOT/bodies/$ROBOT_NAME/config/pdu-manifest.yaml"
 MUJOCO_WORLD_CONFIG="$REPO_ROOT/bodies/$ROBOT_NAME/config/mujoco_world.yaml"
 
 python3 "$SCRIPT_DIR/xacro2urdf.py" "$SOURCE_URDF"
-python3 "$SCRIPT_DIR/urdf2mjcf.py" "$GENERATED_URDF"
+URDF2MJCF_ARGS=()
+if [ "${HAKO_URDF2MJCF_DISCARD_VISUAL:-0}" = "1" ]; then
+    URDF2MJCF_ARGS+=(--discard-visual)
+fi
+python3 "$SCRIPT_DIR/urdf2mjcf.py" "${URDF2MJCF_ARGS[@]}" "$GENERATED_URDF"
 if [ -f "$ACTUATOR_CONFIG" ]; then
     python3 "$SCRIPT_DIR/mjcf_add_actuators.py" "$GENERATED_XML" "$ACTUATOR_CONFIG"
 fi
-python3 "$SCRIPT_DIR/urdf2glb.py" "$GENERATED_URDF"
-python3 "$SCRIPT_DIR/mjcf2glb.py" "$GENERATED_XML"
+if [ "${HAKO_SKIP_GLB:-0}" = "1" ]; then
+    echo "Skipping GLB generation because HAKO_SKIP_GLB=1"
+else
+    python3 "$SCRIPT_DIR/urdf2glb.py" "$GENERATED_URDF"
+    python3 "$SCRIPT_DIR/mjcf2glb.py" "$GENERATED_XML"
+fi
 if [ -f "$PDU_MANIFEST" ]; then
     python3 "$SCRIPT_DIR/pdu_manifest2types.py" "$PDU_MANIFEST"
     python3 "$SCRIPT_DIR/pdu_manifest2def.py" "$PDU_MANIFEST"

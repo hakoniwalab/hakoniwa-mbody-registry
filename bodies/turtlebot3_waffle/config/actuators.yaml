@@ -1,0 +1,14 @@
+actuators:
+  - type: velocity
+    name: left_motor
+    joint: wheel_left_joint
+    ctrllimited: true
+    ctrlrange: [-12, 12]
+    kv: 0.75
+
+  - type: velocity
+    name: right_motor
+    joint: wheel_right_joint
+    ctrllimited: true
+    ctrlrange: [-12, 12]
+    kv: 0.75

@@ -199,6 +199,19 @@ regenerate artifacts without fetching from upstream again, set
 PATH=$PWD/.venv/bin:$PATH HAKO_SKIP_FETCH=1 ./tools/forge.sh sources/turtlebot3_burger.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
+Some upstream robot descriptions contain visual mesh formats that are not
+accepted by MuJoCo's URDF compiler or by the local GLB conversion environment.
+For physics-only Recipe validation, you can discard URDF visuals during MJCF
+compilation and skip GLB generation:
+
+```bash
+PATH=$PWD/.venv/bin:$PATH \
+HAKO_SKIP_FETCH=1 \
+HAKO_URDF2MJCF_DISCARD_VISUAL=1 \
+HAKO_SKIP_GLB=1 \
+  ./tools/forge.sh sources/turtlebot3_waffle.yaml turtlebot3_description/urdf/turtlebot3_waffle.urdf
+```
+
 Typical outputs are created under `bodies/turtlebot3_burger/generated/`:
 
 - `turtlebot3_burger.urdf`

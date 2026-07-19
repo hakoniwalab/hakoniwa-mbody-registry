@@ -100,7 +100,7 @@ def rewrite_package_uris(
     return tree, modified
 
 
-def ensure_mujoco_compiler_block(root: ET.Element) -> None:
+def ensure_mujoco_compiler_block(root: ET.Element, discard_visual: bool) -> None:
     mujoco_element = root.find("mujoco")
     if mujoco_element is None:
         mujoco_element = ET.SubElement(root, "mujoco")
@@ -109,16 +109,22 @@ def ensure_mujoco_compiler_block(root: ET.Element) -> None:
     if compiler_element is None:
         compiler_element = ET.SubElement(mujoco_element, "compiler")
 
-    if "discardvisual" not in compiler_element.attrib:
+    if discard_visual:
+        compiler_element.set("discardvisual", "true")
+    elif "discardvisual" not in compiler_element.attrib:
         compiler_element.set("discardvisual", "false")
     if "fusestatic" not in compiler_element.attrib:
         compiler_element.set("fusestatic", "false")
 
 
-def prepare_urdf_for_mujoco(input_file: Path, explicit_roots: dict[str, Path]) -> Path:
+def prepare_urdf_for_mujoco(
+    input_file: Path,
+    explicit_roots: dict[str, Path],
+    discard_visual: bool,
+) -> Path:
     tree, _ = rewrite_package_uris(input_file, explicit_roots)
     root = tree.getroot()
-    ensure_mujoco_compiler_block(root)
+    ensure_mujoco_compiler_block(root, discard_visual)
 
     temporary_dir = Path(tempfile.mkdtemp(prefix="urdf2mjcf-"))
     temporary_urdf = temporary_dir / input_file.name
@@ -151,9 +157,14 @@ def normalize_mesh_paths(output_file: Path) -> None:
         tree.write(output_file, encoding="utf-8", xml_declaration=False)
 
 
-def convert_urdf_to_mjcf(input_file: Path, output_file: Path, explicit_roots: dict[str, Path]) -> None:
+def convert_urdf_to_mjcf(
+    input_file: Path,
+    output_file: Path,
+    explicit_roots: dict[str, Path],
+    discard_visual: bool,
+) -> None:
     mujoco = import_mujoco_module()
-    prepared_urdf = prepare_urdf_for_mujoco(input_file, explicit_roots)
+    prepared_urdf = prepare_urdf_for_mujoco(input_file, explicit_roots, discard_visual)
 
     print(f"Converting {input_file} -> {output_file}")
     try:
@@ -188,6 +199,11 @@ def main() -> None:
         metavar="PACKAGE=PATH",
         help="Resolve package://PACKAGE/... URIs against PATH. Repeat for multiple packages.",
     )
+    parser.add_argument(
+        "--discard-visual",
+        action="store_true",
+        help="Ask MuJoCo to discard URDF visual meshes during MJCF compilation.",
+    )
     args = parser.parse_args()
 
     input_file = Path(args.input)
@@ -196,7 +212,7 @@ def main() -> None:
 
     output_file = build_output_path(input_file, args.output)
     package_roots = parse_package_roots(args.package_root)
-    convert_urdf_to_mjcf(input_file, output_file, package_roots)
+    convert_urdf_to_mjcf(input_file, output_file, package_roots, args.discard_visual)
 
 
 if __name__ == "__main__":
