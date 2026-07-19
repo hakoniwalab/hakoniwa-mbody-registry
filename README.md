@@ -163,20 +163,28 @@ All tools are bundled in `tools/` and are intended to work without a ROS install
 
 ## Dependencies
 
-The tools require these Python packages:
+The tools require the Python packages listed in `requirements.txt`.
+
+Use a repository-local virtual environment before running the conversion tools.
+This is especially important on macOS with Homebrew Python, where direct
+`pip install` into the system-managed environment is blocked by PEP 668.
 
 ```bash
-python3 -m pip install -r requirements.txt
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -r requirements.txt
 ```
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
-python3 -m pip install -r requirements.txt
+# 1. Install dependencies into a local virtual environment
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -r requirements.txt
 
 # 2. Run the full TurtleBot3 Burger pipeline
-./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
+PATH=$PWD/.venv/bin:$PATH ./tools/forge.sh sources/tb3.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
 Typical outputs are created under `bodies/turtlebot3/generated/`:
