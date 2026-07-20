@@ -50,7 +50,9 @@ def normalize_fetch_path(raw_path: object) -> str:
     return path_obj.as_posix()
 
 
-def load_config(yaml_file: Path) -> tuple[str, str, str, list[str]]:
+def load_config(
+    yaml_file: Path,
+) -> tuple[str, str, str, str | None, list[str]]:
     with yaml_file.open("r", encoding="utf-8") as file_obj:
         config = yaml.safe_load(file_obj)
 
@@ -60,6 +62,7 @@ def load_config(yaml_file: Path) -> tuple[str, str, str, list[str]]:
     name = config.get("name")
     repo = config.get("repo")
     branch = config.get("branch")
+    revision = config.get("revision")
     files = config.get("files")
 
     if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", name):
@@ -68,6 +71,12 @@ def load_config(yaml_file: Path) -> tuple[str, str, str, list[str]]:
         fail("'repo' must be a non-empty string.")
     if not isinstance(branch, str) or not branch.strip():
         fail("'branch' must be a non-empty string.")
+    if revision is not None:
+        if not isinstance(revision, str) or not revision.strip():
+            fail(
+                "'revision' must be a non-empty string when specified."
+            )
+        revision = revision.strip()
     if not isinstance(files, list) or not files:
         fail("'files' must be a non-empty list.")
 
@@ -79,7 +88,13 @@ def load_config(yaml_file: Path) -> tuple[str, str, str, list[str]]:
             normalized_files.append(normalized)
             seen.add(normalized)
 
-    return name, repo.strip(), branch.strip(), normalized_files
+    return (
+        name,
+        repo.strip(),
+        branch.strip(),
+        revision,
+        normalized_files,
+    )
 
 
 def copy_fetched_path(source_root: Path, destination_root: Path, relative_path: str) -> None:
@@ -96,7 +111,7 @@ def copy_fetched_path(source_root: Path, destination_root: Path, relative_path: 
         shutil.copy2(source, destination)
 
 def fetch_robot_sources(yaml_file: Path, output_dir: Path | None = None) -> Path:
-    name, repo, branch, files_to_fetch = load_config(yaml_file)
+    name, repo, branch, revision, files_to_fetch = load_config(yaml_file)
 
     if output_dir is not None:
         dest_dir = output_dir.resolve()
@@ -109,6 +124,8 @@ def fetch_robot_sources(yaml_file: Path, output_dir: Path | None = None) -> Path
     print(f"Fetching robot source for: {name}")
     print(f"  - Repo:        {repo}")
     print(f"  - Branch:      {branch}")
+    if revision:
+        print(f"  - Revision:    {revision}")
     print(f"  - Destination: {dest_dir}")
     print(f"  - Paths:       {', '.join(files_to_fetch)}")
 
@@ -128,12 +145,49 @@ def fetch_robot_sources(yaml_file: Path, output_dir: Path | None = None) -> Path
         run_git(["sparse-checkout", "init", "--cone"], cwd=tmp_path)
         run_git(["sparse-checkout", "set", *files_to_fetch], cwd=tmp_path)
 
-        print(f"  - Pulling files from branch '{branch}'...")
-        run_git(
-            ["pull", "--depth", "1", "origin", branch],
-            cwd=tmp_path,
-            capture_output=True,
-        )
+        if revision:
+            print(
+                f"  - Fetching revision '{revision}'..."
+            )
+
+            run_git(
+                [
+                    "fetch",
+                    "--depth",
+                    "1",
+                    "origin",
+                    revision,
+                ],
+                cwd=tmp_path,
+                capture_output=True,
+            )
+
+            run_git(
+                [
+                    "checkout",
+                    "--detach",
+                    "FETCH_HEAD",
+                ],
+                cwd=tmp_path,
+                capture_output=True,
+            )
+
+        else:
+            print(
+                f"  - Pulling files from branch '{branch}'..."
+            )
+
+            run_git(
+                [
+                    "pull",
+                    "--depth",
+                    "1",
+                    "origin",
+                    branch,
+                ],
+                cwd=tmp_path,
+                capture_output=True,
+            )
 
         print("  - Copying fetched files to destination...")
         for relative_path in files_to_fetch:
