@@ -95,13 +95,16 @@ def copy_fetched_path(source_root: Path, destination_root: Path, relative_path: 
     else:
         shutil.copy2(source, destination)
 
-
-def fetch_robot_sources(yaml_file: Path) -> Path:
+def fetch_robot_sources(yaml_file: Path, output_dir: Path | None = None) -> Path:
     name, repo, branch, files_to_fetch = load_config(yaml_file)
 
-    repo_root = Path(__file__).resolve().parent.parent
-    robot_root = repo_root / "bodies" / name
-    dest_dir = robot_root / "source"
+    if output_dir is not None:
+        dest_dir = output_dir.resolve()
+    else:
+        # Legacy behavior
+        repo_root = Path(__file__).resolve().parent.parent
+        robot_root = repo_root / "bodies" / name
+        dest_dir = robot_root / "source"
 
     print(f"Fetching robot source for: {name}")
     print(f"  - Repo:        {repo}")
@@ -112,7 +115,7 @@ def fetch_robot_sources(yaml_file: Path) -> Path:
     if dest_dir.exists():
         print(f"  - Cleaning up existing directory: {dest_dir}")
         shutil.rmtree(dest_dir)
-    robot_root.mkdir(parents=True, exist_ok=True)
+
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -126,32 +129,41 @@ def fetch_robot_sources(yaml_file: Path) -> Path:
         run_git(["sparse-checkout", "set", *files_to_fetch], cwd=tmp_path)
 
         print(f"  - Pulling files from branch '{branch}'...")
-        run_git(["pull", "--depth", "1", "origin", branch], cwd=tmp_path, capture_output=True)
+        run_git(
+            ["pull", "--depth", "1", "origin", branch],
+            cwd=tmp_path,
+            capture_output=True,
+        )
 
         print("  - Copying fetched files to destination...")
         for relative_path in files_to_fetch:
             copy_fetched_path(tmp_path, dest_dir, relative_path)
 
     print(f"Fetch complete. Files are in {dest_dir}")
-    print("Fetched files:")
-    for path in sorted(dest_dir.rglob("*")):
-        print(f"  - {path.relative_to(dest_dir)}")
 
     return dest_dir
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Fetch robot source files from an upstream Git repository using sparse checkout."
     )
-    parser.add_argument("yaml_file", type=Path, help="Path to the robot fetch definition YAML.")
+    parser.add_argument(
+        "yaml_file",
+        type=Path,
+        help="Path to the robot fetch definition YAML.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        help="Destination directory. Defaults to bodies/{name}/source for backward compatibility.",
+    )
+
     args = parser.parse_args()
 
     if not args.yaml_file.is_file():
         fail(f"YAML file not found at '{args.yaml_file}'")
 
-    fetch_robot_sources(args.yaml_file)
-
+    fetch_robot_sources(args.yaml_file, args.output_dir)
 
 if __name__ == "__main__":
     main()
