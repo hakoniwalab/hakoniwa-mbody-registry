@@ -56,6 +56,7 @@ def build_position_actuator(
     joint_type: str,
     limit: ET.Element | None,
     kp: float,
+    dampratio: float | None,
 ) -> dict:
     actuator = {
         "type": "position",
@@ -107,6 +108,13 @@ def build_position_actuator(
                 ]
 
     actuator["kp"] = kp
+
+    #
+    # dampratio is not derived from URDF.
+    # Add it only when explicitly specified by the caller.
+    #
+    if dampratio is not None:
+        actuator["dampratio"] = dampratio
 
     return actuator
 
@@ -196,6 +204,7 @@ def convert_urdf_to_actuator_yaml(
     actuator_type: str,
     kp: float,
     kv: float,
+    dampratio: float | None,
 ) -> None:
     try:
         tree = ET.parse(input_file)
@@ -231,23 +240,24 @@ def convert_urdf_to_actuator_yaml(
 
         if actuator_type == "position":
             actuator = build_position_actuator(
-                joint_name,
-                joint_type,
-                limit,
-                kp,
+                joint_name=joint_name,
+                joint_type=joint_type,
+                limit=limit,
+                kp=kp,
+                dampratio=dampratio,
             )
 
         elif actuator_type == "velocity":
             actuator = build_velocity_actuator(
-                joint_name,
-                limit,
-                kv,
+                joint_name=joint_name,
+                limit=limit,
+                kv=kv,
             )
 
         elif actuator_type == "torque":
             actuator = build_torque_actuator(
-                joint_name,
-                limit,
+                joint_name=joint_name,
+                limit=limit,
             )
 
         else:
@@ -343,6 +353,16 @@ def main() -> None:
     )
 
     parser.add_argument(
+        "--dampratio",
+        type=float,
+        default=None,
+        help=(
+            "Damping ratio for position actuators. "
+            "If omitted, dampratio is not written."
+        ),
+    )
+
+    parser.add_argument(
         "--kv",
         type=float,
         default=0.75,
@@ -366,12 +386,25 @@ def main() -> None:
     if args.kv <= 0:
         fail("'--kv' must be greater than zero.")
 
+    if args.dampratio is not None:
+        if args.dampratio <= 0:
+            fail(
+                "'--dampratio' must be greater than zero."
+            )
+
+        if args.type != "position":
+            fail(
+                "'--dampratio' can only be used "
+                "with '--type position'."
+            )
+
     convert_urdf_to_actuator_yaml(
         input_file=args.input,
         output_file=args.output,
         actuator_type=args.type,
         kp=args.kp,
         kv=args.kv,
+        dampratio=args.dampratio,
     )
 
 
