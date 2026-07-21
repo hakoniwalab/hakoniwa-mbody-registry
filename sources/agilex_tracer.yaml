@@ -1,0 +1,10 @@
+name: agilex_tracer
+repo: https://github.com/agilexrobotics/tracer_ros.git
+branch: master
+revision: 151b53c548fe2f5d6dd67a9c1478ea340ad43f21
+files:
+  - tracer_description/
+forge:
+  entry_urdf: tracer_description/urdf/tracer_v1.xacro
+  urdf_dae2obj:
+    enabled: true

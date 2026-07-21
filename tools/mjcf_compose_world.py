@@ -67,13 +67,14 @@ def normalize_mesh_paths(asset: ET.Element, robot_mjcf_path: Path, output_path: 
         mesh.set("file", os.path.relpath(mesh_path, output_dir))
 
 
-def add_freejoint_if_missing(body: ET.Element) -> None:
+def add_freejoint_if_missing(body: ET.Element, name: str | None = None) -> None:
     for child in body:
         if child.tag == "freejoint":
             return
         if child.tag == "joint" and child.get("type") == "free":
             return
-    body.insert(0, ET.Element("freejoint"))
+    attrs = {"name": name} if name else {}
+    body.insert(0, ET.Element("freejoint", attrs))
 
 
 def append_configured_elements(parent: ET.Element, tag: str, values: list[dict] | None) -> None:
@@ -130,6 +131,9 @@ def build_world(
         raise ValueError("robot config must be a YAML mapping")
     start_pos = str(robot_cfg.get("pos", "0 0 0"))
     add_freejoint = bool(robot_cfg.get("add_freejoint", True))
+    freejoint_name = robot_cfg.get("freejoint_name")
+    if freejoint_name is not None and not isinstance(freejoint_name, str):
+        raise ValueError("robot.freejoint_name must be a string when set")
 
     robot_worldbody = require_child(robot_root, "worldbody", robot_mjcf_path)
     robot_bodies = [copy.deepcopy(child) for child in robot_worldbody if child.tag == "body"]
@@ -139,13 +143,18 @@ def build_world(
     for body in robot_bodies:
         body.set("pos", start_pos)
         if add_freejoint:
-            add_freejoint_if_missing(body)
+            add_freejoint_if_missing(body, freejoint_name)
         worldbody.append(body)
 
     if bool(config.get("copy_actuators", True)):
         robot_actuator = robot_root.find("actuator")
         if robot_actuator is not None and len(robot_actuator):
             world_root.append(copy.deepcopy(robot_actuator))
+
+    if bool(config.get("copy_contacts", True)):
+        robot_contact = robot_root.find("contact")
+        if robot_contact is not None and len(robot_contact):
+            world_root.append(copy.deepcopy(robot_contact))
 
     return ET.ElementTree(world_root)
 

@@ -1,0 +1,56 @@
+name: agilex_tracer_minimal_world
+
+option:
+  timestep: "0.002"
+  gravity: "0 0 -9.81"
+  integrator: implicit
+
+visual:
+  global:
+    offwidth: 640
+    offheight: 480
+  map:
+    znear: 0.05
+    zfar: 20
+
+textures:
+  - name: tracer_grid
+    type: 2d
+    builtin: checker
+    width: 256
+    height: 256
+    rgb1: "0.88 0.88 0.84"
+    rgb2: "0.58 0.58 0.55"
+
+materials:
+  - name: tracer_grid
+    texture: tracer_grid
+    texrepeat: "8 8"
+    texuniform: true
+    reflectance: 0.1
+
+world_geoms:
+  - name: ground
+    type: plane
+    size: "5 5 0.05"
+    material: tracer_grid
+    friction: 1.4
+
+lights:
+  - name: top_light
+    pos: "0 0 3"
+    dir: "0 0 -1"
+    diffuse: "0.8 0.8 0.8"
+
+cameras:
+  - name: overview
+    pos: "1.6 -1.8 1.1"
+    xyaxes: "0.74 0.67 0 -0.31 0.34 0.89"
+
+robot:
+  pos: "0 0 0.1425"
+  add_freejoint: true
+  freejoint_name: base_freejoint
+
+copy_actuators: true
+copy_contacts: true

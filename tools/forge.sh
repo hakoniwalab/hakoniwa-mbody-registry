@@ -56,6 +56,21 @@ print("1" if value else "0")
 PY
 )"
 
+SOURCE_DAE2OBJ_ENABLED="$(python3 - <<'PY' "$YAML_FILE"
+from pathlib import Path
+import sys
+import yaml
+
+config = yaml.safe_load(Path(sys.argv[1]).read_text(encoding="utf-8"))
+value = (
+    config.get("forge", {})
+    .get("urdf_dae2obj", {})
+    .get("enabled", False)
+)
+print("1" if value else "0")
+PY
+)"
+
 #
 # Resolve mode and arguments
 #
@@ -174,6 +189,8 @@ GENERATED_XML="$GENERATED_DIR/$ENTRY_BASENAME.xml"
 # These remain under bodies/<name>/config for backward compatibility.
 #
 ACTUATOR_CONFIG="$ROBOT_ROOT/config/actuators.yaml"
+COLLISION_PRIMITIVES_CONFIG="$ROBOT_ROOT/config/collision_primitives.yaml"
+CONTACT_EXCLUDES_CONFIG="$ROBOT_ROOT/config/contact_excludes.yaml"
 PDU_CONFIG="$ROBOT_ROOT/config/pdu_bodies.yaml"
 PDU_MANIFEST="$ROBOT_ROOT/config/pdu-manifest.yaml"
 MUJOCO_WORLD_CONFIG="$ROBOT_ROOT/config/mujoco_world.yaml"
@@ -193,17 +210,27 @@ python3 "$SCRIPT_DIR/xacro2urdf.py" \
     "$SOURCE_URDF" \
     -o "$GENERATED_URDF"
 
+MJCF_INPUT_URDF="$GENERATED_URDF"
+
+if [ "${HAKO_URDF_DAE2OBJ:-$SOURCE_DAE2OBJ_ENABLED}" = "1" ]; then
+    GENERATED_OBJ_URDF="${GENERATED_URDF%.urdf}.obj.urdf"
+    python3 "$SCRIPT_DIR/urdf_dae2obj.py" \
+        "$GENERATED_URDF" \
+        -o "$GENERATED_OBJ_URDF"
+    MJCF_INPUT_URDF="$GENERATED_OBJ_URDF"
+fi
+
 #
 # URDF -> MJCF
 #
 if [ "${HAKO_URDF2MJCF_DISCARD_VISUAL:-$SOURCE_DISCARD_VISUAL}" = "1" ]; then
     python3 "$SCRIPT_DIR/urdf2mjcf.py" \
-        "$GENERATED_URDF" \
+        "$MJCF_INPUT_URDF" \
         -o "$GENERATED_XML" \
         --discard-visual
 else
     python3 "$SCRIPT_DIR/urdf2mjcf.py" \
-        "$GENERATED_URDF" \
+        "$MJCF_INPUT_URDF" \
         -o "$GENERATED_XML"
 fi
 
@@ -214,6 +241,36 @@ if [ -f "$ACTUATOR_CONFIG" ]; then
     python3 "$SCRIPT_DIR/mjcf_add_actuators.py" \
         "$GENERATED_XML" \
         "$ACTUATOR_CONFIG"
+fi
+
+#
+# Add primitive collision geoms if configured
+#
+COLLISION_INPUT_XML="$GENERATED_XML"
+
+if [ -f "${GENERATED_XML%.xml}.actuated.xml" ]; then
+    COLLISION_INPUT_XML="${GENERATED_XML%.xml}.actuated.xml"
+fi
+
+if [ -f "$COLLISION_PRIMITIVES_CONFIG" ]; then
+    python3 "$SCRIPT_DIR/mjcf_apply_collision_primitives.py" \
+        "$COLLISION_INPUT_XML" \
+        "$COLLISION_PRIMITIVES_CONFIG"
+fi
+
+#
+# Add contact excludes if configured
+#
+CONTACT_INPUT_XML="$COLLISION_INPUT_XML"
+
+if [ -f "${COLLISION_INPUT_XML%.xml}.collision.xml" ]; then
+    CONTACT_INPUT_XML="${COLLISION_INPUT_XML%.xml}.collision.xml"
+fi
+
+if [ -f "$CONTACT_EXCLUDES_CONFIG" ]; then
+    python3 "$SCRIPT_DIR/mjcf_add_contact_excludes.py" \
+        "$CONTACT_INPUT_XML" \
+        "$CONTACT_EXCLUDES_CONFIG"
 fi
 
 #
@@ -257,6 +314,14 @@ if [ -f "$MUJOCO_WORLD_CONFIG" ]; then
 
     if [ -f "${GENERATED_XML%.xml}.actuated.xml" ]; then
         WORLD_INPUT_XML="${GENERATED_XML%.xml}.actuated.xml"
+    fi
+
+    if [ -f "${WORLD_INPUT_XML%.xml}.collision.xml" ]; then
+        WORLD_INPUT_XML="${WORLD_INPUT_XML%.xml}.collision.xml"
+    fi
+
+    if [ -f "${WORLD_INPUT_XML%.xml}.contact.xml" ]; then
+        WORLD_INPUT_XML="${WORLD_INPUT_XML%.xml}.contact.xml"
     fi
 
     python3 "$SCRIPT_DIR/mjcf_compose_world.py" \

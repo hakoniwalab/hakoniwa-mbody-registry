@@ -1,0 +1,21 @@
+excludes:
+  - body1: base_link
+    body2: right_wheel_link
+  - body1: base_link
+    body2: left_wheel_link
+  - body1: base_link
+    body2: fl_castor_link
+  - body1: base_link
+    body2: fl_wheel_link
+  - body1: base_link
+    body2: fr_castor_link
+  - body1: base_link
+    body2: fr_wheel_link
+  - body1: base_link
+    body2: rr_castor_link
+  - body1: base_link
+    body2: rr_wheel_link
+  - body1: base_link
+    body2: rl_castor_link
+  - body1: base_link
+    body2: rl_wheel_link

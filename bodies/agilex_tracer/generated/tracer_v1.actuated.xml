@@ -1,0 +1,78 @@
+<mujoco model="tracer_v1">
+  <compiler angle="radian" />
+  <asset>
+    <mesh name="tracer_base_link_no_wheel" content_type="model/obj" file="tracer_description/meshes/tracer_base_link_no_wheel.obj" />
+    <mesh name="tracer_wheel" content_type="model/obj" file="tracer_description/meshes/tracer_wheel.obj" />
+    <mesh name="castor_joint" content_type="model/obj" file="tracer_description/meshes/castor_joint.obj" />
+    <mesh name="castor" content_type="model/obj" file="tracer_description/meshes/castor.obj" />
+  </asset>
+  <worldbody>
+    <body name="base_link">
+      <geom pos="0 0 0" quat="0.707388 0.706825 0 0" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="tracer_base_link_no_wheel" />
+      <geom pos="0 0 0" quat="0.707388 0.706825 0 0" type="mesh" mesh="tracer_base_link_no_wheel" />
+      <body name="inertial_link">
+        <inertial pos="0.015 0.0231317 0" quat="0.500685 0.499314 0.500685 0.499314" mass="132.39" diaginertia="0.364895 0.223867 0.185196" />
+      </body>
+      <body name="right_wheel_link" pos="0 -0.17 -0.082">
+        <inertial pos="0 0 0" quat="0.707107 0.707107 0 0" mass="6" diaginertia="0.7171 0.7171 0.1361" />
+        <joint name="right_wheel" pos="0 0 0" axis="0 1 0" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="tracer_wheel" />
+        <geom type="mesh" mesh="tracer_wheel" />
+      </body>
+      <body name="left_wheel_link" pos="0 0.17 -0.082" quat="0.000796327 1 0 0">
+        <inertial pos="0 0 0" quat="0.707107 0.707107 0 0" mass="6" diaginertia="0.7171 0.7171 0.1361" />
+        <joint name="left_wheel" pos="0 0 0" axis="0 1 0" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="tracer_wheel" />
+        <geom type="mesh" mesh="tracer_wheel" />
+      </body>
+      <body name="fl_castor_link" pos="0.18955 0.17 -0.0380886" quat="0.707388 -0.706825 0 0">
+        <inertial pos="0 0 0" quat="0.707107 0.707107 0 0" mass="1" diaginertia="0.7171 0.7171 0.1361" />
+        <joint name="fl_castor_wheel" pos="0 0 0" axis="0 1 0" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor_joint" />
+        <body name="fl_wheel_link" pos="-0.0218084 0.067 0">
+          <inertial pos="0 0 0" mass="1" diaginertia="0.3131 0.3131 0.1361" />
+          <joint name="fl_wheel" pos="0 0 0" axis="0 0 1" />
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor" />
+          <geom type="mesh" mesh="castor" />
+        </body>
+      </body>
+      <body name="fr_castor_link" pos="0.18955 -0.17 -0.0380886" quat="0.707388 -0.706825 0 0">
+        <inertial pos="0 0 0" quat="0.707107 0.707107 0 0" mass="1" diaginertia="0.7171 0.7171 0.1361" />
+        <joint name="fr_castor_wheel" pos="0 0 0" axis="0 1 0" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor_joint" />
+        <body name="fr_wheel_link" pos="-0.0218084 0.067 0">
+          <inertial pos="0 0 0" mass="1" diaginertia="0.3131 0.3131 0.1361" />
+          <joint name="fr_wheel" pos="0 0 0" axis="0 0 1" />
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor" />
+          <geom type="mesh" mesh="castor" />
+        </body>
+      </body>
+      <body name="rr_castor_link" pos="-0.18955 -0.17 -0.0380886" quat="0.707388 -0.706825 0 0">
+        <inertial pos="0 0 0" quat="0.707107 0.707107 0 0" mass="1" diaginertia="0.7171 0.7171 0.1361" />
+        <joint name="rr_castor_wheel" pos="0 0 0" axis="0 1 0" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor_joint" />
+        <body name="rr_wheel_link" pos="-0.0218084 0.067 0">
+          <inertial pos="0 0 0" mass="1" diaginertia="0.3131 0.3131 0.1361" />
+          <joint name="rr_wheel" pos="0 0 0" axis="0 0 1" />
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor" />
+          <geom type="mesh" mesh="castor" />
+        </body>
+      </body>
+      <body name="rl_castor_link" pos="-0.18955 0.17 -0.0380886" quat="0.707388 -0.706825 0 0">
+        <inertial pos="0 0 0" quat="0.707107 0.707107 0 0" mass="1" diaginertia="0.7171 0.7171 0.1361" />
+        <joint name="rl_castor_wheel" pos="0 0 0" axis="0 1 0" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor_joint" />
+        <body name="rl_wheel_link" pos="-0.0218084 0.067 0">
+          <inertial pos="0 0 0" mass="1" diaginertia="0.3131 0.3131 0.1361" />
+          <joint name="rl_wheel" pos="0 0 0" axis="0 0 1" />
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="castor" />
+          <geom type="mesh" mesh="castor" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <velocity name="left_motor" joint="left_wheel" ctrllimited="true" ctrlrange="-18 18" kv="1.0" />
+    <velocity name="right_motor" joint="right_wheel" ctrllimited="true" ctrlrange="-18 18" kv="1.0" />
+  </actuator>
+</mujoco>
