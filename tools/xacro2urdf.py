@@ -3,6 +3,7 @@
 import argparse
 import re
 import sys
+from contextlib import contextmanager
 from pathlib import Path
 
 from path_utils import default_generated_file, infer_robot_root
@@ -27,6 +28,26 @@ def parse_mappings(raw_args: list[str]) -> dict[str, str]:
         if not name.strip():
             fail(f"Invalid --arg '{raw_arg}'. Argument name must not be empty.")
         mappings[name.strip()] = value
+    return mappings
+
+
+def parse_package_mappings(raw_args: list[str]) -> dict[str, Path]:
+    mappings: dict[str, Path] = {}
+    for raw_arg in raw_args:
+        if "=" not in raw_arg:
+            fail(f"Invalid --package '{raw_arg}'. Use NAME=PATH format.")
+        name, raw_path = raw_arg.split("=", 1)
+        name = name.strip()
+        raw_path = raw_path.strip()
+        if not name:
+            fail(f"Invalid --package '{raw_arg}'. Package name must not be empty.")
+        if not raw_path:
+            fail(f"Invalid --package '{raw_arg}'. Package path must not be empty.")
+
+        package_path = Path(raw_path).expanduser().resolve()
+        if not package_path.is_dir():
+            fail(f"Package path for '{name}' is not a directory: {package_path}")
+        mappings[name] = package_path
     return mappings
 
 
@@ -81,6 +102,30 @@ def import_xacro_module():
     return xacro
 
 
+@contextmanager
+def mapped_package_find(xacro, package_mappings: dict[str, Path]):
+    original_eval_extension = xacro.eval_extension
+
+    def eval_extension(expression: str):
+        match = ROS_FIND_PATTERN.fullmatch(expression)
+        if match is not None:
+            package_name = match.group(1).strip()
+            package_path = package_mappings.get(package_name)
+            if package_path is None:
+                raise xacro.XacroException(
+                    f"ROS package '{package_name}' is not mapped. "
+                    f"Pass --package {package_name}=PATH."
+                )
+            return str(package_path)
+        return original_eval_extension(expression)
+
+    xacro.eval_extension = eval_extension
+    try:
+        yield
+    finally:
+        xacro.eval_extension = original_eval_extension
+
+
 def build_output_path(input_file: Path, output_arg: str | None) -> Path:
     if output_arg:
         return Path(output_arg)
@@ -105,27 +150,43 @@ def normalize_generated_comments(text: str, input_file: Path) -> str:
     return text.replace(resolved_input, display_input_path(input_file))
 
 
-def convert_xacro_to_urdf(input_file: Path, output_file: Path, mappings: dict[str, str]) -> None:
-    ros_find_usages = scan_for_ros_find(input_file)
-    if ros_find_usages:
-        details = "\n".join(
-            f"  - {path}:{line_number}: {expression}"
-            for path, line_number, expression in ros_find_usages
-        )
-        fail(
-            "Detected ROS-style '$(find ...)' expressions, which are not supported in this ROS-free tool.\n"
-            "Replace them with relative paths or pre-fetched local paths before conversion:\n"
-            f"{details}"
-        )
+def convert_xacro_to_urdf(
+    input_file: Path,
+    output_file: Path,
+    mappings: dict[str, str],
+    package_mappings: dict[str, Path],
+) -> None:
+    if not package_mappings:
+        ros_find_usages = scan_for_ros_find(input_file)
+        if ros_find_usages:
+            details = "\n".join(
+                f"  - {path}:{line_number}: {expression}"
+                for path, line_number, expression in ros_find_usages
+            )
+            fail(
+                "Detected ROS-style '$(find ...)' expressions, which require explicit "
+                "package mappings in this ROS-free tool.\n"
+                "Pass --package NAME=PATH for each required package:\n"
+                f"{details}"
+            )
 
     xacro = import_xacro_module()
 
     print(f"Converting {input_file} -> {output_file}")
     if mappings:
         print(f"  - xacro args: {mappings}")
+    if package_mappings:
+        print(
+            "  - package mappings: "
+            + ", ".join(
+                f"{name}={path}"
+                for name, path in sorted(package_mappings.items())
+            )
+        )
 
     try:
-        document = xacro.process_file(str(input_file), mappings=mappings)
+        with mapped_package_find(xacro, package_mappings):
+            document = xacro.process_file(str(input_file), mappings=mappings)
     except Exception as exc:
         fail(f"xacro processing failed: {exc}")
 
@@ -152,6 +213,16 @@ def main() -> None:
         metavar="NAME=VALUE",
         help="Set a xacro argument. Repeat for multiple values.",
     )
+    parser.add_argument(
+        "--package",
+        action="append",
+        default=[],
+        metavar="NAME=PATH",
+        help=(
+            "Resolve ROS-style $(find NAME) expressions to a local package directory "
+            "without ROS. Repeat for multiple packages."
+        ),
+    )
     args = parser.parse_args()
 
     input_file = Path(args.input)
@@ -159,8 +230,14 @@ def main() -> None:
         fail(f"Input file not found at {input_file}")
 
     mappings = parse_mappings(args.arg)
+    package_mappings = parse_package_mappings(args.package)
     output_file = build_output_path(input_file, args.output)
-    convert_xacro_to_urdf(input_file, output_file, mappings)
+    convert_xacro_to_urdf(
+        input_file,
+        output_file,
+        mappings,
+        package_mappings,
+    )
 
 
 if __name__ == "__main__":
