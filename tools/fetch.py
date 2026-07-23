@@ -110,13 +110,14 @@ def copy_fetched_path(source_root: Path, destination_root: Path, relative_path: 
     else:
         shutil.copy2(source, destination)
 
+
 def fetch_robot_sources(yaml_file: Path, output_dir: Path | None = None) -> Path:
     name, repo, branch, revision, files_to_fetch = load_config(yaml_file)
 
     if output_dir is not None:
         dest_dir = output_dir.resolve()
     else:
-        # Legacy behavior
+        # Default materialization path for committed generated artifacts.
         repo_root = Path(__file__).resolve().parent.parent
         robot_root = repo_root / "bodies" / name
         dest_dir = robot_root / "source"
@@ -138,7 +139,6 @@ def fetch_robot_sources(yaml_file: Path, output_dir: Path | None = None) -> Path
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
         print(f"  - Using temporary directory: {tmp_path}")
-
         run_git(["init", "-q"], cwd=tmp_path)
         run_git(["remote", "add", "origin", repo], cwd=tmp_path)
         run_git(["config", "core.sparseCheckout", "true"], cwd=tmp_path)
@@ -194,12 +194,20 @@ def fetch_robot_sources(yaml_file: Path, output_dir: Path | None = None) -> Path
             copy_fetched_path(tmp_path, dest_dir, relative_path)
 
     print(f"Fetch complete. Files are in {dest_dir}")
+    if output_dir is None:
+        print("Local source materialization is ready for committed generated artifacts.")
+        print("The source directory is intentionally not committed; upstream licensing still applies.")
 
     return dest_dir
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Fetch robot source files from an upstream Git repository using sparse checkout."
+        description=(
+            "Sparse-fetch upstream robot source files. By default this materializes "
+            "user-local source assets under bodies/{name}/source so committed generated "
+            "artifacts can resolve external meshes without vendoring them."
+        )
     )
     parser.add_argument(
         "yaml_file",
@@ -209,7 +217,10 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        help="Destination directory. Defaults to bodies/{name}/source for backward compatibility.",
+        help=(
+            "Destination directory. Defaults to bodies/{name}/source for local source "
+            "materialization and backward compatibility."
+        ),
     )
 
     args = parser.parse_args()
@@ -218,6 +229,7 @@ def main() -> None:
         fail(f"YAML file not found at '{args.yaml_file}'")
 
     fetch_robot_sources(args.yaml_file, args.output_dir)
+
 
 if __name__ == "__main__":
     main()
