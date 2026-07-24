@@ -1,0 +1,9 @@
+name: shadow_hand
+repo: https://github.com/google-deepmind/mujoco_menagerie.git
+branch: main
+revision: 71f066ad0be9cd271f7ed58c030243ef157af9f4
+files:
+  - shadow_hand/
+forge:
+  mode: mjcf_passthrough
+  entry_mjcf: shadow_hand/scene_right.xml
