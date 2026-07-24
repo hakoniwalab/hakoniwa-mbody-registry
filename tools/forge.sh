@@ -4,7 +4,7 @@ set -euo pipefail
 
 if [ "$#" -ne 2 ] && [ "$#" -ne 3 ]; then
     echo "Usage:"
-    echo "  New:    $0 <path_to_yaml_file> <generated_dir> [<entry_urdf_relative_to_source>]"
+    echo "  New:    $0 <path_to_yaml_file> <output_dir> [<entry_urdf_relative_to_source>]"
     echo "  Legacy: $0 <path_to_yaml_file> <entry_urdf_relative_to_source>"
     exit 1
 fi
@@ -15,64 +15,93 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 #
-# Read robot configuration
+# Read robot configuration.
 #
-ROBOT_NAME="$(python3 - <<'PY' "$YAML_FILE"
+# The default forge mode preserves the existing URDF/Xacro -> MJCF pipeline.
+# mjcf_passthrough materializes an upstream MJCF tree and validates its local
+# include/mesh references without converting it.
+#
+eval "$(python3 - <<'PY' "$YAML_FILE"
 from pathlib import Path
+import shlex
 import sys
 import yaml
 
 config = yaml.safe_load(Path(sys.argv[1]).read_text(encoding="utf-8"))
-print(config["name"])
+forge = config.get("forge", {})
+
+def emit(name, value):
+    print(f"{name}={shlex.quote(str(value))}")
+
+emit("ROBOT_NAME", config["name"])
+emit("FORGE_MODE", forge.get("mode", "urdf_to_mjcf"))
+emit("YAML_ENTRY_URDF_REL", forge.get("entry_urdf", ""))
+emit("YAML_ENTRY_MJCF_REL", forge.get("entry_mjcf", ""))
+emit("SOURCE_DISCARD_VISUAL", "1" if forge.get("urdf2mjcf", {}).get("discard_visual", False) else "0")
+emit("SOURCE_DAE2OBJ_ENABLED", "1" if forge.get("urdf_dae2obj", {}).get("enabled", False) else "0")
 PY
 )"
 
-YAML_ENTRY_URDF_REL="$(python3 - <<'PY' "$YAML_FILE"
-from pathlib import Path
-import sys
-import yaml
-
-config = yaml.safe_load(Path(sys.argv[1]).read_text(encoding="utf-8"))
-value = (
-    config.get("forge", {})
-    .get("entry_urdf", "")
-)
-print(value)
-PY
-)"
-
-SOURCE_DISCARD_VISUAL="$(python3 - <<'PY' "$YAML_FILE"
-from pathlib import Path
-import sys
-import yaml
-
-config = yaml.safe_load(Path(sys.argv[1]).read_text(encoding="utf-8"))
-value = (
-    config.get("forge", {})
-    .get("urdf2mjcf", {})
-    .get("discard_visual", False)
-)
-print("1" if value else "0")
-PY
-)"
-
-SOURCE_DAE2OBJ_ENABLED="$(python3 - <<'PY' "$YAML_FILE"
-from pathlib import Path
-import sys
-import yaml
-
-config = yaml.safe_load(Path(sys.argv[1]).read_text(encoding="utf-8"))
-value = (
-    config.get("forge", {})
-    .get("urdf_dae2obj", {})
-    .get("enabled", False)
-)
-print("1" if value else "0")
-PY
-)"
+case "$FORGE_MODE" in
+    urdf_to_mjcf|mjcf_passthrough)
+        ;;
+    *)
+        echo "Error: unsupported forge.mode '$FORGE_MODE'."
+        echo "Supported modes: urdf_to_mjcf, mjcf_passthrough"
+        exit 1
+        ;;
+esac
 
 #
-# Resolve mode and arguments
+# Direct MJCF materialization.
+#
+# This mode intentionally writes upstream source assets to the caller-provided
+# output directory. For external meshes that should not be committed, use the
+# ignored bodies/<name>/source directory.
+#
+if [ "$FORGE_MODE" = "mjcf_passthrough" ]; then
+    if [ "$#" -ne 2 ]; then
+        echo "Error: mjcf_passthrough expects exactly:"
+        echo "  $0 <path_to_yaml_file> <output_dir>"
+        exit 1
+    fi
+    if [ -z "$YAML_ENTRY_MJCF_REL" ]; then
+        echo "Error: forge.entry_mjcf is required for mjcf_passthrough."
+        exit 1
+    fi
+
+    OUTPUT_DIR="$2"
+    mkdir -p "$OUTPUT_DIR"
+    OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
+
+    if [ "${HAKO_SKIP_FETCH:-0}" = "1" ]; then
+        echo "Skipping fetch because HAKO_SKIP_FETCH=1"
+    else
+        python3 "$SCRIPT_DIR/fetch.py" \
+            "$YAML_FILE" \
+            --output-dir "$OUTPUT_DIR"
+    fi
+
+    ENTRY_MJCF="$OUTPUT_DIR/$YAML_ENTRY_MJCF_REL"
+    if [ ! -f "$ENTRY_MJCF" ]; then
+        echo "Error: Entry MJCF not found at $ENTRY_MJCF"
+        exit 1
+    fi
+
+    echo "Forging robot: $ROBOT_NAME"
+    echo "  - Mode:        $FORGE_MODE"
+    echo "  - Entry MJCF:  $ENTRY_MJCF"
+    echo "  - Materialized: $OUTPUT_DIR"
+
+    python3 "$SCRIPT_DIR/validate_mjcf_assets.py" "$ENTRY_MJCF"
+
+    echo "Forge complete."
+    echo "Materialized MJCF source is in: $OUTPUT_DIR"
+    exit 0
+fi
+
+#
+# Resolve URDF mode and arguments.
 #
 # New style:
 #   forge.sh source.yaml generated_dir
@@ -109,49 +138,37 @@ if [ -z "$ENTRY_URDF_REL" ]; then
 fi
 
 #
-# Prepare generated directory
+# Prepare generated directory.
 #
 mkdir -p "$GENERATED_DIR"
 GENERATED_DIR="$(cd "$GENERATED_DIR" && pwd)"
 
 #
-# Fetch robot source
+# Fetch robot source.
 #
 if [ "${HAKO_SKIP_FETCH:-0}" = "1" ]; then
     echo "Skipping fetch because HAKO_SKIP_FETCH=1"
 else
     if [ "$MODE" = "new" ]; then
-        #
-        # New style:
         # Fetch source tree directly into generated directory.
-        #
         python3 "$SCRIPT_DIR/fetch.py" \
             "$YAML_FILE" \
             --output-dir "$GENERATED_DIR"
     else
-        #
-        # Legacy style:
         # Fetch into bodies/<name>/source.
-        #
         python3 "$SCRIPT_DIR/fetch.py" \
             "$YAML_FILE"
     fi
 fi
 
 #
-# Resolve source and config paths
+# Resolve source and config paths.
 #
 ROBOT_ROOT="$REPO_ROOT/bodies/$ROBOT_NAME"
 
 if [ "$MODE" = "new" ]; then
-    #
-    # Source tree has already been fetched directly into GENERATED_DIR.
-    #
     SOURCE_URDF="$GENERATED_DIR/$ENTRY_URDF_REL"
 else
-    #
-    # Legacy layout.
-    #
     SOURCE_URDF="$ROBOT_ROOT/source/$ENTRY_URDF_REL"
 fi
 
@@ -162,14 +179,6 @@ fi
 
 #
 # Preserve the directory containing the entry URDF.
-#
-# Example:
-#   entry:
-#     fairino_description/urdf/FR5WM.urdf
-#
-# becomes:
-#   generated:
-#     <GENERATED_DIR>/fairino_description/urdf/FR5WM.urdf
 #
 ENTRY_DIR="$(dirname "$ENTRY_URDF_REL")"
 ENTRY_FILENAME="$(basename "$ENTRY_URDF_REL")"
@@ -185,7 +194,6 @@ GENERATED_XML="$GENERATED_DIR/$ENTRY_BASENAME.xml"
 
 #
 # Existing mbody-registry configuration.
-#
 # These remain under bodies/<name>/config for backward compatibility.
 #
 ACTUATOR_CONFIG="$ROBOT_ROOT/config/actuators.yaml"
@@ -204,7 +212,7 @@ echo "  - Generated URDF: $GENERATED_URDF"
 echo "  - Generated MJCF: $GENERATED_XML"
 
 #
-# URDF / Xacro -> plain URDF
+# URDF / Xacro -> plain URDF.
 #
 python3 "$SCRIPT_DIR/xacro2urdf.py" \
     "$SOURCE_URDF" \
@@ -221,7 +229,7 @@ if [ "${HAKO_URDF_DAE2OBJ:-$SOURCE_DAE2OBJ_ENABLED}" = "1" ]; then
 fi
 
 #
-# URDF -> MJCF
+# URDF -> MJCF.
 #
 if [ "${HAKO_URDF2MJCF_DISCARD_VISUAL:-$SOURCE_DISCARD_VISUAL}" = "1" ]; then
     python3 "$SCRIPT_DIR/urdf2mjcf.py" \
@@ -235,7 +243,7 @@ else
 fi
 
 #
-# Add actuators if configured
+# Add actuators if configured.
 #
 if [ -f "$ACTUATOR_CONFIG" ]; then
     python3 "$SCRIPT_DIR/mjcf_add_actuators.py" \
@@ -244,10 +252,9 @@ if [ -f "$ACTUATOR_CONFIG" ]; then
 fi
 
 #
-# Add primitive collision geoms if configured
+# Add primitive collision geoms if configured.
 #
 COLLISION_INPUT_XML="$GENERATED_XML"
-
 if [ -f "${GENERATED_XML%.xml}.actuated.xml" ]; then
     COLLISION_INPUT_XML="${GENERATED_XML%.xml}.actuated.xml"
 fi
@@ -259,10 +266,9 @@ if [ -f "$COLLISION_PRIMITIVES_CONFIG" ]; then
 fi
 
 #
-# Add contact excludes if configured
+# Add contact excludes if configured.
 #
 CONTACT_INPUT_XML="$COLLISION_INPUT_XML"
-
 if [ -f "${COLLISION_INPUT_XML%.xml}.collision.xml" ]; then
     CONTACT_INPUT_XML="${COLLISION_INPUT_XML%.xml}.collision.xml"
 fi
@@ -274,7 +280,7 @@ if [ -f "$CONTACT_EXCLUDES_CONFIG" ]; then
 fi
 
 #
-# Generate GLB assets
+# Generate GLB assets.
 #
 if [ "${HAKO_SKIP_GLB:-0}" = "1" ]; then
     echo "Skipping GLB generation because HAKO_SKIP_GLB=1"
@@ -288,7 +294,7 @@ else
 fi
 
 #
-# Generate PDU definitions if configured
+# Generate PDU definitions if configured.
 #
 if [ -f "$PDU_MANIFEST" ]; then
     python3 "$SCRIPT_DIR/pdu_manifest2types.py" \
@@ -298,7 +304,6 @@ if [ -f "$PDU_MANIFEST" ]; then
     python3 "$SCRIPT_DIR/pdu_manifest2def.py" \
         "$PDU_MANIFEST" \
         -o "$GENERATED_DIR/pdu_def.json"
-
 elif [ -f "$PDU_CONFIG" ]; then
     python3 "$SCRIPT_DIR/mjcf2pdu.py" \
         "$GENERATED_XML" \
@@ -307,7 +312,7 @@ elif [ -f "$PDU_CONFIG" ]; then
 fi
 
 #
-# Compose minimal MuJoCo world if configured
+# Compose minimal MuJoCo world if configured.
 #
 if [ -f "$MUJOCO_WORLD_CONFIG" ]; then
     WORLD_INPUT_XML="$GENERATED_XML"
