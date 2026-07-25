@@ -2,176 +2,137 @@
 
 # hakoniwa-mbody-registry
 
-Robot body definitions as molds — convert to URDF, MJCF, and GLB for Hakoniwa simulations.
+> Reproducible robot-body preparation and target artifact generation for the Hakoniwa simulation ecosystem.
 
-For Godot runtime integration, this repository now also generates the config artifacts consumed by [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot).
+`hakoniwa-mbody-registry` takes upstream robot descriptions and turns them into stable, reviewable artifacts that downstream simulators and visualizers can consume.
 
-## What is this?
+It supports both ROS-origin descriptions such as Xacro / URDF and authoritative MJCF sources. The repository is intentionally **not** a runtime simulator.
 
-This repository helps you take an existing robot description and turn it into simulation-ready assets you can actually use.
+## Responsibility Boundary
 
-It is for people who need robot geometry in practical formats:
+The current responsibility boundary is:
 
-- robotics researchers who want a reproducible model registry
-- simulation developers who need URDF or MuJoCo XML
-- game engine or 3D tool users who want GLB assets
-- ML / RL engineers who want robot bodies without adopting a full ROS stack
+```text
+Upstream robot source
+  -> source materialization
+  -> body normalization / adaptation
+  -> canonical body artifacts
+  -> target-specific generated artifacts
+  -> downstream runtime
+```
 
-The main value is simple: fetch once, convert once, and keep the generated assets under a predictable local layout.
+MBody owns the preparation side:
 
-The ROS-free part matters because it lowers setup cost. You can work with robot body assets using standard Python tools, without installing or maintaining a full ROS environment.
+- reproducible source definitions under `sources/`
+- pinned upstream revisions when needed
+- local source materialization
+- Xacro / URDF normalization
+- direct MJCF materialization
+- mesh preprocessing
+- structural MJCF generation
+- GLB / parts GLB generation
+- runtime-neutral view-model generation
+- target-specific artifact generation for MuJoCo, PDU, and Godot consumers
+
+Downstream repositories own runtime behavior:
+
+- simulator lifecycle and stepping
+- controller semantics and runtime actuation
+- PDU transport and runtime connection behavior
+- time synchronization behavior
+- Godot addon / scene runtime behavior
+- runtime-specific policy and orchestration
+
+The important distinction is:
+
+```text
+artifact generation        -> MBody can own it
+runtime semantic ownership -> downstream runtime owns it
+```
+
+See [`docs/responsibility-boundary.md`](docs/responsibility-boundary.md) for the detailed rationale and classification.
 
 ## Registry Pattern
 
-This repository follows the same registry idea as `hakoniwa-pdu-registry`.
+This repository follows the same registry idea as `hakoniwa-pdu-registry`:
 
-- `sources/` stores where the robot description came from
-- `tools/` stores how to convert it
-- `bodies/{name}/generated/` stores the committed outputs that downstream users can consume directly
+- `sources/` describes where a robot model comes from and how it should be materialized
+- `tools/` contains reusable preparation and export tools
+- `bodies/<name>/source/` contains local upstream materialization when required
+- `bodies/<name>/generated/` contains generated artifacts intended for downstream consumption
+- `bodies/<name>/config/` contains robot-specific preparation / exporter inputs
 
-Committing generated artifacts is intentional here. It means users can use URDF, MuJoCo XML, and GLB outputs without running the whole conversion pipeline themselves, and upstream robot changes show up as versioned diffs.
+Generated Hakoniwa-owned artifacts may be committed when that makes downstream use reproducible and reviewable. Third-party upstream assets remain subject to their upstream licenses and are not automatically copied into this repository.
 
-## Overview
+For models whose generated MJCF still references upstream meshes, materialize the source tree locally instead of committing those third-party assets. See [`docs/local-source-materialization.md`](docs/local-source-materialization.md).
 
-`hakoniwa-mbody-registry` is a **ROS-independent** registry of robot physical body definitions (mold-bodies) for the [Hakoniwa](https://github.com/hakoniwalab) simulation ecosystem.
+## Main Preparation Flows
 
-It is the physical counterpart to [`hakoniwa-pdu-registry`](https://github.com/hakoniwalab/hakoniwa-pdu-registry):
+### Xacro / URDF flow
 
-| Repository | Role |
-|---|---|
-| `hakoniwa-pdu-registry` | Data communication type definitions (ROS IDL-based) |
-| `hakoniwa-mbody-registry` | Robot physical body definitions (xacro-based) |
-
-Each robot body is defined as a **mold** (mbody) — a xacro-based source definition that can be cast into multiple simulation formats.
-
-When targeting Godot, the intended split is:
-
-- `hakoniwa-mbody-registry`
-  - user-facing robot inputs
-  - generated URDF / MJCF / GLB / PDU / Godot profile outputs
-- [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot)
-  - runtime addon and endpoint integration
-  - consumes generated `robot_sync.profile.json` and endpoint configs
-
-## Ecosystem Flow
-
-![Hakoniwa ecosystem overview](docs/images/hakoniwa-ecosystem.png)
-
-This diagram shows how a robot body definition moves from ROS-origin source files into two downstream runtime targets:
-
-- a Godot project that consumes generated scene and sync artifacts
-- a MuJoCo-based Hakoniwa runtime that consumes generated MJCF and sensor/actuator-related assets
-
-In this repository, the main role of `hakoniwa-mbody-registry` is to convert source robot descriptions into stable generated artifacts that other Hakoniwa components can consume directly.
-
-### Diagram-to-Tool Mapping
-
-The labels in the diagram correspond to the concrete files and tools in this repository as follows.
-
-| Diagram label | Actual tool or artifact |
-|---|---|
-| `TB3.xacro` | Upstream TurtleBot3 robot description fetched under `bodies/turtlebot3_burger/source/` |
-| `toURDF` | `tools/xacro2urdf.py` |
-| `TB3.urdf` | `bodies/{name}/generated/{model}.urdf` |
-| `toMJCF` | `tools/urdf2mjcf.py` |
-| `TB3.mjcf` | `bodies/{name}/generated/{model}.xml` |
-| `toGLB` | `tools/urdf2glb.py` for a single GLB, or `tools/mjcf2glb.py` for split body-local GLBs |
-| `parts.glb` | `bodies/{name}/generated/parts/*.glb` |
-| `actuator.yml` | `bodies/{name}/config/actuator.yml` |
-| `addActuator` | `tools/mjcf_add_actuators.py` |
-| `TB3-a.mjcf` | `bodies/{name}/generated/{model}.actuated.xml` |
-| `view.recipe.yml` | `bodies/{name}/config/viewer.recipe.yaml` |
-| `toViewModel` | `tools/hako_viewer_model_gen.py` |
-| `TB3-v.json` | `bodies/{name}/view/{robot}.json` viewer model output |
-| `toGodSceneGen` | `tools/hako_godot_scene_gen.py` |
-| `godot.tscn` | Generated Godot scene such as `bodies/{name}/godot_tb3_reference/*.generated.tscn` |
-| Godot sync config path in the flow | `bodies/{name}/config/godot_sync.yaml` consumed by `tools/godot_sync2endpoint.py` and `tools/godot_sync2profile.py` |
-| `GodotInstaller` | `install-robot-on-godot.bash` plus the staging/copy flow described in this README |
-| `sensor.json` | Sensor or runtime-side config artifact owned by downstream MuJoCo-side integration, not generated by the core toolchain here |
-| `Shared Memory (Clock/PDU)` | Runtime integration boundary handled by downstream Hakoniwa components, not by this repository alone |
-
-### What This Repository Owns
-
-From the diagram, the artifacts owned and generated here are:
-
-- source snapshots under `bodies/{name}/source/`
-- converted `URDF`, `MJCF`, and `GLB` artifacts
-- actuated MuJoCo XML
-- viewer model JSON
-- Godot scene artifacts
-- Godot sync-related generated configs such as `endpoint_shm_with_pdu.json` and `robot_sync.profile.json`
-
-The runtime wiring itself lives in downstream projects such as `hakoniwa-godot` and MuJoCo-side Hakoniwa robot runners. This repository is the conversion and artifact registry layer between upstream robot descriptions and those runtimes.
-
-## Toolchain
+The default forge mode is `urdf_to_mjcf`.
 
 ```text
-fetch.py
-  -> upstream robot description
-  -> local source snapshot under bodies/{name}/source/
-
-xacro2urdf.py
-  -> xacro / xacro-enabled URDF
-  -> bodies/{name}/generated/{model}.urdf
-
-urdf2mjcf.py
-  -> plain URDF
-  -> bodies/{name}/generated/{model}.xml
-
-urdf2glb.py
-  -> plain URDF
-  -> bodies/{name}/generated/{model}.glb
-
-mjcf2glb.py
-  -> canonical MuJoCo XML
-  -> bodies/{name}/generated/parts/*.glb
-
-mjcf_add_actuators.py
-  -> canonical MuJoCo XML + actuator YAML
-  -> actuated MuJoCo XML
-
-mjcf_compose_world.py
-  -> actuated MuJoCo XML + MuJoCo world YAML
-  -> minimal MuJoCo runtime world XML
-
-pdu_manifest2types.py
-  -> pdu-manifest.yaml
-  -> canonical pdutypes.json
-
-pdu_manifest2def.py
-  -> pdu-manifest.yaml
-  -> compact pdu_def.json
-
-godot_sync2endpoint.py
-  -> godot_sync.yaml
-  -> Godot endpoint_shm_with_pdu.json
-
-godot_sync2profile.py
-  -> godot_sync.yaml + viewer model JSON
-  -> robot_sync.profile.json
-
-hako_viewer_model_gen.py
-  -> viewer.recipe.yaml + actuated MuJoCo XML
-  -> viewer model JSON
-
-hako_godot_scene_gen.py
-  -> viewer model JSON
-  -> Godot .tscn scene
-
-mjcf2pdu.py (legacy)
-  -> canonical MuJoCo XML + body-to-PDU YAML
-  -> Hakoniwa pdutypes.json
+sources/*.yaml
+  -> fetch.py
+  -> xacro2urdf.py
+  -> optional mesh preprocessing
+  -> urdf2mjcf.py
+  -> optional MuJoCo target overlays
+  -> GLB / parts GLB
+  -> optional PDU artifacts
+  -> optional minimal MuJoCo world
 ```
 
-All tools are bundled in `tools/` and are intended to work without a ROS installation.
+Typical stages currently orchestrated by `tools/forge.sh` include:
 
-## Dependencies
+- source fetch / materialization
+- Xacro or Xacro-enabled URDF expansion
+- optional DAE-to-OBJ preprocessing
+- structural MJCF generation
+- optional actuator injection
+- optional primitive collision overlay
+- optional contact excludes
+- GLB generation
+- optional `pdutypes.json` / `pdu_def.json` generation
+- optional minimal-world composition
 
-The tools require the Python packages listed in `requirements.txt`.
+Target-specific exporters are preparation tools. Successful artifact generation does **not** by itself verify downstream runtime control, PDU wiring, or simulation behavior.
 
-Use a repository-local virtual environment before running the conversion tools.
-This is especially important on macOS with Homebrew Python, where direct
-`pip install` into the system-managed environment is blocked by PEP 668.
+### Direct MJCF materialization
+
+Some upstream projects already provide an authoritative MJCF model. In that case, converting through URDF would lose useful source structure or create unnecessary work.
+
+Use `forge.mode: mjcf_passthrough` to materialize the upstream MJCF tree directly and validate its local dependencies.
+
+Representative source definition:
+
+```yaml
+name: shadow_hand
+repo: https://github.com/google-deepmind/mujoco_menagerie.git
+branch: main
+revision: 71f066ad0be9cd271f7ed58c030243ef157af9f4
+files:
+  - shadow_hand/
+forge:
+  mode: mjcf_passthrough
+  entry_mjcf: shadow_hand/scene_right.xml
+```
+
+Representative command:
+
+```bash
+PATH=$PWD/.venv/bin:$PATH \
+  ./tools/forge.sh sources/shadow_hand.yaml bodies/shadow_hand/source
+```
+
+This flow intentionally versions the reproducible source definition rather than committing third-party OBJ / STL / DAE assets that can be restored from the pinned upstream revision.
+
+See [`docs/mjcf-passthrough.md`](docs/mjcf-passthrough.md).
+
+## Quick Start: TurtleBot3 Burger
+
+Create a repository-local Python environment first:
 
 ```bash
 python3 -m venv .venv
@@ -179,626 +140,187 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-## Quick Start
+Then run the TurtleBot3 Burger forge flow:
 
 ```bash
-# 1. Install dependencies into a local virtual environment
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -r requirements.txt
-
-# 2. Run the full TurtleBot3 Burger pipeline
-PATH=$PWD/.venv/bin:$PATH ./tools/forge.sh sources/turtlebot3_burger.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
+PATH=$PWD/.venv/bin:$PATH \
+  ./tools/forge.sh \
+  sources/turtlebot3_burger.yaml \
+  turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
-If `bodies/turtlebot3_burger/source/` is already populated and you want to
-regenerate artifacts without fetching from upstream again, set
-`HAKO_SKIP_FETCH=1`:
-
-```bash
-PATH=$PWD/.venv/bin:$PATH HAKO_SKIP_FETCH=1 ./tools/forge.sh sources/turtlebot3_burger.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
-```
-
-Some upstream robot descriptions contain visual mesh formats that are not
-accepted by MuJoCo's URDF compiler. A source can request visual discard during
-MJCF compilation through its `forge.urdf2mjcf.discard_visual` setting.
-`sources/turtlebot3_waffle.yaml` uses this path, so Waffle can be forged with:
+If the source tree is already materialized locally:
 
 ```bash
 PATH=$PWD/.venv/bin:$PATH \
 HAKO_SKIP_FETCH=1 \
-  ./tools/forge.sh sources/turtlebot3_waffle.yaml turtlebot3_description/urdf/turtlebot3_waffle.urdf
+  ./tools/forge.sh \
+  sources/turtlebot3_burger.yaml \
+  turtlebot3_description/urdf/turtlebot3_burger.urdf
 ```
 
-`HAKO_URDF2MJCF_DISCARD_VISUAL=1` can still be used as an explicit override,
-and `HAKO_SKIP_GLB=1` can skip GLB generation for physics-only checks.
+`HAKO_SKIP_GLB=1` can be used for physics-only checks where GLB generation is unnecessary.
 
-Typical outputs are created under `bodies/turtlebot3_burger/generated/`:
+The exact outputs depend on the robot-specific config present under `bodies/<name>/config/`. Typical outputs include:
 
-- `turtlebot3_burger.urdf`
-- `turtlebot3_burger.xml`
-- `turtlebot3_burger.actuated.xml`
-- `turtlebot3_burger.minimal_world.xml`
-- `turtlebot3_burger.glb`
-- `pdutypes.json`
-- `pdu_def.json`
-- `parts/*.glb`
+- plain URDF
+- structural MJCF
+- optional actuated / collision-overlaid MJCF
+- optional minimal-world MJCF
+- single or split GLB assets
+- optional `pdutypes.json`
+- optional `pdu_def.json`
 
-## Repository Structure
+## ROS-free Xacro Package Mapping
 
-```
-hakoniwa-mbody-registry/
-├── requirements.txt      # Python dependencies for the toolchain
-├── tools/
-│   ├── fetch.py          # Sparse fetch from upstream Git repositories
-│   ├── xacro2urdf.py     # ROS-free xacro / xacro-enabled URDF -> plain URDF
-│   ├── urdf2mjcf.py      # URDF -> canonical MuJoCo XML
-│   ├── urdf2glb.py       # URDF -> single GLB scene
-│   ├── mjcf2glb.py       # MuJoCo XML -> split GLB assets
-│   ├── mjcf_add_actuators.py # Actuator YAML -> actuated MuJoCo XML
-│   ├── mjcf2pdu.py       # MJCF body list -> Hakoniwa pdutypes.json
-│   ├── pdu_manifest2types.py # pdu-manifest.yaml -> canonical pdutypes.json
-│   ├── pdu_manifest2def.py # pdu-manifest.yaml -> compact pdu_def.json
-│   ├── godot_sync2endpoint.py # godot_sync.yaml -> Godot endpoint config
-│   ├── godot_sync2profile.py # godot_sync.yaml + viewer model -> robot sync profile
-│   ├── hako_viewer_model_gen.py # viewer.recipe.yaml + MJCF -> viewer model JSON
-│   ├── hako_godot_scene_gen.py # viewer model JSON -> Godot .tscn
-│   └── forge.sh          # Full pipeline wrapper
-├── bodies/               # Registry-managed source snapshots and generated artifacts
-│   └── turtlebot3/
-│       ├── config/       # Robot-specific actuator or postprocess settings, committed
-│       ├── source/       # Fetched upstream files, not committed
-│       ├── generated/    # Converted artifacts, committed
-│       ├── view/         # Optional generated viewer model JSON outputs
-│       └── godot_tb3_reference/ # Optional generated Godot scene staging area
-├── docs/
-│   └── images/           # Placeholder location for README screenshots
-├── sources/              # Declarative fetch definitions per robot
-│   ├── tb3.yaml          # Legacy TurtleBot3 package-level entry
-│   └── turtlebot3_burger.yaml # TurtleBot3 Burger robot variant
-└── README.md
-```
+`tools/xacro2urdf.py` can expand Xacro files that contain ROS-style `$(find PACKAGE)` references without installing ROS.
 
-### `sources/` — Fetch Definitions
-
-Each YAML file declares where to fetch robot source files from and which paths to retrieve:
-
-```yaml
-name: turtlebot3
-repo: https://github.com/ROBOTIS-GIT/turtlebot3
-branch: humble
-files:
-  - turtlebot3_description/
-```
-
-Running `tools/fetch.py` reads these files and performs a sparse checkout of only the listed paths into `bodies/{name}/source/`, preserving the upstream relative paths.
-
-### `bodies/` layout
-
-- `bodies/{name}/source/`
-  Fetched from upstream. This is a local snapshot used as conversion input and is not committed.
-- `bodies/{name}/generated/`
-  Generated artifacts. These are committed as registry outputs for downstream users.
-- `bodies/{name}/config/`
-  Robot-specific settings such as actuator mappings, `pdu-manifest.yaml`, and `godot_sync.yaml` that are not present in standard URDF.
-- `bodies/{name}/view/`
-  Optional generated viewer model JSON outputs used before Godot scene/profile generation.
-- `bodies/{name}/godot_tb3_reference/`
-  Optional local staging area for generated Godot scene outputs and wrapper scripts.
-
-## Tools
-
-### `tools/fetch.py`
-
-Fetch only the robot files you need from an upstream Git repository.
-
-- Input: `sources/*.yaml`
-- Output: `bodies/{name}/source/...`
-
-### `tools/xacro2urdf.py`
-
-Turn a xacro-based robot description into a plain URDF file.
-
-- Input: `.xacro` or xacro-enabled `.urdf`
-- Output: `bodies/{name}/generated/{stem}.urdf` by default when the input is under `bodies/{name}/`
-- Supports `--arg NAME=VALUE`
-- Detects unsupported ROS-style `$(find ...)` expressions and fails early with file and line information
-
-Example:
+Provide package roots explicitly:
 
 ```bash
 python3 tools/xacro2urdf.py \
-  bodies/turtlebot3_burger/source/turtlebot3_description/urdf/turtlebot3_burger.urdf
+  path/to/robot.urdf.xacro \
+  -o path/to/robot.urdf \
+  --package sr_description=path/to/sr_description \
+  --arg hand_version=E3M5 \
+  --arg side=right
 ```
 
-### `tools/urdf2mjcf.py`
+`--package NAME=PATH` may be repeated.
 
-Convert a plain URDF into canonical MuJoCo XML using MuJoCo's official compiler.
+Behavior:
 
-- Input: plain URDF
-- Output: `bodies/{name}/generated/{stem}.xml` by default when the input is under `bodies/{name}/`
-- Rewrites `package://...` mesh references before invoking MuJoCo
-- If the package root cannot be inferred from the input path, pass `--package-root PACKAGE=PATH`
+- mapped `$(find NAME)` expressions resolve from explicit package mappings
+- no ROS workspace discovery is performed
+- unmapped packages fail clearly
+- when no `--package` mapping is supplied, Xacro files that require `$(find ...)` still fail early
+- generated `package://...` mesh references are left for the downstream conversion stage
 
-Example:
+See [`docs/xacro-package-mapping.md`](docs/xacro-package-mapping.md).
 
-```bash
-python3 tools/urdf2mjcf.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
-```
+## Target Exporters
 
-### `tools/urdf2glb.py`
+Target exporters are intentionally allowed in this repository when they derive reproducible artifacts from robot-body source/config and do not take ownership of runtime behavior.
 
-Export the robot's visual geometry as one GLB scene.
+### MuJoCo target artifacts
 
-- Input: plain URDF
-- Output: `bodies/{name}/generated/{stem}.glb` by default when the input is under `bodies/{name}/`
-- With `--parts-dir`, exports one GLB per link in link-local coordinates
-- Supports mesh, box, cylinder, and sphere visuals
-- Supports `package://...` mesh references
-- Do not pass MuJoCo XML (`*.xml`) here. Use `mjcf2glb.py` for MJCF input.
+Current tools include preparation such as:
 
-Example:
+- actuator injection with `tools/mjcf_add_actuators.py`
+- primitive collision overlay with `tools/mjcf_apply_collision_primitives.py`
+- contact excludes with `tools/mjcf_add_contact_excludes.py`
+- minimal-world composition with `tools/mjcf_compose_world.py`
 
-```bash
-python3 tools/urdf2glb.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
-```
+These artifacts can make a body usable by a downstream MuJoCo runner, but runtime actuation, control loops, PDU command handling, and simulation lifecycle belong downstream, for example in `hakoniwa-mujoco-robots`.
 
-Per-link example:
+A minimal generated world is a preparation artifact, not a guarantee of stable robot dynamics. Friction, contact tuning, sensor layout, controller behavior, and runtime validation remain separate work.
 
-```bash
-python3 tools/urdf2glb.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf \
-  --parts-dir bodies/turtlebot3_burger/generated/parts
-```
+### PDU artifacts
 
-### `tools/mjcf2glb.py`
-
-Split a MuJoCo XML model into smaller GLB assets that match its body or geom structure.
-
-- Input: canonical MuJoCo XML produced by `urdf2mjcf.py`
-- Output: `bodies/{name}/generated/parts/*.glb` by default when the input is under `bodies/{name}/`
-- Default: `--split-by body`
-- Alternative: `--split-by geom`
-
-Example:
-
-```bash
-python3 tools/mjcf2glb.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml
-```
-
-### `tools/mjcf_add_actuators.py`
-
-Add control definitions to a structural MuJoCo XML model using a YAML mapping file.
-
-- Input: canonical MuJoCo XML and an actuator YAML file
-- Output: `bodies/{name}/generated/{stem}.actuated.xml` by default when the input is under `bodies/{name}/`
-- Validates that referenced joints exist before writing output
-
-Example:
-
-```bash
-python3 tools/mjcf_add_actuators.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml \
-  bodies/turtlebot3_burger/config/actuators.yaml
-```
-
-Example YAML:
-
-```yaml
-actuators:
-  - type: motor
-    name: left_motor
-    joint: wheel_left_joint
-    ctrllimited: true
-    ctrlrange: [-10, 10]
-    gear: 1.0
-
-  - type: motor
-    name: right_motor
-    joint: wheel_right_joint
-    ctrllimited: true
-    ctrlrange: [-10, 10]
-    gear: 1.0
-```
-
-### `tools/mjcf_compose_world.py`
-
-Compose an MBody-generated robot MJCF into a minimal MuJoCo world.
-
-- Input: robot MJCF and a world composition YAML file
-- Output: `bodies/{name}/generated/{stem}.minimal_world.xml` when called from
-  `tools/forge.sh` for TurtleBot3
-- Copies robot assets, robot bodies, and actuator definitions from the generated
-  MJCF
-- Adds user-owned world elements such as ground, lights, cameras, initial pose,
-  and a top-level free joint
-- Rewrites mesh file paths relative to the generated world XML, so the output
-  does not contain local absolute paths
-
-Example:
-
-```bash
-python3 tools/mjcf_compose_world.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.actuated.xml \
-  bodies/turtlebot3_burger/config/mujoco_world.yaml \
-  -o bodies/turtlebot3_burger/generated/turtlebot3_burger.minimal_world.xml
-```
-
-Validate the generated world with MuJoCo:
-
-```bash
-python3 -c "import mujoco; m = mujoco.MjModel.from_xml_path('bodies/turtlebot3_burger/generated/turtlebot3_burger.minimal_world.xml'); print(m.nbody, m.njnt, m.nu)"
-```
-
-Expected shape for the TurtleBot3 minimal world:
+The canonical declarative path is:
 
 ```text
-8 3 2
+pdu-manifest.yaml
+  -> pdu_manifest2types.py
+  -> pdutypes.json
+
+pdu-manifest.yaml
+  -> pdu_manifest2def.py
+  -> pdu_def.json
 ```
 
-This output is a minimal loadable world, not a runtime-grade driving world.
-Stable driving dynamics, contact/friction tuning, sensor layout, and runtime PDU
-mapping remain downstream world-design work.
+These are connection artifacts. Runtime transport and endpoint behavior are not owned here.
 
-### `tools/mjcf2pdu.py`
+`tools/mjcf2pdu.py` is retained only as a **legacy body-list-oriented helper**. New robot definitions should prefer `pdu-manifest.yaml` with `pdu_manifest2types.py` / `pdu_manifest2def.py`. Removal of the legacy helper requires reference and compatibility review first.
 
-Generate Hakoniwa `pdutypes.json` from a selected list of MJCF bodies.
+### View-model
 
-- Input: canonical MuJoCo XML and a PDU YAML file
-- Output: `bodies/{name}/generated/pdutypes.json` by default when the input is under `bodies/{name}/`
-- Auto-assigns `channel_id` values starting from `base_channel_id`
-- Validates that referenced body names exist in the MJCF
-
-Example:
-
-```bash
-python3 tools/mjcf2pdu.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml \
-  bodies/turtlebot3_burger/config/pdu_bodies.yaml
-```
-
-This is now considered a legacy / body-list-oriented helper.
-For canonical robot PDU definitions, prefer `pdu-manifest.yaml` with
-`tools/pdu_manifest2types.py` and `tools/pdu_manifest2def.py`.
-
-Example YAML:
-
-```yaml
-base_channel_id: 0
-default_pdu_size: 72
-default_type: geometry_msgs/Twist
-default_name_suffix: pos
-
-bodies:
-  - base_link
-  - base_scan
-  - wheel_left_link
-  - wheel_right_link
-  - caster_back_link
-```
-
-### `tools/pdu_manifest2types.py`
-
-Generate canonical Hakoniwa `pdutypes.json` from `pdu-manifest.yaml`.
-
-- Input: `bodies/{name}/config/pdu-manifest.yaml`
-- Output: `bodies/{name}/generated/pdutypes.json` by default
-- Flattens `bodies`, `sensors`, and `extras`
-- Preserves explicit `channel_id`
-- Resolves `pdu_size` from the manifest first, then from the `hakoniwa_pdu` size registry when available
-
-Example:
-
-```bash
-python3 tools/pdu_manifest2types.py \
-  bodies/turtlebot3_burger/config/pdu-manifest.yaml
-```
-
-### `tools/pdu_manifest2def.py`
-
-Generate compact Hakoniwa `pdu_def.json` from `pdu-manifest.yaml`.
-
-- Input: `bodies/{name}/config/pdu-manifest.yaml`
-- Output: `bodies/{name}/generated/pdu_def.json` by default
-- Emits the compact `paths + robots` form
-- Supports overriding `pdutypes_path` and `pdutypes_id`
-
-Example:
-
-```bash
-python3 tools/pdu_manifest2def.py \
-  bodies/turtlebot3_burger/config/pdu-manifest.yaml \
-  --pdutypes-path tb3-pdutypes.json \
-  --pdutypes-id tb3-endpoint
-```
-
-### `tools/godot_sync2endpoint.py`
-
-Generate Godot `endpoint_shm_with_pdu.json` from `godot_sync.yaml`.
-
-- Input: `bodies/{name}/config/godot_sync.yaml`
-- Output: `bodies/{name}/generated/endpoint_shm_with_pdu.json` by default
-- Uses `endpoint.endpoint_name`
-- Rewrites `endpoint.comm_path` relative to the output location
-- Defaults `pdu_def_path` to a sibling `pdu_def.json`
-
-Example:
-
-```bash
-python3 tools/godot_sync2endpoint.py \
-  bodies/turtlebot3_burger/config/godot_sync.yaml
-```
-
-### `tools/godot_sync2profile.py`
-
-Generate Godot `robot_sync.profile.json` from `godot_sync.yaml` and a viewer model JSON.
-
-- Input:
-  - `bodies/{name}/config/godot_sync.yaml`
-  - viewer model JSON generated by `tools/hako_viewer_model_gen.py`
-- Output: `bodies/{name}/generated/godot/robot_sync.profile.json` by default
-- Resolves `base_node_path` and `joint_mappings[].node_path` using the same body-name rules as the Godot scene generator
-
-Example:
-
-```bash
-python3 tools/hako_viewer_model_gen.py \
-  bodies/turtlebot3_burger/config/viewer.recipe.yaml \
-  -o /tmp/tb3-viewer.json \
-  --pretty
-
-python3 tools/godot_sync2profile.py \
-  bodies/turtlebot3_burger/config/godot_sync.yaml \
-  /tmp/tb3-viewer.json
-```
-
-### `tools/forge.sh`
-
-Run the whole robot conversion flow in one command when you already know the entry URDF path.
-
-- Input: `sources/*.yaml` and an entry URDF path relative to `source/`
-- Output: `bodies/{name}/generated/`
-- If `bodies/{name}/config/actuators.yaml` exists, also generates an actuated MuJoCo XML file
-
-Example:
-
-```bash
-./tools/forge.sh sources/turtlebot3_burger.yaml turtlebot3_description/urdf/turtlebot3_burger.urdf
-```
-
-## Walkthrough: TurtleBot3 Burger
-
-This is the simplest end-to-end example in the repository. It starts from the upstream TurtleBot3 description and produces:
-
-- a plain URDF
-- a canonical MuJoCo XML file
-- a single GLB scene
-- split GLB assets based on the MuJoCo body structure
-
-```bash
-# Step 1: Fetch TB3 description from upstream
-python3 tools/fetch.py sources/turtlebot3_burger.yaml
-
-# Step 2: Expand xacro to plain URDF
-python3 tools/xacro2urdf.py \
-  bodies/turtlebot3_burger/source/turtlebot3_description/urdf/turtlebot3_burger.urdf
-
-# Step 3: Convert URDF to MuJoCo XML
-python3 tools/urdf2mjcf.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
-
-# Step 4: Convert URDF to GLB (single scene)
-python3 tools/urdf2glb.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf
-
-# Step 5: Add actuators from YAML
-python3 tools/mjcf_add_actuators.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml \
-  bodies/turtlebot3_burger/config/actuators.yaml
-
-# Step 6: Generate canonical Hakoniwa pdutypes.json from pdu-manifest.yaml
-python3 tools/pdu_manifest2types.py \
-  bodies/turtlebot3_burger/config/pdu-manifest.yaml
-
-# Step 7: Generate compact pdu_def.json
-python3 tools/pdu_manifest2def.py \
-  bodies/turtlebot3_burger/config/pdu-manifest.yaml
-
-# Step 8: Split MuJoCo XML into per-body GLB assets
-python3 tools/mjcf2glb.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.xml
-```
-
-Expected output files:
-
-- `bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf`
-- `bodies/turtlebot3_burger/generated/turtlebot3_burger.xml`
-- `bodies/turtlebot3_burger/generated/turtlebot3_burger.actuated.xml`
-- `bodies/turtlebot3_burger/generated/turtlebot3_burger.glb`
-- `bodies/turtlebot3_burger/generated/pdutypes.json`
-- `bodies/turtlebot3_burger/generated/pdu_def.json`
-- `bodies/turtlebot3_burger/generated/parts/*.glb`
-
-## Godot Export
-
-To build a Godot scene and runtime configs for TurtleBot3, first generate the viewer model JSON and then generate:
-
-- the `.tscn` scene
-- `endpoint_shm_with_pdu.json`
-- `robot_sync.profile.json`
-
-These outputs are intended to be consumed by [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot).
-
-Recommended path:
+The runtime-neutral view-model is derived from structural body information and visual assets.
 
 ```text
-pdu-manifest.yaml -> pdu_manifest2types.py / pdu_manifest2def.py
-godot_sync.yaml -> godot_sync2endpoint.py
-viewer.recipe.yaml + MJCF -> hako_viewer_model_gen.py
-viewer model JSON + godot_sync.yaml -> godot_sync2profile.py / hako_godot_scene_gen.py
+structural MJCF + viewer.recipe.yaml
+  -> hako_viewer_model_gen.py
+  -> view-model JSON
 ```
 
-```bash
-# Generate the viewer model JSON from recipe + actuated MJCF
-python3 tools/hako_viewer_model_gen.py \
-  bodies/turtlebot3_burger/config/viewer.recipe.yaml \
-  -o bodies/turtlebot3_burger/view/turtlebot3.json \
-  --pretty
-
-# Generate the Godot scene
-python3 tools/hako_godot_scene_gen.py \
-  bodies/turtlebot3_burger/view/turtlebot3.json \
-  -o bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn \
-  --res-root res:// \
-  --sync-script tb3_reference_sync.gd
-
-# Generate Godot endpoint config
-python3 tools/godot_sync2endpoint.py \
-  bodies/turtlebot3_burger/config/godot_sync.yaml
-
-# Generate Godot robot sync profile
-python3 tools/godot_sync2profile.py \
-  bodies/turtlebot3_burger/config/godot_sync.yaml \
-  bodies/turtlebot3_burger/view/turtlebot3.json
-```
-
-When `--sync-script` is specified, the generator also writes a placeholder GDScript file with the same basename next to the output `.tscn`.
-
-The generated scene expects the split GLB assets under `res://parts/`.
-
-One practical way to stage everything into a Godot project is:
-
-```bash
-export GODOT_PROJECT_DIR=/path/to/your/godot/project
-
-mkdir -p "$GODOT_PROJECT_DIR/parts"
-cp -f bodies/turtlebot3_burger/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
-cp -f bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3_burger/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3_burger/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
-cp -f bodies/turtlebot3_burger/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
-```
-
-If you want to regenerate and stage in one flow:
-
-```bash
-python3 tools/urdf2glb.py \
-  bodies/turtlebot3_burger/generated/turtlebot3_burger.urdf \
-  --parts-dir bodies/turtlebot3_burger/generated/parts
-
-# Note: this input must be a URDF.
-# If you have turtlebot3_burger.xml, use tools/mjcf2glb.py instead.
-
-python3 tools/hako_viewer_model_gen.py \
-  bodies/turtlebot3_burger/config/viewer.recipe.yaml \
-  -o bodies/turtlebot3_burger/view/turtlebot3.json \
-  --pretty
-
-python3 tools/hako_godot_scene_gen.py \
-  bodies/turtlebot3_burger/view/turtlebot3.json \
-  -o bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn \
-  --res-root res:// \
-  --sync-script tb3_reference_sync.gd
-
-python3 tools/godot_sync2endpoint.py \
-  bodies/turtlebot3_burger/config/godot_sync.yaml
-
-python3 tools/godot_sync2profile.py \
-  bodies/turtlebot3_burger/config/godot_sync.yaml \
-  bodies/turtlebot3_burger/view/turtlebot3.json
-
-mkdir -p "$GODOT_PROJECT_DIR/parts"
-mkdir -p "$GODOT_PROJECT_DIR/config"
-cp -f bodies/turtlebot3_burger/generated/parts/*.glb "$GODOT_PROJECT_DIR/parts/"
-cp -f bodies/turtlebot3_burger/godot_tb3_reference/TurtleBot3.generated.tscn "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3_burger/godot_tb3_reference/tb3_reference_sync.gd "$GODOT_PROJECT_DIR/"
-cp -f bodies/turtlebot3_burger/generated/endpoint_shm_with_pdu.json "$GODOT_PROJECT_DIR/config/"
-cp -f bodies/turtlebot3_burger/generated/godot/robot_sync.profile.json "$GODOT_PROJECT_DIR/config/"
-```
-
-The resulting Godot node structure is:
-
-```text
-TurtleBot3
-  HakoSync
-  RosToGodot
-    Visuals
-      base_link
-        wheel_left_link
-        wheel_right_link
-        base_scan
-```
-
-The ROS-to-Godot coordinate conversion used by the generated scene is:
-
-```text
-godot_x = -ros_y
-godot_y =  ros_z
-godot_z = -ros_x
-```
-
-From the `hakoniwa-godot` side, the example scene can now be driven by a thin wrapper that subclasses `HakoniwaRobotSyncController`, instead of embedding robot-specific sync logic directly in the example script.
+The view-model is deliberately view-only. It does not own PDU channels, endpoint configuration, controller semantics, multi-robot composition, or runtime lifecycle.
 
 See:
 
-- [`hakoniwa-godot`](https://github.com/hakoniwalab/hakoniwa-godot)
-- `examples/mujoco/assets/tb3_reference_sync.gd`
-- `examples/mujoco/config/robot_sync.profile.json`
+- [`docs/view-model.md`](docs/view-model.md)
+- [`docs/view-model-recipe.md`](docs/view-model-recipe.md)
 
-Note on `forge.sh`:
+### Godot target artifacts
 
-- today, `forge.sh` covers the core robot conversion flow up to URDF / MJCF / GLB style artifacts
-- it does not yet cover the newer Godot-specific generators
-  (`pdu_manifest2types.py`, `pdu_manifest2def.py`, `godot_sync2endpoint.py`, `godot_sync2profile.py`, `hako_viewer_model_gen.py`, `hako_godot_scene_gen.py`)
-- integrating those into `forge.sh` is the next step
+MBody can generate robot-specific artifacts consumed by `hakoniwa-godot`:
 
-## Gallery
+```text
+view-model JSON
+  -> hako_godot_scene_gen.py
+  -> .tscn
 
-### TurtleBot3 Burger — MJCF (MuJoCo Viewer)
-![TB3 Burger in MuJoCo](docs/images/tb3_burger_mjcf.png)
+godot_sync.yaml
+  -> godot_sync2endpoint.py
+  -> endpoint_shm_with_pdu.json
 
-### TurtleBot3 Burger — GLB (3D Scene)
-![TB3 Burger GLB](docs/images/tb3_burger_glb.png)
+view-model JSON + godot_sync.yaml
+  -> godot_sync2profile.py
+  -> robot_sync.profile.json
+```
 
-### TurtleBot3 Burger — Split Parts (GLB)
-![TB3 Burger parts](docs/images/tb3_burger_parts.png)
+These generators are currently separate from the core `forge.sh` pipeline.
 
-## Registered Robots
+The generated artifacts are preparation-time outputs. `hakoniwa-godot` owns addon behavior, endpoint integration, scene execution, and runtime synchronization behavior.
 
-| Name | Source | Formats | License |
-|---|---|---|---|
-| TurtleBot3 (TB3) | [ROBOTIS-GIT/turtlebot3](https://github.com/ROBOTIS-GIT/turtlebot3) | URDF, MJCF, GLB | Apache License 2.0 |
+## Representative Source Definitions
 
-## Status & TODO
+The authoritative inventory is `sources/*.yaml`. Representative flows currently include:
 
-### Done
-- [x] Repository created
-- [x] Directory structure defined
-- [x] `sources/turtlebot3_burger.yaml` — TB3 fetch definition
-- [x] `tools/fetch.py` — sparse fetch from upstream repos
-- [x] `tools/xacro2urdf.py` — ROS-free xacro → URDF conversion
-- [x] `tools/urdf2mjcf.py` — URDF → MJCF conversion via MuJoCo
-- [x] `tools/urdf2glb.py` — URDF → GLB conversion
-- [x] `tools/mjcf2glb.py` — MJCF → split GLB conversion
-- [x] `tools/mjcf_add_actuators.py` — actuator YAML → actuated MJCF conversion
-- [x] `tools/mjcf2pdu.py` — MJCF body list → Hakoniwa pdutypes.json conversion
-- [x] `tools/pdu_manifest2types.py` — canonical `pdu-manifest.yaml` → `pdutypes.json`
-- [x] `tools/pdu_manifest2def.py` — canonical `pdu-manifest.yaml` → compact `pdu_def.json`
-- [x] `tools/godot_sync2endpoint.py` — `godot_sync.yaml` → Godot endpoint config
-- [x] `tools/godot_sync2profile.py` — `godot_sync.yaml` + viewer model → `robot_sync.profile.json`
-- [x] TB3 conversion verification (MJCF, GLB)
-- [x] `hakoniwa-godot` example integration verified (TB3 / robot sync addon)
+- TurtleBot3 Burger — Xacro / URDF to structural MJCF and GLB
+- TurtleBot3 Waffle — URDF/MJCF conversion with source-specific forge options
+- AgileX Tracer — pinned `tracer_ros` source, source adaptation, DAE-to-OBJ preprocessing, and MuJoCo target preparation
+- Shadow Hand — pinned MuJoCo Menagerie MJCF materialization with include/mesh closure validation
 
-### In Progress
-- [ ] `tools/forge.sh` — full pipeline runner improvements
+These examples exercise different source shapes. A registered source does not imply every downstream runtime path has been fully verified.
 
-### Planned
-- [ ] CI/CD: auto-convert and upload artifacts on push
-- [ ] Register additional robots
+## Runtime Boundary Examples
+
+### MuJoCo
+
+```text
+MBody
+  -> structural / prepared MJCF artifacts
+  -> hakoniwa-mujoco-robots
+  -> runtime actuator / controller / PDU behavior
+```
+
+### Godot
+
+```text
+MBody
+  -> GLB / view-model / scene / profile / endpoint config artifacts
+  -> hakoniwa-godot
+  -> addon / endpoint / scene runtime behavior
+```
+
+This separation keeps robot-specific preparation reproducible while preventing MBody from becoming a second runtime implementation.
+
+## Validation and Maintenance
+
+Useful validation and design documents include:
+
+- [`docs/responsibility-boundary.md`](docs/responsibility-boundary.md) — current ownership boundary
+- [`docs/stale-audit-2026-07.md`](docs/stale-audit-2026-07.md) — current documentation / legacy audit
+- [`docs/local-source-materialization.md`](docs/local-source-materialization.md) — local third-party source materialization
+- [`docs/mjcf-passthrough.md`](docs/mjcf-passthrough.md) — direct MJCF flow
+- [`docs/xacro-package-mapping.md`](docs/xacro-package-mapping.md) — explicit ROS-free package mapping
+- [`docs/view-model.md`](docs/view-model.md) — view-model contract
+- [`docs/view-model-recipe.md`](docs/view-model-recipe.md) — human-authored view-model recipe
+
+When a downstream integration exposes a reusable source or artifact problem, prefer fixing the preparation pipeline or adding a declarative source/config input rather than maintaining hand-edited generated model forks.
 
 ## License
 
-MIT
+The repository code is MIT licensed.
+
+Fetched or materialized robot descriptions, meshes, and other third-party assets remain subject to their upstream licenses. A source definition in this repository does not relicense upstream content.
