@@ -1,0 +1,7 @@
+excludes:
+  # The front wheel is a grandchild of the chassis through its steer link, so
+  # MuJoCo's direct parent-child filter does not cover this assembly pair.
+  - body1: vehicle
+    body2: front_left_wheel
+  - body1: vehicle
+    body2: front_right_wheel

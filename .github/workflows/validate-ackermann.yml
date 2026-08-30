@@ -1,0 +1,45 @@
+name: Validate Ackermann bodies
+
+on:
+  pull_request:
+    paths:
+      - 'tools/ackermann/**'
+      - 'bodies/generic_ackermann_golf_cart/**'
+      - 'bodies/hunter_v2/**'
+      - 'sources/hunter_v2.yaml'
+      - 'tests/test_ackermann_validation.py'
+      - '.github/workflows/validate-ackermann.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/ackermann/**'
+      - 'bodies/generic_ackermann_golf_cart/**'
+      - 'bodies/hunter_v2/**'
+      - 'sources/hunter_v2.yaml'
+      - 'tests/test_ackermann_validation.py'
+      - '.github/workflows/validate-ackermann.yml'
+
+jobs:
+  headless-migration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned Ackermann Forge dependencies
+        run: python -m pip install -r tools/ackermann/requirements.txt
+
+      - name: Test kinematics contract
+        run: python -m unittest tests/test_ackermann_validation.py
+
+      - name: Smoke-test user-defined optimization loop
+        run: python tools/ackermann/optimize.py generic_ackermann_golf_cart --output /tmp/golf-optuna --trials 2
+
+      - name: Verify Golf Cart reproduction and dynamics
+        run: python tools/ackermann/forge.py generic_ackermann_golf_cart --verify
+
+      - name: Verify Hunter reproduction and dynamics
+        run: python tools/ackermann/forge.py hunter_v2 --verify

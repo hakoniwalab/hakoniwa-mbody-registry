@@ -1,0 +1,13 @@
+name: hunter_v2
+origin: LCAS/hunter_robot
+license: Apache-2.0
+repository: https://github.com/LCAS/hunter_robot.git
+revision: e073b273674459a13ec57b8731d06ddc8770546f
+upstream_package: hunter_description
+description: >-
+  Hunter V2 URDF/Xacro and DAE assets fetched at the pinned revision. The
+  Hakoniwa Forge removes selected mimic couplings, converts DAE meshes to OBJ,
+  and adds runtime-neutral MuJoCo preparation overlays.
+trademark_notice: >-
+  Hunter and AgileX names identify the upstream reference product. This
+  registry artifact does not imply endorsement by the product manufacturer.

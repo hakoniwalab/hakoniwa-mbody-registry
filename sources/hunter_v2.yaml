@@ -1,0 +1,7 @@
+name: hunter_v2
+repo: https://github.com/LCAS/hunter_robot.git
+branch: main
+revision: e073b273674459a13ec57b8731d06ddc8770546f
+files:
+  - LICENSE
+  - hunter_description/

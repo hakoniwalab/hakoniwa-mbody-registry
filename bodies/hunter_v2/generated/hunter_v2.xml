@@ -1,0 +1,55 @@
+<mujoco model="hunter">
+  <compiler angle="radian" />
+  <asset>
+    <mesh name="chassis" content_type="model/obj" file="../source/hunter_description/meshes/chassis.obj" />
+    <mesh name="rear_left_wheel" content_type="model/obj" file="../source/hunter_description/meshes/rear_left_wheel.obj" />
+    <mesh name="rear_right_wheel" content_type="model/obj" file="../source/hunter_description/meshes/rear_right_wheel.obj" />
+    <mesh name="front_left_wheel" content_type="model/obj" file="../source/hunter_description/meshes/front_left_wheel.obj" />
+    <mesh name="front_right_wheel" content_type="model/obj" file="../source/hunter_description/meshes/front_right_wheel.obj" />
+    <material name="hunter_body" rgba="0.34 0.36 0.38 1" specular="0.35" shininess="0.45" />
+    <material name="hunter_tire" rgba="0.025 0.028 0.032 1" specular="0.08" shininess="0.15" />
+  </asset>
+  <worldbody>
+    <body name="base_link">
+      <body name="chassis" pos="0 0 0.37">
+        <inertial pos="0.0266989 0.000409204 -0.135901" quat="-1.58963e-05 0.699923 -6.37864e-06 0.714218" mass="72" diaginertia="0.126647 0.111072 0.0331989" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="chassis" material="hunter_body" />
+        <geom type="mesh" mesh="chassis" material="hunter_body" />
+        <body name="rear_left_wheel" pos="-0.28 0.2925 -0.19558" quat="0.707107 0.707107 0 0">
+          <inertial pos="-6.5774e-06 2.0242e-05 -0.0096386" quat="0.5 0.5 -0.5 0.5" mass="7" diaginertia="0.11072 0.063724 0.063724" />
+          <joint name="rear_left_wheel_joint" pos="0 0 0" axis="0 0 -1" actuatorfrcrange="-300 300" damping="0.2" frictionloss="1.0" />
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="rear_left_wheel" material="hunter_tire" />
+          <geom type="mesh" mesh="rear_left_wheel" material="hunter_tire" />
+        </body>
+        <body name="rear_right_wheel" pos="-0.28 -0.2925 -0.19558" quat="0.707107 0.707107 0 0">
+          <inertial pos="-6.5774e-06 2.0242e-05 -0.0096386" quat="0.5 0.5 -0.5 0.5" mass="7" diaginertia="0.11072 0.063724 0.063724" />
+          <joint name="rear_right_wheel_joint" pos="0 0 0" axis="0 0 -1" actuatorfrcrange="-300 300" damping="0.2" frictionloss="1.0" />
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="rear_right_wheel" material="hunter_tire" />
+          <geom type="mesh" mesh="rear_right_wheel" material="hunter_tire" />
+        </body>
+        <body name="front_left_steering_link" pos="0.37142 0.2925 -0.19558" quat="0.707107 0.707107 0 0">
+          <inertial pos="0 0 0" mass="0.005" diaginertia="0.1 0.1 0.1" />
+          <joint name="front_left_steering_joint" pos="0 0 0" axis="0 1 0" range="-0.461 0.461" actuatorfrcrange="-100 100" damping="0.2" />
+          <geom size="0.01 0.005" type="cylinder" contype="0" conaffinity="0" group="1" density="0" rgba="0 0 0 0" />
+          <body name="front_left_wheel">
+            <inertial pos="-6.5774e-06 2.0242e-05 -0.0096386" quat="0.5 0.5 -0.5 0.5" mass="7" diaginertia="0.11072 0.063724 0.063724" />
+            <joint name="front_left_wheel_joint" pos="0 0 0" axis="0 0 -1" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="front_left_wheel" material="hunter_tire" />
+            <geom type="mesh" mesh="front_left_wheel" material="hunter_tire" />
+          </body>
+        </body>
+        <body name="front_right_steering_link" pos="0.37142 -0.2925 -0.19558" quat="0.707107 0.707107 0 0">
+          <inertial pos="0 0 0" mass="0.005" diaginertia="0.1 0.1 0.1" />
+          <joint name="front_right_steering_joint" pos="0 0 0" axis="0 1 0" range="-0.461 0.461" actuatorfrcrange="-100 100" damping="0.2" />
+          <geom size="0.01 0.005" type="cylinder" contype="0" conaffinity="0" group="1" density="0" rgba="0 0 0 0" />
+          <body name="front_right_wheel">
+            <inertial pos="-6.5774e-06 2.0242e-05 -0.0096386" quat="0.5 0.5 -0.5 0.5" mass="7" diaginertia="0.11072 0.063724 0.063724" />
+            <joint name="front_right_wheel_joint" pos="0 0 0" axis="0 0 -1" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="front_right_wheel" material="hunter_tire" />
+            <geom type="mesh" mesh="front_right_wheel" material="hunter_tire" />
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

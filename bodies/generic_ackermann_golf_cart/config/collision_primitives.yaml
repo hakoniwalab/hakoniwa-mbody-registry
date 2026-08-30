@@ -1,0 +1,44 @@
+disable_existing:
+  - body: "*"
+    type: mesh
+
+geoms:
+  - body: vehicle
+    attrs:
+      name: chassis_collision
+      type: box
+      pos: "0 0 0.08"
+      size: "0.92 0.40 0.10"
+      mass: "170"
+      rgba: "0.18 0.22 0.24 1"
+      condim: "4"
+      friction: "1.1 0.01 0.001"
+      solref: "0.01 1"
+      solimp: "0.9 0.95 0.001"
+
+  # Keep the physical tread narrower than the visual tire. A full-width rigid
+  # cylinder creates an unrealistic contact patch that resists kingpin motion.
+  - body: front_left_wheel
+    attrs: &wheel_collision
+      name: front_left_tire
+      type: cylinder
+      size: "0.25 0.04"
+      euler: "1.57079632679 0 0"
+      mass: "7"
+      rgba: "0 0 0 0"
+      condim: "3"
+      friction: "1.6 0.02 0.002"
+      solref: "0.01 1"
+      solimp: "0.9 0.95 0.001"
+  - body: front_right_wheel
+    attrs:
+      <<: *wheel_collision
+      name: front_right_tire
+  - body: rear_left_wheel
+    attrs:
+      <<: *wheel_collision
+      name: rear_left_tire
+  - body: rear_right_wheel
+    attrs:
+      <<: *wheel_collision
+      name: rear_right_tire

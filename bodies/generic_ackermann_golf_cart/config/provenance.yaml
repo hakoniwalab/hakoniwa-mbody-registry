@@ -1,0 +1,12 @@
+name: generic_ackermann_golf_cart
+origin: hakoniwalab
+license: MIT
+description: >-
+  Original primitive-based generic Ackermann golf-cart model authored for
+  Hakoniwa. The joint structure was informed by common Ackermann URDF practice.
+references:
+  - name: steer_bot
+    url: https://github.com/srmainwaring/steer_bot
+    revision: c86232658df84a8d3518b480a468e8a260754c9c
+    license: BSD-3-Clause
+    usage: Structural reference only; upstream source files and geometry are not copied.

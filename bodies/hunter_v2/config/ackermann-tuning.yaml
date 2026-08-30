@@ -1,0 +1,37 @@
+version: 1
+
+study:
+  trials: 20
+  seed: 20260830
+  hard_failure_penalty: 100.0
+
+baseline:
+  steering_kp: 500.0
+  steering_kv: 30.0
+  drive_kv: 120.0
+
+parameters:
+  steering_kp:
+    distribution: float
+    low: 150.0
+    high: 1200.0
+    targets:
+      - kind: actuator
+        names: [front_left_steer_motor, front_right_steer_motor]
+        attribute: kp
+  steering_kv:
+    distribution: float
+    low: 10.0
+    high: 80.0
+    targets:
+      - kind: actuator
+        names: [front_left_steer_motor, front_right_steer_motor]
+        attribute: kv
+  drive_kv:
+    distribution: float
+    low: 40.0
+    high: 300.0
+    targets:
+      - kind: actuator
+        names: [rear_left_wheel_motor, rear_right_wheel_motor]
+        attribute: kv

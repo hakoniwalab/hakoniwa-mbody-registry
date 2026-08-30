@@ -1,0 +1,30 @@
+actuators:
+  - type: position
+    name: front_left_steer_motor
+    joint: front_left_steering_joint
+    ctrllimited: true
+    ctrlrange: [-0.461, 0.461]
+    kp: 500
+    kv: 30
+
+  - type: position
+    name: front_right_steer_motor
+    joint: front_right_steering_joint
+    ctrllimited: true
+    ctrlrange: [-0.461, 0.461]
+    kp: 500
+    kv: 30
+
+  - type: velocity
+    name: rear_left_wheel_motor
+    joint: rear_left_wheel_joint
+    ctrllimited: true
+    ctrlrange: [-10, 10]
+    kv: 120
+
+  - type: velocity
+    name: rear_right_wheel_motor
+    joint: rear_right_wheel_joint
+    ctrllimited: true
+    ctrlrange: [-10, 10]
+    kv: 120

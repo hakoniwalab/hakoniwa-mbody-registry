@@ -1,0 +1,46 @@
+name: generic_ackermann_golf_cart_world
+
+option:
+  timestep: "0.002"
+  gravity: "0 0 -9.81"
+  integrator: implicitfast
+  cone: elliptic
+
+textures:
+  - name: ground_tex
+    type: 2d
+    builtin: checker
+    rgb1: "0.32 0.42 0.30"
+    rgb2: "0.24 0.32 0.22"
+    width: 512
+    height: 512
+
+materials:
+  - name: ground_mat
+    texture: ground_tex
+    texrepeat: "12 12"
+    reflectance: 0.05
+
+world_geoms:
+  - name: ground
+    type: plane
+    size: "30 30 0.1"
+    material: ground_mat
+    condim: 4
+    friction: "1.1 0.01 0.001"
+    solref: "0.01 1"
+    solimp: "0.9 0.95 0.001"
+
+lights:
+  - name: key_light
+    pos: "0 -4 6"
+    dir: "0 0.5 -1"
+    diffuse: "0.9 0.9 0.9"
+
+robot:
+  pos: "0 0 0.42"
+  add_freejoint: true
+  freejoint_name: base_freejoint
+
+copy_actuators: true
+copy_contacts: true

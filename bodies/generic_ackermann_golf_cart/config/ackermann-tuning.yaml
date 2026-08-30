@@ -1,0 +1,38 @@
+version: 1
+
+study:
+  trials: 20
+  seed: 20260830
+  hard_failure_penalty: 100.0
+
+# Trial zero always evaluates the currently accepted values.
+baseline:
+  steering_kp: 1200.0
+  steering_kv: 60.0
+  drive_kv: 220.0
+
+parameters:
+  steering_kp:
+    distribution: float
+    low: 400.0
+    high: 2000.0
+    targets:
+      - kind: actuator
+        names: [front_left_steer_motor, front_right_steer_motor]
+        attribute: kp
+  steering_kv:
+    distribution: float
+    low: 20.0
+    high: 120.0
+    targets:
+      - kind: actuator
+        names: [front_left_steer_motor, front_right_steer_motor]
+        attribute: kv
+  drive_kv:
+    distribution: float
+    low: 80.0
+    high: 400.0
+    targets:
+      - kind: actuator
+        names: [rear_left_wheel_motor, rear_right_wheel_motor]
+        attribute: kv

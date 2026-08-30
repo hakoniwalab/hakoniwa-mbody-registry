@@ -1,0 +1,46 @@
+name: hunter_v2_world
+
+option:
+  timestep: "0.002"
+  gravity: "0 0 -9.81"
+  integrator: implicitfast
+  cone: elliptic
+
+textures:
+  - name: ground_tex
+    type: 2d
+    builtin: checker
+    rgb1: "0.22 0.31 0.43"
+    rgb2: "0.12 0.20 0.32"
+    width: 512
+    height: 512
+
+materials:
+  - name: ground_mat
+    texture: ground_tex
+    texrepeat: "12 12"
+    reflectance: 0.05
+
+world_geoms:
+  - name: ground
+    type: plane
+    size: "30 30 0.1"
+    material: ground_mat
+    condim: 4
+    friction: "1.1 0.01 0.001"
+
+lights:
+  - name: key_light
+    pos: "0 -4 6"
+    dir: "0 0.5 -1"
+    diffuse: "0.9 0.9 0.9"
+
+robot:
+  # The upstream base_link/chassis transform already places wheel centers at
+  # ground height. Do not add the chassis height a second time here.
+  pos: "0 0 0"
+  add_freejoint: true
+  freejoint_name: base_freejoint
+
+copy_actuators: true
+copy_contacts: true

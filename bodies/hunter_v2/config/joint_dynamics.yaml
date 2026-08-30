@@ -1,0 +1,18 @@
+# The upstream Gazebo URDF limits wheel effort to 10 while also assigning a
+# friction loss of 15. That combination cannot start moving in MuJoCo. These
+# are explicit simulator-port values, not claims about the real Hunter V2.
+joints:
+  rear_left_wheel_joint:
+    actuatorfrcrange: [-300, 300]
+    damping: 0.2
+    frictionloss: 1.0
+  rear_right_wheel_joint:
+    actuatorfrcrange: [-300, 300]
+    damping: 0.2
+    frictionloss: 1.0
+  front_left_steering_joint:
+    actuatorfrcrange: [-100, 100]
+    damping: 0.2
+  front_right_steering_joint:
+    actuatorfrcrange: [-100, 100]
+    damping: 0.2

@@ -1,0 +1,18 @@
+# The upstream DAE files do not declare a portable chassis material. These
+# colors are an explicit Hunter port presentation choice, not measured data.
+materials:
+  hunter_body:
+    rgba: "0.34 0.36 0.38 1"
+    specular: 0.35
+    shininess: 0.45
+  hunter_tire:
+    rgba: "0.025 0.028 0.032 1"
+    specular: 0.08
+    shininess: 0.15
+
+mesh_assignments:
+  chassis: hunter_body
+  front_left_wheel: hunter_tire
+  front_right_wheel: hunter_tire
+  rear_left_wheel: hunter_tire
+  rear_right_wheel: hunter_tire

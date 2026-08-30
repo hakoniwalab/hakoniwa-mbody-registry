@@ -1,0 +1,5 @@
+excludes:
+  - body1: chassis
+    body2: front_left_wheel
+  - body1: chassis
+    body2: front_right_wheel

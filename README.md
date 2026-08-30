@@ -130,6 +130,49 @@ This flow intentionally versions the reproducible source definition rather than 
 
 See [`docs/mjcf-passthrough.md`](docs/mjcf-passthrough.md).
 
+### Hakoniwa-authored local MJCF flow
+
+Bodies authored directly for Hakoniwa can keep their structural MJCF and
+target overlays together under `bodies/<name>/config/`.  The local Forge then
+produces the reviewable runtime artifact without embedding runtime controller
+or PDU policy in this repository.
+
+```text
+bodies/<name>/config/model.xml
+  + actuators.yaml
+  + collision_primitives.yaml
+  + contact_excludes.yaml
+  + mujoco_world.yaml
+  -> tools/ackermann/forge.py
+  -> bodies/<name>/generated/*.xml
+```
+
+The generic Ackermann golf cart is the reference example:
+
+```bash
+python tools/ackermann/forge.py generic_ackermann_golf_cart
+python tools/ackermann/forge.py generic_ackermann_golf_cart --verify
+python tools/ackermann/validate.py generic_ackermann_golf_cart --report /tmp/golf-cart.json
+```
+
+See [`bodies/generic_ackermann_golf_cart/config/README.md`](bodies/generic_ackermann_golf_cart/config/README.md).
+
+The same narrow Forge contract also covers an external Xacro/DAE source:
+
+```bash
+python tools/ackermann/forge.py hunter_v2
+python tools/ackermann/forge.py hunter_v2 --verify
+```
+
+`--verify` fetches pinned external sources into a temporary body tree, rebuilds
+all artifacts, loads the final MJCF with MuJoCo, and compares every generated
+artifact byte-for-byte with the committed registry outputs.
+
+Both bodies use the same Recipe-driven headless migration test suite. See
+[`docs/ackermann-validation.md`](docs/ackermann-validation.md). Business Pack
+Recipes select the managed Foundation Python; users do not operate an
+MBody-local virtual environment for this flow.
+
 ## Quick Start: TurtleBot3 Burger
 
 Create a repository-local Python environment first:
