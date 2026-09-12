@@ -1,0 +1,30 @@
+name: Validate MuJoCo world composer
+
+on:
+  pull_request:
+    paths:
+      - 'tools/compose_mujoco_world.py'
+      - 'tests/test_compose_mujoco_world.py'
+      - '.github/workflows/validate-mujoco-world-composer.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/compose_mujoco_world.py'
+      - 'tests/test_compose_mujoco_world.py'
+      - '.github/workflows/validate-mujoco-world-composer.yml'
+
+jobs:
+  composer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check tool syntax
+        run: python -m py_compile tools/compose_mujoco_world.py
+
+      - name: Run unit tests
+        run: python -m unittest tests/test_compose_mujoco_world.py
