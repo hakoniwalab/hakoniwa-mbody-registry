@@ -11,6 +11,18 @@ python tools/compose_mujoco_world.py \
   --output /tmp/golf-cart-city.xml
 ```
 
+To override the composed robot's initial position without changing the source robot model:
+
+```bash
+python tools/compose_mujoco_world.py \
+  bodies/generic_ackermann_golf_cart/generated/model.minimal_world.xml \
+  /path/to/city-world.xml \
+  --robot-pos "0 0 8.5" \
+  --output /tmp/golf-cart-city.xml
+```
+
+`--robot-pos` is an absolute MuJoCo `pos="X Y Z"` override on the robot model's single top-level body. It intentionally fails when the robot model contains zero or multiple top-level bodies so composition does not silently collapse a multi-body scene.
+
 The generated XML is loaded with MuJoCo before the command succeeds. Use `--no-validate` only when the caller intentionally wants artifact generation without MuJoCo validation.
 
 ## Composition contract
@@ -46,6 +58,7 @@ The composer:
 - checks that referenced asset files exist
 - normalizes robot and world asset file paths for the output location
 - removes robot `assetdir`, `meshdir`, and `texturedir` compiler prefixes after rebasing asset paths
+- requires exactly one top-level robot body when `--robot-pos` is used
 - loads the generated model with MuJoCo by default
 
 ## Responsibility boundary

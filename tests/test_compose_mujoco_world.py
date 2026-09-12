@@ -119,6 +119,54 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             tree = ET.parse(output)
             self.assertIsNotNone(tree.find("./worldbody/geom[@name='ground']"))
 
+    def test_robot_position_override_sets_single_top_level_body(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            robot_xml = root / "robot.xml"
+            world_xml = root / "world.xml"
+            output = root / "out.xml"
+            robot_xml.write_text(
+                "<mujoco><worldbody><body name='vehicle' pos='0 0 0.42'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+            world_xml.write_text(
+                "<mujoco><worldbody><geom name='world_ground' type='plane' size='1 1 .1'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+
+            receipt = COMPOSE.compose_mujoco_world(
+                robot_xml, world_xml, output, robot_pos="0 0 8.5"
+            )
+
+            self.assertEqual(
+                receipt["robot_position_override"],
+                {"body": "vehicle", "pos": "0 0 8.5"},
+            )
+            tree = ET.parse(output)
+            vehicle = tree.find("./worldbody/body[@name='vehicle']")
+            assert vehicle is not None
+            self.assertEqual(vehicle.get("pos"), "0 0 8.5")
+
+    def test_robot_position_override_rejects_multiple_top_level_bodies(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            robot_xml = root / "robot.xml"
+            world_xml = root / "world.xml"
+            output = root / "out.xml"
+            robot_xml.write_text(
+                "<mujoco><worldbody><body name='a'/><body name='b'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+            world_xml.write_text(
+                "<mujoco><worldbody><geom name='world_ground' type='plane' size='1 1 .1'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(COMPOSE.ComposeError, "exactly one top-level"):
+                COMPOSE.compose_mujoco_world(
+                    robot_xml, world_xml, output, robot_pos="0 0 8.5"
+                )
+
     def test_duplicate_named_objects_are_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
