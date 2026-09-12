@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import math
 import os
 from pathlib import Path
 import sys
@@ -34,6 +35,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("robot_model", help="Robot MuJoCo XML used as the base model")
     parser.add_argument("world_model", help="World MuJoCo XML to merge into the robot model")
     parser.add_argument("--output", "-o", required=True, help="Output composed MuJoCo XML")
+    parser.add_argument(
+        "--robot-pos",
+        help=(
+            "Override the position of the single top-level robot body, for example "
+            "--robot-pos '0 0 8.5'"
+        ),
+    )
     parser.add_argument(
         "--keep-robot-ground",
         action="store_true",
@@ -122,6 +130,42 @@ def _merge_size(robot_root: ET.Element, world_root: ET.Element) -> dict[str, str
         robot_size.set(key, formatted)
         merged[key] = formatted
     return merged
+
+
+def _parse_robot_position(raw: str | None) -> str | None:
+    if raw is None:
+        return None
+    parts = raw.split()
+    if len(parts) != 3:
+        raise ComposeError("--robot-pos must contain exactly three numbers: 'X Y Z'")
+    try:
+        values = [float(part) for part in parts]
+    except ValueError as exc:
+        raise ComposeError("--robot-pos must contain exactly three numbers: 'X Y Z'") from exc
+    if any(not math.isfinite(value) for value in values):
+        raise ComposeError("--robot-pos values must be finite")
+    return " ".join(_format_numeric(value) for value in values)
+
+
+def _apply_robot_position(
+    robot_worldbody: ET.Element,
+    robot_pos: str | None,
+) -> dict[str, str] | None:
+    normalized = _parse_robot_position(robot_pos)
+    if normalized is None:
+        return None
+    robot_bodies = [child for child in robot_worldbody if child.tag == "body"]
+    if len(robot_bodies) != 1:
+        raise ComposeError(
+            "--robot-pos requires exactly one top-level robot body; "
+            f"found {len(robot_bodies)}"
+        )
+    robot_body = robot_bodies[0]
+    robot_body.set("pos", normalized)
+    return {
+        "body": robot_body.get("name", "<unnamed>"),
+        "pos": normalized,
+    }
 
 
 def _compiler_asset_base(root: ET.Element, source: Path, element: ET.Element) -> Path:
@@ -238,6 +282,7 @@ def compose_mujoco_world(
     world_model: Path,
     output: Path,
     *,
+    robot_pos: str | None = None,
     keep_robot_ground: bool = False,
 ) -> dict[str, object]:
     robot_model = robot_model.expanduser().resolve()
@@ -258,6 +303,7 @@ def compose_mujoco_world(
     world_asset = world_root.find("asset")
 
     removed_ground = 0 if keep_robot_ground else _remove_robot_ground(robot_worldbody)
+    robot_position_override = _apply_robot_position(robot_worldbody, robot_pos)
     _reject_name_collisions(robot_asset, robot_worldbody, world_asset, world_worldbody)
     merged_size = _merge_size(robot_root, world_root)
 
@@ -291,6 +337,7 @@ def compose_mujoco_world(
         "world_model": str(world_model),
         "output": str(output),
         "removed_robot_ground_geoms": removed_ground,
+        "robot_position_override": robot_position_override,
         "merged_size": merged_size,
         "added_world_assets": added_assets,
         "added_worldbody_children": added_worldbody_children,
@@ -322,6 +369,7 @@ def main() -> int:
             Path(args.robot_model),
             Path(args.world_model),
             output,
+            robot_pos=args.robot_pos,
             keep_robot_ground=args.keep_robot_ground,
         )
         if not args.no_validate:
@@ -338,6 +386,10 @@ def main() -> int:
             file=sys.stderr,
         )
     print(f"Generated {receipt['output']}")
+    if receipt["robot_position_override"]:
+        override = receipt["robot_position_override"]
+        assert isinstance(override, dict)
+        print(f"Robot position: body={override['body']} pos={override['pos']}")
     print(
         "Composition: "
         f"world_assets={receipt['added_world_assets']} "
