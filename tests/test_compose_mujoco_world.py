@@ -33,6 +33,7 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             robot_xml.write_text(
                 """<mujoco model='robot'>
   <compiler angle='radian' meshdir='meshes'/>
+  <size nstack='1000' nconmax='200'/>
   <asset><mesh name='robot_mesh' file='robot.obj'/></asset>
   <worldbody>
     <geom name='ground' type='plane' size='10 10 .1'/>
@@ -47,6 +48,7 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             world_xml.write_text(
                 """<mujoco model='world'>
   <option timestep='0.01'/>
+  <size nstack='5000' njmax='10000'/>
   <asset><mesh name='city_mesh' file='city.obj'/></asset>
   <worldbody>
     <geom name='city_ground' type='plane' size='20 20 .1'/>
@@ -60,6 +62,7 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             receipt = COMPOSE.compose_mujoco_world(robot_xml, world_xml, output)
 
             self.assertEqual(receipt["removed_robot_ground_geoms"], 1)
+            self.assertEqual(receipt["merged_size"], {"nstack": "5000", "njmax": "10000"})
             self.assertEqual(receipt["added_world_assets"], 1)
             self.assertEqual(receipt["added_worldbody_children"], 2)
             self.assertEqual(receipt["ignored_world_sections"], ["option"])
@@ -69,6 +72,12 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             compiler = composed.find("compiler")
             assert compiler is not None
             self.assertNotIn("meshdir", compiler.attrib)
+
+            size = composed.find("size")
+            assert size is not None
+            self.assertEqual(size.get("nstack"), "5000")
+            self.assertEqual(size.get("nconmax"), "200")
+            self.assertEqual(size.get("njmax"), "10000")
 
             asset = composed.find("asset")
             assert asset is not None
@@ -126,6 +135,24 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             )
 
             with self.assertRaisesRegex(COMPOSE.ComposeError, "object collision"):
+                COMPOSE.compose_mujoco_world(robot_xml, world_xml, output)
+
+    def test_freejoint_and_joint_names_share_collision_namespace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            robot_xml = root / "robot.xml"
+            world_xml = root / "world.xml"
+            output = root / "out.xml"
+            robot_xml.write_text(
+                "<mujoco><worldbody><body name='robot'><freejoint name='shared_joint'/></body></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+            world_xml.write_text(
+                "<mujoco><worldbody><body name='world_body'><joint name='shared_joint' type='hinge'/></body></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(COMPOSE.ComposeError, "shared_joint"):
                 COMPOSE.compose_mujoco_world(robot_xml, world_xml, output)
 
     def test_world_runtime_sections_are_rejected_instead_of_silently_dropped(self):
