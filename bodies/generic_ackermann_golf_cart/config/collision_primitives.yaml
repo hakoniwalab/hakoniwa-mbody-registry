@@ -16,6 +16,21 @@ geoms:
       solref: "0.01 1"
       solimp: "0.9 0.95 0.001"
 
+  # Keep the roof collision massless so it protects rollover contact without
+  # changing the tuned vehicle mass/inertia.
+  - body: vehicle
+    attrs:
+      name: roof_collision
+      type: box
+      pos: "-0.08 0 1.56"
+      size: "0.90 0.53 0.035"
+      density: "0"
+      rgba: "0 0 0 0"
+      condim: "4"
+      friction: "1.1 0.01 0.001"
+      solref: "0.01 1"
+      solimp: "0.9 0.95 0.001"
+
   # Keep the physical tread narrower than the visual tire. A full-width rigid
   # cylinder creates an unrealistic contact patch that resists kingpin motion.
   - body: front_left_wheel
