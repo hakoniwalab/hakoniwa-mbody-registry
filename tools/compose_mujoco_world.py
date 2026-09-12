@@ -14,8 +14,8 @@ class ComposeError(RuntimeError):
     pass
 
 
-MERGED_WORLD_SECTIONS = {"asset", "worldbody"}
-IGNORED_WORLD_SECTIONS = {"compiler", "option", "size", "visual", "statistic"}
+MERGED_WORLD_SECTIONS = {"size", "asset", "worldbody"}
+IGNORED_WORLD_SECTIONS = {"compiler", "option", "visual", "statistic"}
 SUPPORTED_WORLD_SECTIONS = MERGED_WORLD_SECTIONS | IGNORED_WORLD_SECTIONS
 FILE_BASE_ATTRS = {
     "mesh": "meshdir",
@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
         description=(
             "Compose a robot MuJoCo XML and a world MuJoCo XML into one model. "
             "The robot model remains authoritative for global/runtime sections; "
-            "the world contributes <asset> and <worldbody> content."
+            "the world contributes <size>, <asset>, and <worldbody> content."
         )
     )
     parser.add_argument("robot_model", help="Robot MuJoCo XML used as the base model")
@@ -74,6 +74,54 @@ def _validate_world_sections(root: ET.Element, source: Path) -> list[str]:
             f"{', '.join(unsupported)}: {source}"
         )
     return [child.tag for child in root if child.tag in IGNORED_WORLD_SECTIONS]
+
+
+def _insert_root_section_before_model_content(root: ET.Element, section: ET.Element) -> None:
+    children = list(root)
+    for tag in ("asset", "worldbody"):
+        existing = root.find(tag)
+        if existing is not None:
+            root.insert(children.index(existing), section)
+            return
+    root.append(section)
+
+
+def _numeric_size_value(raw: str, key: str, source: str) -> float:
+    try:
+        value = float(raw)
+    except ValueError as exc:
+        raise ComposeError(f"non-numeric MuJoCo size attribute: {source}.{key}={raw!r}") from exc
+    return value
+
+
+def _format_numeric(value: float) -> str:
+    return str(int(value)) if value.is_integer() else f"{value:.12g}"
+
+
+def _merge_size(robot_root: ET.Element, world_root: ET.Element) -> dict[str, str]:
+    world_size = world_root.find("size")
+    if world_size is None:
+        return {}
+    robot_size = robot_root.find("size")
+    if robot_size is None:
+        robot_size = ET.Element("size")
+        _insert_root_section_before_model_content(robot_root, robot_size)
+
+    merged: dict[str, str] = {}
+    for key, world_raw in world_size.attrib.items():
+        world_value = _numeric_size_value(world_raw, key, "world")
+        robot_raw = robot_size.get(key)
+        if robot_raw is None:
+            selected = world_value
+        else:
+            selected = max(
+                _numeric_size_value(robot_raw, key, "robot"),
+                world_value,
+            )
+        formatted = _format_numeric(selected)
+        robot_size.set(key, formatted)
+        merged[key] = formatted
+    return merged
 
 
 def _compiler_asset_base(root: ET.Element, source: Path, element: ET.Element) -> Path:
@@ -127,14 +175,22 @@ def _clear_compiler_asset_dirs(root: ET.Element) -> None:
         compiler.attrib.pop(attr, None)
 
 
+def _name_key(element: ET.Element) -> tuple[str, str] | None:
+    name = element.get("name")
+    if not name:
+        return None
+    tag = "joint" if element.tag == "freejoint" else element.tag
+    return tag, name
+
+
 def _named_entries(section: ET.Element | None) -> dict[tuple[str, str], ET.Element]:
     entries: dict[tuple[str, str], ET.Element] = {}
     if section is None:
         return entries
     for element in section.iter():
-        name = element.get("name")
-        if name:
-            entries[(element.tag, name)] = element
+        key = _name_key(element)
+        if key is not None:
+            entries[key] = element
     return entries
 
 
@@ -203,6 +259,7 @@ def compose_mujoco_world(
 
     removed_ground = 0 if keep_robot_ground else _remove_robot_ground(robot_worldbody)
     _reject_name_collisions(robot_asset, robot_worldbody, world_asset, world_worldbody)
+    merged_size = _merge_size(robot_root, world_root)
 
     output.parent.mkdir(parents=True, exist_ok=True)
     robot_asset_rewrites = _normalize_asset_file_paths(
@@ -234,6 +291,7 @@ def compose_mujoco_world(
         "world_model": str(world_model),
         "output": str(output),
         "removed_robot_ground_geoms": removed_ground,
+        "merged_size": merged_size,
         "added_world_assets": added_assets,
         "added_worldbody_children": added_worldbody_children,
         "robot_asset_rewrites": robot_asset_rewrites,
