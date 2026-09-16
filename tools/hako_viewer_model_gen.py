@@ -103,7 +103,9 @@ class BodyInfo:
     parent: Optional[str]
     pos: Vec3 = (0.0, 0.0, 0.0)
     quat: Quat = (1.0, 0.0, 0.0, 0.0)
+    rpy: Vec3 = (0.0, 0.0, 0.0)
     mesh_names: List[str] = field(default_factory=list)
+    has_visual_geometry: bool = False
 
 
 @dataclass
@@ -122,6 +124,12 @@ class MjcfIndex:
         self.joints: Dict[str, JointInfo] = {}
         self.children: Dict[Optional[str], List[str]] = {}
         self.root = ET.parse(mjcf_path).getroot()
+        compiler = self.root.find("compiler")
+        self.angle_unit = (
+            "degree" if compiler is None else compiler.get("angle", "degree")
+        )
+        if self.angle_unit not in {"degree", "radian"}:
+            raise ValueError(f"Unsupported MJCF compiler angle unit: {self.angle_unit}")
         self._index()
 
     def _index(self) -> None:
@@ -141,12 +149,22 @@ class MjcfIndex:
         self.children.setdefault(parent, []).append(name)
         self.children.setdefault(name, [])
 
+        quat_value = elem.get("quat")
+        euler_value = elem.get("euler")
+        if quat_value and euler_value:
+            raise ValueError(f"Body '{name}' cannot specify both quat and euler")
+        quat = parse_quat(quat_value)
+        rpy = parse_vec3(euler_value) if euler_value else quat_to_rpy(quat)
+        if euler_value and self.angle_unit == "degree":
+            rpy = tuple(math.radians(value) for value in rpy)
         body = BodyInfo(
             name=name,
             parent=parent,
             pos=parse_vec3(elem.get("pos")),
-            quat=parse_quat(elem.get("quat")),
+            quat=quat,
+            rpy=rpy,
             mesh_names=[],
+            has_visual_geometry=bool(elem.findall("geom")),
         )
 
         for geom in elem.findall("geom"):
@@ -223,8 +241,8 @@ def make_asset_path(glb_dir: str, body_name: str) -> str:
 
 
 def has_visual_asset(body: BodyInfo) -> bool:
-    # For body_name mapping, the generated GLB is expected per body if that body has any mesh geom.
-    return bool(body.mesh_names)
+    # mjcf2glb emits one body asset for both primitive and mesh geoms.
+    return body.has_visual_geometry
 
 
 def normalize_version(value: Any) -> str:
@@ -312,22 +330,24 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
                 f"which is outside base subtree '{base_name}'"
             )
         body = index.get_body(joint.body)
-        require_asset(asset_body_names, body.name, f"movable joint '{joint_name}'")
-
-        movable_parts.append({
+        part = {
             "name": body.name,
             "joint": joint.name,
             "parent": body.parent,
-            "asset": make_asset_id(body.name),
             "mount": {
                 "xyz": round_vec(body.pos),
-                "rpy": round_vec(quat_to_rpy(body.quat)),
+                "rpy": round_vec(body.rpy),
             },
             "motion": {
                 "type": motion_type_from_joint(joint),
                 "axis": round_vec(joint.axis),
             },
-        })
+        }
+        # A joint body may be a transform-only pivot whose visual geometry is
+        # carried by a movable child (for example Ackermann steering pivots).
+        if body.name in asset_body_names:
+            part["asset"] = make_asset_id(body.name)
+        movable_parts.append(part)
 
     fixed_parts = []
     for body_name in recipe.get("fixed_bodies", []) or []:
@@ -343,7 +363,7 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
             "asset": make_asset_id(body.name),
             "mount": {
                 "xyz": round_vec(body.pos),
-                "rpy": round_vec(quat_to_rpy(body.quat)),
+                "rpy": round_vec(body.rpy),
             },
         })
 

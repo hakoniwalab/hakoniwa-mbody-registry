@@ -158,7 +158,6 @@
       "required": [
         "name",
         "joint",
-        "asset",
         "mount",
         "motion"
       ],

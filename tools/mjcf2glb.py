@@ -57,10 +57,36 @@ def quat_to_matrix(quat: np.ndarray) -> np.ndarray:
     )
 
 
-def pose_to_transform(pos: str | None, quat: str | None) -> np.ndarray:
+def euler_to_matrix(euler: np.ndarray) -> np.ndarray:
+    roll, pitch, yaw = euler
+    cr, sr = math.cos(roll), math.sin(roll)
+    cp, sp = math.cos(pitch), math.sin(pitch)
+    cy, sy = math.cos(yaw), math.sin(yaw)
+    rx = np.array([[1, 0, 0], [0, cr, -sr], [0, sr, cr]], dtype=float)
+    ry = np.array([[cp, 0, sp], [0, 1, 0], [-sp, 0, cp]], dtype=float)
+    rz = np.array([[cy, -sy, 0], [sy, cy, 0], [0, 0, 1]], dtype=float)
+    return rz @ ry @ rx
+
+
+def pose_to_transform(
+    pos: str | None,
+    quat: str | None,
+    euler: str | None = None,
+    euler_in_degrees: bool = False,
+) -> np.ndarray:
     transform = np.eye(4)
     transform[:3, 3] = parse_vec(pos, 3, [0.0, 0.0, 0.0])
-    transform[:3, :3] = quat_to_matrix(parse_vec(quat, 4, [1.0, 0.0, 0.0, 0.0]))
+    if quat and euler:
+        fail("MJCF element cannot specify both quat and euler")
+    if euler:
+        angles = parse_vec(euler, 3, [0.0, 0.0, 0.0])
+        if euler_in_degrees:
+            angles = np.radians(angles)
+        transform[:3, :3] = euler_to_matrix(angles)
+    else:
+        transform[:3, :3] = quat_to_matrix(
+            parse_vec(quat, 4, [1.0, 0.0, 0.0, 0.0])
+        )
     return transform
 
 
@@ -117,10 +143,18 @@ def parse_rgba(value: str | None) -> np.ndarray | None:
     return rgba
 
 
-def parse_geom(geom: ET.Element, index: int, body_name: str, mesh_assets: dict[str, MeshAsset]) -> GeomSpec | None:
+def parse_geom(
+    geom: ET.Element,
+    index: int,
+    body_name: str,
+    mesh_assets: dict[str, MeshAsset],
+    euler_in_degrees: bool,
+) -> GeomSpec | None:
     geom_type = geom.get("type", "sphere")
     name = geom.get("name") or f"{body_name}_geom_{index}"
-    transform = pose_to_transform(geom.get("pos"), geom.get("quat"))
+    transform = pose_to_transform(
+        geom.get("pos"), geom.get("quat"), geom.get("euler"), euler_in_degrees
+    )
     rgba = parse_rgba(geom.get("rgba"))
 
     if geom_type == "mesh":
@@ -155,6 +189,24 @@ def parse_geom(geom: ET.Element, index: int, body_name: str, mesh_assets: dict[s
     if geom_type == "sphere":
         size = parse_vec(geom.get("size"), 1, [0.5])
         return GeomSpec(name=name, geometry_type="sphere", params={"radius": size[0]}, transform=transform, rgba=rgba)
+
+    if geom_type == "capsule":
+        raw_size = [float(part) for part in (geom.get("size") or "0.5").split()]
+        if len(raw_size) not in (1, 2):
+            fail(f"Capsule geom '{name}' size must contain one or two values")
+        fromto = geom.get("fromto")
+        params = {"radius": raw_size[0]}
+        if fromto:
+            params["fromto"] = parse_vec(fromto, 6, [0.0] * 6)
+        else:
+            params["half_length"] = raw_size[1] if len(raw_size) == 2 else 0.5
+        return GeomSpec(
+            name=name,
+            geometry_type="capsule",
+            params=params,
+            transform=transform,
+            rgba=rgba,
+        )
 
     print(f"Warning: skipping unsupported geom type '{geom_type}' in '{name}'", file=sys.stderr)
     return None
@@ -194,6 +246,32 @@ def create_geometry(trimesh, geom: GeomSpec, debug_colors: bool):
         apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
+    if geom.geometry_type == "capsule":
+        radius = geom.params["radius"]
+        if "fromto" in geom.params:
+            values = geom.params["fromto"]
+            start, end = values[:3], values[3:]
+            direction = end - start
+            length = float(np.linalg.norm(direction))
+            if length <= 0.0:
+                fail(f"Capsule geom '{geom.name}' has zero-length fromto")
+            mesh = trimesh.creation.capsule(height=length, radius=radius)
+            align = trimesh.geometry.align_vectors(
+                np.array([0.0, 0.0, 1.0]), direction / length
+            )
+            align[:3, 3] = start
+            mesh.apply_transform(align)
+        else:
+            half_length = geom.params["half_length"]
+            mesh = trimesh.creation.capsule(
+                height=half_length * 2.0, radius=radius
+            )
+            center = np.eye(4)
+            center[2, 3] = -half_length
+            mesh.apply_transform(center)
+        apply_material_rgba(trimesh, mesh, color_rgba)
+        return mesh
+
     fail(f"Unsupported geom type: {geom.geometry_type}")
 
 
@@ -202,13 +280,18 @@ def collect_body_parts(
     parent_transform: np.ndarray,
     mesh_assets: dict[str, MeshAsset],
     parts: dict[str, PartSpec],
+    euler_in_degrees: bool,
 ) -> None:
     body_name = body.get("name", "worldbody")
-    world_transform = parent_transform @ pose_to_transform(body.get("pos"), body.get("quat"))
+    world_transform = parent_transform @ pose_to_transform(
+        body.get("pos"), body.get("quat"), body.get("euler"), euler_in_degrees
+    )
 
     direct_geoms: list[tuple[GeomSpec, np.ndarray]] = []
     for index, geom in enumerate(body.findall("geom")):
-        spec = parse_geom(geom, index, body_name, mesh_assets)
+        spec = parse_geom(
+            geom, index, body_name, mesh_assets, euler_in_degrees
+        )
         if spec is not None:
             direct_geoms.append((spec, world_transform @ spec.transform))
 
@@ -220,7 +303,9 @@ def collect_body_parts(
         )
 
     for child in body.findall("body"):
-        collect_body_parts(child, world_transform, mesh_assets, parts)
+        collect_body_parts(
+            child, world_transform, mesh_assets, parts, euler_in_degrees
+        )
 
 
 def collect_geom_parts(
@@ -228,12 +313,17 @@ def collect_geom_parts(
     parent_transform: np.ndarray,
     mesh_assets: dict[str, MeshAsset],
     parts: dict[str, PartSpec],
+    euler_in_degrees: bool,
 ) -> None:
     body_name = body.get("name", "worldbody")
-    world_transform = parent_transform @ pose_to_transform(body.get("pos"), body.get("quat"))
+    world_transform = parent_transform @ pose_to_transform(
+        body.get("pos"), body.get("quat"), body.get("euler"), euler_in_degrees
+    )
 
     for index, geom in enumerate(body.findall("geom")):
-        spec = parse_geom(geom, index, body_name, mesh_assets)
+        spec = parse_geom(
+            geom, index, body_name, mesh_assets, euler_in_degrees
+        )
         if spec is not None:
             part_name = spec.name
             geom_world_transform = world_transform @ spec.transform
@@ -244,7 +334,9 @@ def collect_geom_parts(
             )
 
     for child in body.findall("body"):
-        collect_geom_parts(child, world_transform, mesh_assets, parts)
+        collect_geom_parts(
+            child, world_transform, mesh_assets, parts, euler_in_degrees
+        )
 
 
 def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors: bool) -> None:
@@ -257,11 +349,20 @@ def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors
 
     mesh_assets = parse_mesh_assets(root, input_file.parent.resolve())
     parts: dict[str, PartSpec] = {}
+    compiler = root.find("compiler")
+    angle_unit = "degree" if compiler is None else compiler.get("angle", "degree")
+    if angle_unit not in {"degree", "radian"}:
+        fail(f"Unsupported MJCF compiler angle unit: {angle_unit}")
+    euler_in_degrees = angle_unit == "degree"
 
     if split_by == "body":
-        collect_body_parts(worldbody, np.eye(4), mesh_assets, parts)
+        collect_body_parts(
+            worldbody, np.eye(4), mesh_assets, parts, euler_in_degrees
+        )
     elif split_by == "geom":
-        collect_geom_parts(worldbody, np.eye(4), mesh_assets, parts)
+        collect_geom_parts(
+            worldbody, np.eye(4), mesh_assets, parts, euler_in_degrees
+        )
     else:
         fail(f"Unsupported split mode: {split_by}")
 

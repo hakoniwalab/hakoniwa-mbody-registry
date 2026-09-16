@@ -186,6 +186,11 @@ movable_joints:
 
 Each listed joint is resolved through the MJCF. The generator emits the body that owns that joint as a `movable_parts[]` entry.
 
+A joint body may be a transform-only pivot with no visual geometry of its own.
+In that case the generated movable part omits `asset`, while visual child parts
+remain attached below it. This supports assemblies such as Ackermann steering
+pivots with separately rotating wheel children.
+
 The resulting motion metadata is derived from the MJCF joint type and axis. It is for view-side reconstruction only and does not define actuator or control behavior.
 
 ### `fixed_bodies`

@@ -7,6 +7,7 @@ This directory is the source of truth for the generic Ackermann body.
 - `collision_primitives.yaml`: chassis and narrow physical tire proxies
 - `contact_excludes.yaml`: intentional assembly self-contact exclusions
 - `mujoco_world.yaml`: reproducible minimal test world
+- `viewer.recipe.yaml`: viewer-neutral GLB assembly and movable-joint selection
 - `provenance.yaml`: origin, license, and design references
 
 Generate all derived MJCF files with:
@@ -21,6 +22,13 @@ The generated runtime model is:
 
 ```text
 bodies/generic_ackermann_golf_cart/generated/model.minimal_world.xml
+```
+
+The same Forge also generates browser/game-engine presentation artifacts:
+
+```text
+bodies/generic_ackermann_golf_cart/generated/parts/*.glb
+bodies/generic_ackermann_golf_cart/generated/view-model.json
 ```
 
 Do not hand-edit generated XML. Adjust the structural MJCF or YAML inputs and

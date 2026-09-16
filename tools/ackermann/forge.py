@@ -286,6 +286,46 @@ def apply_overlays(canonical_config: Path, structural: Path, output_dir: Path) -
     return outputs
 
 
+def generate_view_assets(
+    canonical_config: Path,
+    structural: Path,
+    output_dir: Path,
+) -> list[Path]:
+    recipe_path = canonical_config / "viewer.recipe.yaml"
+    if not recipe_path.is_file():
+        return []
+
+    parts_dir = output_dir / "parts"
+    run_tool("mjcf2glb.py", structural, "--output-dir", parts_dir, "--split-by", "body")
+
+    recipe = require_mapping(
+        yaml.safe_load(recipe_path.read_text(encoding="utf-8")),
+        "viewer.recipe",
+    )
+    recipe["mjcf"] = str(structural.resolve())
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        suffix=".viewer.recipe.yaml",
+        encoding="utf-8",
+        delete=False,
+    ) as temporary_recipe:
+        yaml.safe_dump(recipe, temporary_recipe, sort_keys=False)
+        generated_recipe = Path(temporary_recipe.name)
+    try:
+        view_model = output_dir / "view-model.json"
+        run_tool(
+            "hako_viewer_model_gen.py",
+            generated_recipe,
+            "--out",
+            view_model,
+            "--pretty",
+        )
+    finally:
+        generated_recipe.unlink(missing_ok=True)
+
+    return [*sorted(parts_dir.glob("*.glb")), view_model]
+
+
 def forge_to(body: str, recipe: dict, body_root: Path, output_dir: Path) -> list[Path]:
     canonical_body_root = REPO_ROOT / "bodies" / body
     canonical_config = canonical_body_root / "config"
@@ -306,6 +346,7 @@ def forge_to(body: str, recipe: dict, body_root: Path, output_dir: Path) -> list
     apply_joint_dynamics(canonical_config / "joint_dynamics.yaml", structural)
     apply_visual_materials(canonical_config / "visual_materials.yaml", structural)
     outputs.extend(apply_overlays(canonical_config, structural, output_dir))
+    outputs.extend(generate_view_assets(canonical_config, structural, output_dir))
     print(f"Ackermann Forge complete: {body}")
     for output in outputs:
         print(f"  - {output}")
@@ -338,8 +379,9 @@ def verify(body: str, recipe: dict) -> None:
             world_models[0],
         )
         mismatches: list[str] = []
+        actual_dir = temp_body / "generated"
         for actual_path in actual:
-            expected_path = expected_dir / actual_path.name
+            expected_path = expected_dir / actual_path.relative_to(actual_dir)
             if not expected_path.is_file():
                 mismatches.append(f"missing expected artifact: {expected_path}")
             elif not filecmp.cmp(actual_path, expected_path, shallow=False):

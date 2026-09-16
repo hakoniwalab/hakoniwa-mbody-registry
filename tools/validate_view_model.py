@@ -142,20 +142,17 @@ def validate_part(value: Any, path: str, asset_ids: set[str]) -> None:
 
 def validate_movable_part(value: Any, path: str, asset_ids: set[str]) -> None:
     obj = expect_object(value, path)
-    require_keys(obj, path, ["name", "joint", "asset", "mount", "motion"])
+    require_keys(obj, path, ["name", "joint", "mount", "motion"])
     reject_extra_keys(obj, path, {"name", "joint", "parent", "asset", "mount", "motion"})
 
-    # Validate the common part shape first.
-    validate_part(
-        {
-            "name": obj["name"],
-            **({"parent": obj["parent"]} if "parent" in obj else {}),
-            "asset": obj["asset"],
-            "mount": obj["mount"],
-        },
-        path,
-        asset_ids,
-    )
+    expect_string(obj["name"], f"{path}.name", min_length=1)
+    if "parent" in obj and obj["parent"] is not None:
+        expect_string(obj["parent"], f"{path}.parent", min_length=1)
+    if "asset" in obj:
+        asset = expect_string(obj["asset"], f"{path}.asset", min_length=1)
+        if asset not in asset_ids:
+            raise ValidationError(f"{path}.asset: unknown asset id '{asset}'")
+    validate_mount(obj["mount"], f"{path}.mount")
     expect_string(obj["joint"], f"{path}.joint", min_length=1)
     validate_motion(obj["motion"], f"{path}.motion")
 
