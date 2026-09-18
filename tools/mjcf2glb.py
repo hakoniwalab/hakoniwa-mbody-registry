@@ -112,6 +112,19 @@ class PartSpec:
     geoms: list[tuple[GeomSpec, np.ndarray]]
 
 
+def ros_to_three_transform() -> np.ndarray:
+    """Map ROS/MJCF FLU axes to Three.js right/up/back axes."""
+    return np.asarray(
+        [
+            [0.0, -1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [-1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ],
+        dtype=float,
+    )
+
+
 def parse_mesh_assets(root: ET.Element, mjcf_dir: Path) -> dict[str, MeshAsset]:
     assets: dict[str, MeshAsset] = {}
     asset_element = root.find("asset")
@@ -149,6 +162,7 @@ def parse_geom(
     body_name: str,
     mesh_assets: dict[str, MeshAsset],
     euler_in_degrees: bool,
+    visible_only: bool = False,
 ) -> GeomSpec | None:
     geom_type = geom.get("type", "sphere")
     name = geom.get("name") or f"{body_name}_geom_{index}"
@@ -156,6 +170,8 @@ def parse_geom(
         geom.get("pos"), geom.get("quat"), geom.get("euler"), euler_in_degrees
     )
     rgba = parse_rgba(geom.get("rgba"))
+    if visible_only and rgba is not None and rgba[3] <= 0.0:
+        return None
 
     if geom_type == "mesh":
         mesh_name = geom.get("mesh")
@@ -281,6 +297,7 @@ def collect_body_parts(
     mesh_assets: dict[str, MeshAsset],
     parts: dict[str, PartSpec],
     euler_in_degrees: bool,
+    visible_only: bool,
 ) -> None:
     body_name = body.get("name", "worldbody")
     world_transform = parent_transform @ pose_to_transform(
@@ -290,7 +307,7 @@ def collect_body_parts(
     direct_geoms: list[tuple[GeomSpec, np.ndarray]] = []
     for index, geom in enumerate(body.findall("geom")):
         spec = parse_geom(
-            geom, index, body_name, mesh_assets, euler_in_degrees
+            geom, index, body_name, mesh_assets, euler_in_degrees, visible_only
         )
         if spec is not None:
             direct_geoms.append((spec, world_transform @ spec.transform))
@@ -304,7 +321,7 @@ def collect_body_parts(
 
     for child in body.findall("body"):
         collect_body_parts(
-            child, world_transform, mesh_assets, parts, euler_in_degrees
+            child, world_transform, mesh_assets, parts, euler_in_degrees, visible_only
         )
 
 
@@ -314,6 +331,7 @@ def collect_geom_parts(
     mesh_assets: dict[str, MeshAsset],
     parts: dict[str, PartSpec],
     euler_in_degrees: bool,
+    visible_only: bool,
 ) -> None:
     body_name = body.get("name", "worldbody")
     world_transform = parent_transform @ pose_to_transform(
@@ -322,7 +340,7 @@ def collect_geom_parts(
 
     for index, geom in enumerate(body.findall("geom")):
         spec = parse_geom(
-            geom, index, body_name, mesh_assets, euler_in_degrees
+            geom, index, body_name, mesh_assets, euler_in_degrees, visible_only
         )
         if spec is not None:
             part_name = spec.name
@@ -335,11 +353,18 @@ def collect_geom_parts(
 
     for child in body.findall("body"):
         collect_geom_parts(
-            child, world_transform, mesh_assets, parts, euler_in_degrees
+            child, world_transform, mesh_assets, parts, euler_in_degrees, visible_only
         )
 
 
-def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors: bool) -> None:
+def export_parts(
+    input_file: Path,
+    output_dir: Path,
+    split_by: str,
+    debug_colors: bool,
+    visible_only: bool = False,
+    target_frame: str = "mjcf",
+) -> None:
     trimesh = import_trimesh_module()
 
     root = ET.parse(input_file).getroot()
@@ -357,11 +382,11 @@ def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors
 
     if split_by == "body":
         collect_body_parts(
-            worldbody, np.eye(4), mesh_assets, parts, euler_in_degrees
+            worldbody, np.eye(4), mesh_assets, parts, euler_in_degrees, visible_only
         )
     elif split_by == "geom":
         collect_geom_parts(
-            worldbody, np.eye(4), mesh_assets, parts, euler_in_degrees
+            worldbody, np.eye(4), mesh_assets, parts, euler_in_degrees, visible_only
         )
     else:
         fail(f"Unsupported split mode: {split_by}")
@@ -378,6 +403,8 @@ def export_parts(input_file: Path, output_dir: Path, split_by: str, debug_colors
             # Export each GLB in its own local frame instead of baking parent/world placement.
             local_transform = inverse_part_transform @ world_transform
             scene.add_geometry(geometry, node_name=geom.name, transform=local_transform)
+        if target_frame == "threejs":
+            scene.apply_transform(ros_to_three_transform())
         output_path = output_dir / f"{sanitize_name(part_name)}.glb"
         output_path.write_bytes(scene.export(file_type="glb"))
         print(f"Wrote {output_path}")
@@ -404,6 +431,17 @@ def main() -> None:
         action="store_true",
         help="Override source colors with high-contrast debug materials to verify viewer import behavior.",
     )
+    parser.add_argument(
+        "--visible-only",
+        action="store_true",
+        help="Skip geoms whose explicit RGBA alpha is zero. Useful when exporting visual-only browser assets.",
+    )
+    parser.add_argument(
+        "--target-frame",
+        choices=["mjcf", "threejs"],
+        default="mjcf",
+        help="Output coordinate frame. 'threejs' maps MJCF FLU axes to Three.js right/up/back axes.",
+    )
     args = parser.parse_args()
 
     input_file = Path(args.input)
@@ -416,7 +454,14 @@ def main() -> None:
         output_dir = default_generated_parts_dir(input_file)
 
     print(f"Splitting {input_file} -> {output_dir} ({args.split_by})")
-    export_parts(input_file, output_dir, args.split_by, args.debug_colors)
+    export_parts(
+        input_file,
+        output_dir,
+        args.split_by,
+        args.debug_colors,
+        args.visible_only,
+        args.target_frame,
+    )
 
 
 if __name__ == "__main__":
