@@ -275,16 +275,13 @@ def create_geometry(trimesh, geom: GeomSpec, debug_colors: bool):
             align = trimesh.geometry.align_vectors(
                 np.array([0.0, 0.0, 1.0]), direction / length
             )
-            align[:3, 3] = start
+            align[:3, 3] = (start + end) / 2.0
             mesh.apply_transform(align)
         else:
             half_length = geom.params["half_length"]
             mesh = trimesh.creation.capsule(
                 height=half_length * 2.0, radius=radius
             )
-            center = np.eye(4)
-            center[2, 3] = -half_length
-            mesh.apply_transform(center)
         apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 

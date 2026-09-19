@@ -1,6 +1,8 @@
 import importlib.util
+import numpy as np
 from pathlib import Path
 import sys
+import trimesh
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -42,6 +44,39 @@ class Mjcf2GlbTest(unittest.TestCase):
 
         self.assertIsNotNone(
             MJCF2GLB.parse_geom(transparent, 0, "body", {}, True)
+        )
+
+    def test_capsule_without_fromto_is_centered_on_geom_origin(self):
+        geom = MJCF2GLB.parse_geom(
+            ET.fromstring(
+                '<geom name="skid" type="capsule" size="0.0125 0.31"/>'
+            ),
+            0,
+            "body",
+            {},
+            True,
+        )
+
+        mesh = MJCF2GLB.create_geometry(trimesh, geom, False)
+
+        np.testing.assert_allclose(mesh.bounds.mean(axis=0), [0.0, 0.0, 0.0])
+
+    def test_capsule_fromto_is_centered_between_endpoints(self):
+        geom = MJCF2GLB.parse_geom(
+            ET.fromstring(
+                '<geom name="link" type="capsule" size="0.01" '
+                'fromto="1 2 3 5 2 3"/>'
+            ),
+            0,
+            "body",
+            {},
+            True,
+        )
+
+        mesh = MJCF2GLB.create_geometry(trimesh, geom, False)
+
+        np.testing.assert_allclose(
+            mesh.bounds.mean(axis=0), [3.0, 2.0, 3.0], atol=1e-12
         )
 
 
