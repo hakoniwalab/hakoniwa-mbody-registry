@@ -277,6 +277,51 @@ def _remove_robot_ground(worldbody: ET.Element) -> int:
     return removed
 
 
+def _angle_unit(root: ET.Element) -> str:
+    """The compiler angle unit of a model; MuJoCo's default is degree."""
+    compiler = root.find("compiler")
+    unit = (compiler.get("angle") if compiler is not None else None) or "degree"
+    if unit not in {"degree", "radian"}:
+        raise ComposeError(f"unsupported compiler angle unit: {unit!r}")
+    return unit
+
+
+def _euler_sequence(root: ET.Element) -> str:
+    compiler = root.find("compiler")
+    return (compiler.get("eulerseq") if compiler is not None else None) or "xyz"
+
+
+def _scale_values(raw: str, factor: float, indexes: slice) -> str:
+    values = raw.split()
+    for index in range(len(values))[indexes]:
+        values[index] = _format_numeric(float(values[index]) * factor)
+    return " ".join(values)
+
+
+def _convert_world_angles(worldbody_children: list[ET.Element], factor: float) -> int:
+    """Rescale angle attributes of copied world elements to the robot's angle unit.
+
+    The world's <compiler> is dropped when merging, so its angles would be
+    read in the robot's unit (for example a City World in degrees merged into
+    a vehicle model in radians turns every wall's euler yaw into nonsense).
+    """
+    converted = 0
+    for child in worldbody_children:
+        for element in child.iter():
+            if element.get("euler"):
+                element.set("euler", _scale_values(element.get("euler"), factor, slice(None)))
+                converted += 1
+            if element.get("axisangle"):
+                element.set("axisangle", _scale_values(element.get("axisangle"), factor, slice(3, 4)))
+                converted += 1
+            if element.tag == "joint" and element.get("type", "hinge") == "hinge":
+                for attribute in ("range", "ref", "springref"):
+                    if element.get(attribute):
+                        element.set(attribute, _scale_values(element.get(attribute), factor, slice(None)))
+                        converted += 1
+    return converted
+
+
 def compose_mujoco_world(
     robot_model: Path,
     world_model: Path,
@@ -324,9 +369,21 @@ def compose_mujoco_world(
             destination_asset.append(child)
             added_assets += 1
 
+    robot_unit, world_unit = _angle_unit(robot_root), _angle_unit(world_root)
+    if _euler_sequence(robot_root) != _euler_sequence(world_root):
+        raise ComposeError(
+            f"compiler eulerseq differs: robot {_euler_sequence(robot_root)!r}, "
+            f"world {_euler_sequence(world_root)!r}"
+        )
+    world_children = [copy.deepcopy(child) for child in list(world_worldbody)]
+    converted_angles = 0
+    if robot_unit != world_unit:
+        factor = math.pi / 180.0 if robot_unit == "radian" else 180.0 / math.pi
+        converted_angles = _convert_world_angles(world_children, factor)
+
     added_worldbody_children = 0
-    for child in list(world_worldbody):
-        robot_worldbody.insert(added_worldbody_children, copy.deepcopy(child))
+    for child in world_children:
+        robot_worldbody.insert(added_worldbody_children, child)
         added_worldbody_children += 1
 
     ET.indent(robot_tree, space="  ")
@@ -341,6 +398,8 @@ def compose_mujoco_world(
         "merged_size": merged_size,
         "added_world_assets": added_assets,
         "added_worldbody_children": added_worldbody_children,
+        "angle_units": {"robot": robot_unit, "world": world_unit},
+        "converted_world_angle_attributes": converted_angles,
         "robot_asset_rewrites": robot_asset_rewrites,
         "world_asset_rewrites": world_asset_rewrites,
         "ignored_world_sections": ignored_world_sections,

@@ -96,6 +96,52 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             self.assertIsNotNone(composed.find("actuator"))
             self.assertIsNotNone(composed.find("contact"))
 
+    def compose_units(self, robot_compiler: str, world_compiler: str):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        robot_xml = root / "robot.xml"
+        robot_xml.write_text(
+            f"<mujoco model='robot'>{robot_compiler}<worldbody>"
+            "<body name='vehicle'><freejoint name='base_freejoint'/><geom name='robot_geom' type='box' size='.5 .5 .5'/></body>"
+            "</worldbody></mujoco>",
+            encoding="utf-8",
+        )
+        world_xml = root / "world.xml"
+        world_xml.write_text(
+            f"<mujoco model='world'>{world_compiler}<worldbody>"
+            "<body name='wall_body'><geom name='wall' type='box' size='.05 5 1' euler='0 0 90'/></body>"
+            "<body name='gate' axisangle='0 0 1 180'><joint name='hinge' type='hinge' range='-45 45'/>"
+            "<geom name='gate_geom' type='box' size='.1 .1 .1'/></body>"
+            "</worldbody></mujoco>",
+            encoding="utf-8",
+        )
+        output = root / "out.xml"
+        summary = COMPOSE.compose_mujoco_world(robot_xml, world_xml, output)
+        return summary, ET.parse(output).getroot()
+
+    def test_world_angles_in_degrees_are_converted_for_a_radian_robot(self):
+        summary, root = self.compose_units("<compiler angle='radian'/>", "")
+        wall = root.find(".//geom[@name='wall']")
+        self.assertAlmostEqual(float(wall.get("euler").split()[2]), 1.5707963268, places=9)
+        gate = root.find(".//body[@name='gate']")
+        self.assertAlmostEqual(float(gate.get("axisangle").split()[3]), 3.14159265359, places=9)
+        self.assertEqual(gate.get("axisangle").split()[:3], ["0", "0", "1"])
+        low, high = map(float, root.find(".//joint[@name='hinge']").get("range").split())
+        self.assertAlmostEqual(low, -0.785398163397, places=9)
+        self.assertAlmostEqual(high, 0.785398163397, places=9)
+        self.assertEqual(summary["angle_units"], {"robot": "radian", "world": "degree"})
+        self.assertEqual(summary["converted_world_angle_attributes"], 3)
+
+    def test_matching_angle_units_leave_world_angles_unchanged(self):
+        summary, root = self.compose_units("<compiler angle='degree'/>", "")
+        self.assertEqual(root.find(".//geom[@name='wall']").get("euler"), "0 0 90")
+        self.assertEqual(summary["converted_world_angle_attributes"], 0)
+
+    def test_different_euler_sequences_are_rejected(self):
+        with self.assertRaisesRegex(COMPOSE.ComposeError, "eulerseq"):
+            self.compose_units("<compiler angle='radian' eulerseq='zyx'/>", "")
+
     def test_keep_robot_ground_preserves_ground(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
