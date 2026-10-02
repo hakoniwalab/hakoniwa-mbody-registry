@@ -206,6 +206,10 @@ def parse_geom(
         size = parse_vec(geom.get("size"), 1, [0.5])
         return GeomSpec(name=name, geometry_type="sphere", params={"radius": size[0]}, transform=transform, rgba=rgba)
 
+    if geom_type == "ellipsoid":
+        size = parse_vec(geom.get("size"), 3, [0.5, 0.5, 0.5])
+        return GeomSpec(name=name, geometry_type="ellipsoid", params={"radii": size}, transform=transform, rgba=rgba)
+
     if geom_type == "capsule":
         raw_size = [float(part) for part in (geom.get("size") or "0.5").split()]
         if len(raw_size) not in (1, 2):
@@ -231,6 +235,9 @@ def parse_geom(
 # Segments of a capsule's tessellation ([around, along]); None keeps trimesh's
 # default. --capsule-count sets it for bodies built from many small capsules.
 CAPSULE_COUNT: list[int] | None = None
+
+
+DIGITS = None  # --digits
 
 
 def capsule_mesh(trimesh, height: float, radius: float):
@@ -270,6 +277,12 @@ def create_geometry(trimesh, geom: GeomSpec, debug_colors: bool):
 
     if geom.geometry_type == "sphere":
         mesh = trimesh.creation.icosphere(radius=geom.params["radius"])
+        apply_material_rgba(trimesh, mesh, color_rgba)
+        return mesh
+
+    if geom.geometry_type == "ellipsoid":
+        mesh = trimesh.creation.icosphere(radius=1.0)
+        mesh.apply_scale(np.asarray(geom.params["radii"], dtype=float))
         apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
@@ -408,6 +421,13 @@ def export_parts(
             geometry = create_geometry(trimesh, geom, debug_colors)
             # Export each GLB in its own local frame instead of baking parent/world placement.
             local_transform = inverse_part_transform @ world_transform
+            if DIGITS is not None:
+                # sin/cos and matrix products end in digits that differ between
+                # platforms; rounded, the GLB comes out the same everywhere.
+                local_transform = np.round(local_transform, DIGITS) + 0.0
+                geometry.vertices = np.round(geometry.vertices, DIGITS) + 0.0
+                geometry.metadata = {key: round(value, DIGITS) if isinstance(value, float) else value
+                                     for key, value in geometry.metadata.items()}
             scene.add_geometry(geometry, node_name=geom.name, transform=local_transform)
         if target_frame == "threejs":
             scene.apply_transform(ros_to_three_transform())
@@ -449,12 +469,18 @@ def main() -> None:
         help="Output coordinate frame. 'threejs' maps MJCF FLU axes to Three.js right/up/back axes.",
     )
     parser.add_argument(
+        "--digits",
+        type=int,
+        help="Round the geoms' placements and vertices to this many decimals (metres), so that the GLB is byte for byte the same on every platform.",
+    )
+    parser.add_argument(
         "--capsule-count",
         type=int,
         help="Segments around (and along) each capsule; fewer make lighter GLBs for bodies of many small capsules. Default: trimesh's.",
     )
     args = parser.parse_args()
-    global CAPSULE_COUNT
+    global CAPSULE_COUNT, DIGITS
+    DIGITS = args.digits
     if args.capsule_count is not None:
         if args.capsule_count < 4:
             fail("--capsule-count must be at least 4")

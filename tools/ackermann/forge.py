@@ -296,7 +296,7 @@ def generate_view_assets(
         return []
 
     parts_dir = output_dir / "parts"
-    run_tool("mjcf2glb.py", structural, "--output-dir", parts_dir, "--split-by", "body")
+    run_tool("mjcf2glb.py", structural, "--output-dir", parts_dir, "--split-by", "body", "--digits", "7")
     lights = canonical_config / "lights.yaml"
     if lights.is_file():  # glowing lamps and head lights in the parts GLB
         run_tool("glb_add_lights.py", parts_dir, lights)
