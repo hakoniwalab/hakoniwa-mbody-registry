@@ -291,7 +291,7 @@ def armrest(name, y, x, z):
 
 
 def steering_wheel():
-    column_base, column_top = (0.84, SEAT_Y, 0.66), (0.60, SEAT_Y, 0.92)
+    column_base, column_top = (0.96, SEAT_Y, 0.66), (0.72, SEAT_Y, 0.92)
     axis = tuple(column_top[i] - column_base[i] for i in range(3))
     return [
         capsule("steering_column", column_base, column_top, 0.028, BLACK),
@@ -329,7 +329,7 @@ BODY = [
     *bumper(),
     "      <!-- The windshield's foot on the cowl, the dashboard behind it, the steering wheel (the driver sits on the left) -->",
     capsule("windshield_foot", (1.10, -0.58, 0.60), (1.10, 0.58, 0.60), 0.022, BLACK),
-    *span("dashboard", 0.74, 1.08, 0.58, 0.56, 0.72, 0.06, SEAT_DARK),
+    *span("dashboard", 0.90, 1.08, 0.58, 0.56, 0.72, 0.06, SEAT_DARK),
     *steering_wheel(),
 
     "      <!-- Seats: the front row on a white pedestal, the rear row on the rear body -->",

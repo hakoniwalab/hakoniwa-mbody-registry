@@ -260,35 +260,35 @@
       <geom name="front_marker_right_visual" type="box" pos="1.503 -0.565 0.15" size="0.004 0.012 0.07" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1"/>
       <!-- The windshield's foot on the cowl, the dashboard behind it, the steering wheel (the driver sits on the left) -->
       <geom name="windshield_foot_visual" type="capsule" fromto="1.1 -0.58 0.6 1.1 0.58 0.6" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_x_visual" type="box" pos="0.91 0 0.64" size="0.17 0.52 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_y_visual" type="box" pos="0.91 0 0.64" size="0.11 0.58 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_z_visual" type="box" pos="0.91 0 0.64" size="0.11 0.52 0.08" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge0_visual" type="capsule" fromto="0.8 -0.52 0.62 1.02 -0.52 0.62" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge1_visual" type="capsule" fromto="0.8 -0.52 0.66 1.02 -0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge2_visual" type="capsule" fromto="0.8 0.52 0.62 1.02 0.52 0.62" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge3_visual" type="capsule" fromto="0.8 0.52 0.66 1.02 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge4_visual" type="capsule" fromto="0.8 -0.52 0.62 0.8 0.52 0.62" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge5_visual" type="capsule" fromto="0.8 -0.52 0.66 0.8 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_x_visual" type="box" pos="0.99 0 0.64" size="0.09 0.52 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_y_visual" type="box" pos="0.99 0 0.64" size="0.03 0.58 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_z_visual" type="box" pos="0.99 0 0.64" size="0.03 0.52 0.08" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge0_visual" type="capsule" fromto="0.96 -0.52 0.62 1.02 -0.52 0.62" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge1_visual" type="capsule" fromto="0.96 -0.52 0.66 1.02 -0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge2_visual" type="capsule" fromto="0.96 0.52 0.62 1.02 0.52 0.62" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge3_visual" type="capsule" fromto="0.96 0.52 0.66 1.02 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge4_visual" type="capsule" fromto="0.96 -0.52 0.62 0.96 0.52 0.62" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge5_visual" type="capsule" fromto="0.96 -0.52 0.66 0.96 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
       <geom name="dashboard_edge6_visual" type="capsule" fromto="1.02 -0.52 0.62 1.02 0.52 0.62" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
       <geom name="dashboard_edge7_visual" type="capsule" fromto="1.02 -0.52 0.66 1.02 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge8_visual" type="capsule" fromto="0.8 -0.52 0.62 0.8 -0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="dashboard_edge9_visual" type="capsule" fromto="0.8 0.52 0.62 0.8 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge8_visual" type="capsule" fromto="0.96 -0.52 0.62 0.96 -0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="dashboard_edge9_visual" type="capsule" fromto="0.96 0.52 0.62 0.96 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
       <geom name="dashboard_edge10_visual" type="capsule" fromto="1.02 -0.52 0.62 1.02 -0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
       <geom name="dashboard_edge11_visual" type="capsule" fromto="1.02 0.52 0.62 1.02 0.52 0.66" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_column_visual" type="capsule" fromto="0.84 0.26 0.66 0.6 0.26 0.92" size="0.028" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_0_visual" type="capsule" fromto="0.6 0.43 0.92 0.537542 0.407224 0.862346" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_1_visual" type="capsule" fromto="0.537542 0.407224 0.862346 0.491819 0.345 0.820141" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_2_visual" type="capsule" fromto="0.491819 0.345 0.820141 0.475083 0.26 0.804692" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_3_visual" type="capsule" fromto="0.475083 0.26 0.804692 0.491819 0.175 0.820141" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_4_visual" type="capsule" fromto="0.491819 0.175 0.820141 0.537542 0.112776 0.862346" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_5_visual" type="capsule" fromto="0.537542 0.112776 0.862346 0.6 0.09 0.92" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_6_visual" type="capsule" fromto="0.6 0.09 0.92 0.662458 0.112776 0.977654" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_7_visual" type="capsule" fromto="0.662458 0.112776 0.977654 0.708181 0.175 1.01986" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_8_visual" type="capsule" fromto="0.708181 0.175 1.01986 0.724917 0.26 1.03531" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_9_visual" type="capsule" fromto="0.724917 0.26 1.03531 0.708181 0.345 1.01986" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_10_visual" type="capsule" fromto="0.708181 0.345 1.01986 0.662458 0.407224 0.977654" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_wheel_11_visual" type="capsule" fromto="0.662458 0.407224 0.977654 0.6 0.43 0.92" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <geom name="steering_spoke_visual" type="capsule" fromto="0.6 0.1 0.92 0.6 0.42 0.92" size="0.014" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_column_visual" type="capsule" fromto="0.96 0.26 0.66 0.72 0.26 0.92" size="0.028" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_0_visual" type="capsule" fromto="0.72 0.43 0.92 0.657542 0.407224 0.862346" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_1_visual" type="capsule" fromto="0.657542 0.407224 0.862346 0.611819 0.345 0.820141" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_2_visual" type="capsule" fromto="0.611819 0.345 0.820141 0.595083 0.26 0.804692" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_3_visual" type="capsule" fromto="0.595083 0.26 0.804692 0.611819 0.175 0.820141" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_4_visual" type="capsule" fromto="0.611819 0.175 0.820141 0.657542 0.112776 0.862346" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_5_visual" type="capsule" fromto="0.657542 0.112776 0.862346 0.72 0.09 0.92" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_6_visual" type="capsule" fromto="0.72 0.09 0.92 0.782458 0.112776 0.977654" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_7_visual" type="capsule" fromto="0.782458 0.112776 0.977654 0.828181 0.175 1.01986" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_8_visual" type="capsule" fromto="0.828181 0.175 1.01986 0.844917 0.26 1.03531" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_9_visual" type="capsule" fromto="0.844917 0.26 1.03531 0.828181 0.345 1.01986" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_10_visual" type="capsule" fromto="0.828181 0.345 1.01986 0.782458 0.407224 0.977654" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_wheel_11_visual" type="capsule" fromto="0.782458 0.407224 0.977654 0.72 0.43 0.92" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="steering_spoke_visual" type="capsule" fromto="0.72 0.1 0.92 0.72 0.42 0.92" size="0.014" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1"/>
       <!-- Seats: the front row on a white pedestal, the rear row on the rear body -->
       <geom name="front_pedestal_x_visual" type="box" pos="0.2 0 0.08" size="0.25 0.5 0.14" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1"/>
       <geom name="front_pedestal_y_visual" type="box" pos="0.2 0 0.08" size="0.19 0.56 0.14" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1"/>

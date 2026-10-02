@@ -32,7 +32,9 @@ PREVIEW_PATH = OUT_DIR / "hakoniwa_cart_concept_preview.png"
 def clean_scene() -> None:
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
-    for datablocks in (bpy.data.meshes, bpy.data.curves, bpy.data.materials):
+    # Materials are created at module load so they remain available while the
+    # scene is rebuilt. Only orphaned geometry datablocks are cleared here.
+    for datablocks in (bpy.data.meshes, bpy.data.curves):
         for block in list(datablocks):
             if block.users == 0:
                 datablocks.remove(block)
