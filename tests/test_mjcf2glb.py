@@ -46,6 +46,24 @@ class Mjcf2GlbTest(unittest.TestCase):
             MJCF2GLB.parse_geom(transparent, 0, "body", {}, True)
         )
 
+    def test_capsule_count_makes_coarser_capsules(self):
+        geom = MJCF2GLB.parse_geom(
+            ET.fromstring('<geom name="edge" type="capsule" fromto="0 0 0 0 0 0.2" size="0.02"/>'),
+            0,
+            "body",
+            {},
+            True,
+        )
+        default = MJCF2GLB.create_geometry(trimesh, geom, False)
+        MJCF2GLB.CAPSULE_COUNT = [12, 12]
+        try:
+            coarse = MJCF2GLB.create_geometry(trimesh, geom, False)
+        finally:
+            MJCF2GLB.CAPSULE_COUNT = None
+
+        self.assertLess(len(coarse.vertices), len(default.vertices) / 4)
+        np.testing.assert_allclose(coarse.bounds, default.bounds, atol=1e-3)
+
     def test_capsule_without_fromto_is_centered_on_geom_origin(self):
         geom = MJCF2GLB.parse_geom(
             ET.fromstring(

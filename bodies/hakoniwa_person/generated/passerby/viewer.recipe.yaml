@@ -1,0 +1,18 @@
+format: hako_viewer_model_recipe
+version: 0.1
+
+robot: hakoniwa_person_passerby
+mjcf: model.xml
+coordinate_system: mujoco
+
+assets:
+  glb_dir: parts
+  map: body_name
+
+base: person
+
+movable_joints:
+  - shoulder_left_joint
+  - shoulder_right_joint
+  - hip_left_joint
+  - hip_right_joint
