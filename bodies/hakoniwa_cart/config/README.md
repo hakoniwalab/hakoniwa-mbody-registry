@@ -1,16 +1,19 @@
 # Hakoniwa Cart body
 
 The Hakoniwa Cart is a four-seat cart authored for Hakoniwa from MuJoCo
-primitives: a rounded white nose with two round head lamps and a white LED
+primitives: a front that, seen from the side, is a trapezoid: as short as the black cowl at the top and widening down to the front wheel (the face leans back above the lamps and stands upright below them, the side's rear edge runs down and back behind the wheel, the white wraps the wheel arch over a wide dark grey fender); small round head lamps near the face's outer edges sit in black eye sockets narrowing inwards into the long thin LED bar that joins them, and a dark grey bumper stands out below the face, rising at each end in a slant into the face's lower corner (the amber marker on it) and wrapping round into the fender and a white LED
 bar between them over a dark bumper, two rows of seats facing forward (the
-driver on the front left), a grab bar behind the rear row, round red tail
+driver on the front left, the backrests leaning back 15°), a grab bar behind the rear row, round red tail
 lamps, and a long white roof with orange lines on black pillars (the
-windshield is an open frame). It is 3.3 m long, 1.4 m wide with the mirrors
+windshield is an open frame). It is 3.1 m long, 1.4 m wide with the mirrors
 and 2.5 m high, and has the same Ackermann structure as the Hakoniwa Car: two
 independently steered front wheels and two driven rear wheels.
 
-- `build_model.py`: writes `model.xml`; the panels (nose, bumpers, pedestals,
-  rear body, seats, roof) are rounded boxes (three boxes and twelve edge
+- `build_model.py`: writes `model.xml`; the panels (face, forehead, cowl,
+  bumpers, pedestals, rear body, seats, roof) are rounded boxes (the forehead
+  tilted), the eye sockets discs and flat ellipsoids, the side's slanted edge
+  tilted boxes, the bands round the front wheel arches (white side, grey
+  fender) short boxes along the arc (three boxes and twelve edge
   capsules each), the wheel arches half circles of capsules, the steering
   wheel a ring of capsules. Change the model there and run it, then the Forge
 - `model.xml`: the visual model (boxes, cylinders and capsules, no contact,
