@@ -188,8 +188,9 @@ def model(variant: str, look: Look) -> str:
         f'size="{radius:g}" mass="{60 * s ** 3:g}" group="3" rgba="0.2 0.6 1 0"/>',
         "      <!-- A round shadow under the feet (the stick's own part in the viewer) -->",
         "      " + cylinder("shadow", (0, 0, 0.004), (0.24 * s, 0.002), "0.32 0.33 0.36 1"),
-        *body("torso", (0, 0, hip_z), None, None, None, torso, indent=6, children=[
-            body("head", (0, 0, neck_z - hip_z), None, None, None, head, indent=8)]),
+        "      <!-- The torso and the head are the stick's own (they do not move on it) -->",
+        *[f"      {geom}" for geom in raised(torso, hip_z)],
+        *[f"      {geom}" for geom in raised(head, neck_z)],
         *arm("left", 1), *arm("right", -1), *leg("left", 1), *leg("right", -1),
         "    </body>",
         "  </worldbody>",
@@ -201,6 +202,19 @@ def model(variant: str, look: Look) -> str:
         "</mujoco>",
     ]
     return "\n".join(flatten(lines)) + "\n"
+
+
+def raised(geoms, dz):
+    """Geoms moved up by dz (their pos, or both ends of a fromto)."""
+    import re
+
+    def shift(match):
+        key, values = match.group(1), [float(value) for value in match.group(2).split()]
+        for index in range(2, len(values), 3):
+            values[index] += dz
+        return f'{key}="{fmt(values)}"'
+
+    return [re.sub(r'(pos|fromto)="([^"]+)"', shift, geom) for geom in geoms]
 
 
 def body(name, pos, joint, axis, limits, geoms, indent=6, children=()):

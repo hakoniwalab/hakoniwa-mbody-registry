@@ -20,7 +20,8 @@ A person is a stick that slides; the walk is an animation.
   times as big). It floats above the ground, so it never rubs the floor; it
   stops at walls, cars and other people. Velocity actuators `move_x`,
   `move_y` (m/s) and `turn` (rad/s) drive it, with limited force.
-- `torso` and its `head`: fixed to the root (the body does not bob).
+- The torso and the head: geoms of the root itself (the body does not bob; a
+  viewer model shows only the root and the jointed bodies).
 - `arm_left` / `arm_right` on `shoulder_*_joint`, `leg_left` / `leg_right`
   on `hip_*_joint` (about y; the frames are at the shoulders and hips).
   Soft springs keep them straight; a runtime animates a walk by sending
