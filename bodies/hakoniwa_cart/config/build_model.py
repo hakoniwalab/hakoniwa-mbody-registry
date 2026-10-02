@@ -270,15 +270,31 @@ def round_lamp(name, x, y, z, radius, ring_rgba, facing):
     ]
 
 
+BACK_RECLINE = math.radians(15)  # the backrests lean back this much
+
+
 def seat(name, x, y, z):
-    """One seat facing forward: a dark base, a cushion and a backrest with an orange line."""
-    back_x = x - 0.23
+    """One seat facing forward: a dark base, a cushion and a backrest leaning
+    back BACK_RECLINE about its foot (at the cushion's back), with an orange
+    line down its front."""
+    pitch = -BACK_RECLINE  # MuJoCo's pitch: negative leans the top backwards
+    up = (math.sin(pitch), math.cos(pitch))       # along the backrest, upwards
+    forward = (math.cos(pitch), -math.sin(pitch))  # out of its front face
+    foot = (x - 0.23, z + 0.05)  # the backrest's foot, behind the cushion
+
+    def along(height, depth=0.0):  # a point `height` up the backrest and `depth` out of its middle plane
+        return (foot[0] + height * up[0] + depth * forward[0], foot[1] + height * up[1] + depth * forward[1])
+
+    euler = f"0 {pitch:g} 0"
+    back_x, back_z = along(0.27)
+    frame_x, frame_z = along(0.25, -0.03)
+    line_x, line_z = along(0.29, 0.051)
     return [
         box(f"{name}_base", (x, y, z - 0.08), (0.20, 0.22, 0.03), SEAT_DARK),
         *rounded_box(f"{name}_cushion", (x, y, z), (0.22, 0.23, 0.06), 0.05, SEAT),
-        *rounded_box(f"{name}_back", (back_x, y, z + 0.32), (0.05, 0.22, 0.27), 0.04, SEAT),
-        box(f"{name}_back_frame", (back_x - 0.03, y, z + 0.30), (0.03, 0.23, 0.28), SEAT_DARK),
-        box(f"{name}_back_line", (back_x + 0.051, y + (0.11 if y > 0 else -0.11), z + 0.34), (0.004, 0.012, 0.20), ORANGE),
+        *rounded_box(f"{name}_back", (back_x, y, back_z), (0.05, 0.22, 0.27), 0.04, SEAT, pitch=pitch),
+        box(f"{name}_back_frame", (frame_x, y, frame_z), (0.03, 0.23, 0.28), SEAT_DARK, euler=euler),
+        box(f"{name}_back_line", (line_x, y + (0.11 if y > 0 else -0.11), line_z), (0.004, 0.012, 0.20), ORANGE, euler=euler),
     ]
 
 
