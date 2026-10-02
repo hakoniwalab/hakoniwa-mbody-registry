@@ -159,18 +159,56 @@ def nose():
     return geoms
 
 def eyes():
-    """The head lamps in black eye sockets: round round each lamp, narrowing
-    inwards to the thin LED bar that joins them (the face's centre line)."""
-    x, z = FACE_X, 0.33
+    """The head lamps, small and near the face's outer edges, in black eye
+    sockets: round round each lamp, narrowing inwards (flat ellipsoids) into
+    the long thin LED bar that joins them (the face's centre line)."""
+    x, z = FACE_X, 0.34
     geoms = []
     for name, sign in (("left", 1), ("right", -1)):
         geoms += [
-            cylinder(f"eye_socket_{name}", (x - 0.015, sign * 0.36, z), (0.125, 0.025), BLACK, ALONG_X),
-            ellipsoid(f"eye_socket_inner_{name}", (x - 0.015, sign * 0.25, z - 0.005), (0.025, 0.13, 0.05), BLACK),
-            *round_lamp(f"head_lamp_{name}", x + 0.005, sign * 0.36, z, 0.10, LAMP, 1),
+            cylinder(f"eye_socket_{name}", (x - 0.015, sign * 0.40, z), (0.088, 0.025), BLACK, ALONG_X),
+            ellipsoid(f"eye_socket_inner_{name}", (x - 0.015, sign * 0.30, z - 0.006), (0.025, 0.10, 0.042), BLACK),
+            *round_lamp(f"head_lamp_{name}", x + 0.005, sign * 0.40, z, 0.068, LAMP, 1),
         ]
-    geoms.append(box("led_bar_channel", (x + 0.002, 0, z - 0.005), (0.004, 0.16, 0.016), BLACK))
-    geoms.append(box("led_bar", (x + 0.007, 0, z - 0.005), (0.004, 0.15, 0.008), LAMP))
+    geoms.append(box("led_bar_channel", (x + 0.002, 0, z - 0.008), (0.004, 0.23, 0.015), BLACK))
+    geoms.append(box("led_bar", (x + 0.007, 0, z - 0.008), (0.004, 0.22, 0.007), LAMP))
+    return geoms
+
+
+def slanted_yz(name, a, b, x, half_x, half_thickness, outward, rgba):
+    """A plate in the y-z plane (at x) whose edge runs from a (y, z) to b (y, z),
+    lying on the side of it away from the car's centre line when `outward`."""
+    (y0, z0), (y1, z1) = a, b
+    angle = math.atan2(z1 - z0, y1 - y0)  # turning y about x onto the edge
+    normal = (-math.sin(angle), math.cos(angle))
+    side = 1 if (normal[0] * (y0 + y1) > 0) == outward else -1
+    centre = (x, (y0 + y1) / 2 + side * half_thickness * normal[0], (z0 + z1) / 2 + side * half_thickness * normal[1])
+    half_length = math.hypot(y1 - y0, z1 - z0) / 2
+    return (f'      <geom name="{name}_visual" type="box" pos="{fmt(centre)}" '
+            f'size="{fmt((half_x, half_length, half_thickness))}" euler="{angle:g} 0 0" rgba="{rgba}" {VISUAL}/>')
+
+
+def bumper():
+    """The bumper: dark grey, standing out ahead of the face (its top a ledge),
+    a recess low in the middle. At each end it rises in a slant into the
+    face's lower corner (the amber marker on it) and wraps round onto the side,
+    running back down into the fender."""
+    geoms = [
+        *span("front_bumper", 1.33, 1.52, 0.62, -0.22, 0.04, 0.07, GREY),
+        box("face_foot_shadow", (1.465, 0, 0.046), (0.006, 0.36, 0.006), BLACK),
+        box("bumper_recess", (1.521, 0, -0.165), (0.004, 0.32, 0.045), SEAT_DARK),
+        box("bumper_recess_edge", (1.522, 0, -0.118), (0.004, 0.32, 0.004), BLACK),
+    ]
+    for name, sign in (("left", 1), ("right", -1)):
+        geoms += [
+            # On the face: a slant from the bumper's top up into the corner, and the corner itself
+            slanted_yz(f"bumper_wing_slant_{name}", (sign * 0.40, 0.04), (sign * 0.53, 0.27), 1.4725, 0.0275, 0.05, True, GREY),
+            box(f"bumper_wing_{name}", (1.4725, sign * 0.57, 0.155), (0.0275, 0.04, 0.115), GREY),
+            # Round the corner onto the side, its back edge slanting down into the fender
+            box(f"bumper_wing_side_{name}", (1.43, sign * 0.612, 0.155), (0.07, 0.012, 0.115), GREY),
+            slanted(f"bumper_wing_side_slant_{name}", (1.36, 0.27), (1.27, 0.10), sign * 0.612, 0.012, 0.05, -1, GREY),
+            box(f"front_marker_{name}", (1.503, sign * 0.565, 0.15), (0.004, 0.012, 0.07), AMBER),
+        ]
     return geoms
 
 def fender(name, centre, radius, thickness, rgba, segments=8):
@@ -288,11 +326,7 @@ BODY = [
     "      <!-- The front: a black cowl, a white face (black eye sockets, LED bar) and a dark grey bumper; the sides flow down to the wheel arches -->",
     *nose(),
     *eyes(),
-    # The bumper stands out ahead of the face (its top a ledge), wraps the corners and runs on into the fenders
-    *span("front_bumper", 1.33, 1.52, 0.62, -0.22, 0.04, 0.07, GREY),
-    box("face_foot_shadow", (1.465, 0, 0.046), (0.006, 0.56, 0.006), BLACK),
-    box("bumper_recess", (1.522, 0, -0.14), (0.004, 0.30, 0.05), BLACK),
-    *both(lambda n, y: box(n, (1.523, y, -0.07), (0.004, 0.012, 0.06), AMBER), "front_marker", 0.53),
+    *bumper(),
     "      <!-- The windshield's foot on the cowl, the dashboard behind it, the steering wheel (the driver sits on the left) -->",
     capsule("windshield_foot", (1.10, -0.58, 0.60), (1.10, 0.58, 0.60), 0.022, BLACK),
     *span("dashboard", 0.74, 1.08, 0.58, 0.56, 0.72, 0.06, SEAT_DARK),

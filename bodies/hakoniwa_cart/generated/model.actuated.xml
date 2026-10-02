@@ -206,18 +206,18 @@
       <geom name="side_arch_right_23_visual" type="box" pos="0.645867 -0.5856 -0.153512" size="0.0285451 0.015 0.045" euler="0 -1.50535 0" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="firewall_right_visual" type="box" pos="0.933365 -0.3 0.42952" size="0.173349 0.27 0.01" euler="0 -0.990794 0" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="firewall_foot_right_visual" type="box" pos="0.743365 -0.3 0.13952" size="0.173349 0.27 0.01" euler="0 -0.990794 0" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="eye_socket_left_visual" type="cylinder" pos="1.445 0.36 0.33" size="0.125 0.025" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="eye_socket_inner_left_visual" type="ellipsoid" pos="1.445 0.25 0.325" size="0.025 0.13 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="head_lamp_left_ring_visual" type="cylinder" pos="1.465 0.36 0.33" size="0.1 0.01" euler="0 1.57079632679 0" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="head_lamp_left_inside_visual" type="cylinder" pos="1.469 0.36 0.33" size="0.082 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="head_lamp_left_lens_visual" type="cylinder" pos="1.473 0.36 0.33" size="0.038 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="eye_socket_right_visual" type="cylinder" pos="1.445 -0.36 0.33" size="0.125 0.025" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="eye_socket_inner_right_visual" type="ellipsoid" pos="1.445 -0.25 0.325" size="0.025 0.13 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="head_lamp_right_ring_visual" type="cylinder" pos="1.465 -0.36 0.33" size="0.1 0.01" euler="0 1.57079632679 0" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="head_lamp_right_inside_visual" type="cylinder" pos="1.469 -0.36 0.33" size="0.082 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="head_lamp_right_lens_visual" type="cylinder" pos="1.473 -0.36 0.33" size="0.038 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="led_bar_channel_visual" type="box" pos="1.462 0 0.325" size="0.004 0.16 0.016" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="led_bar_visual" type="box" pos="1.467 0 0.325" size="0.004 0.15 0.008" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="eye_socket_left_visual" type="cylinder" pos="1.445 0.4 0.34" size="0.088 0.025" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="eye_socket_inner_left_visual" type="ellipsoid" pos="1.445 0.3 0.334" size="0.025 0.1 0.042" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_left_ring_visual" type="cylinder" pos="1.465 0.4 0.34" size="0.068 0.01" euler="0 1.57079632679 0" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_left_inside_visual" type="cylinder" pos="1.469 0.4 0.34" size="0.05576 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_left_lens_visual" type="cylinder" pos="1.473 0.4 0.34" size="0.02584 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="eye_socket_right_visual" type="cylinder" pos="1.445 -0.4 0.34" size="0.088 0.025" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="eye_socket_inner_right_visual" type="ellipsoid" pos="1.445 -0.3 0.334" size="0.025 0.1 0.042" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_right_ring_visual" type="cylinder" pos="1.465 -0.4 0.34" size="0.068 0.01" euler="0 1.57079632679 0" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_right_inside_visual" type="cylinder" pos="1.469 -0.4 0.34" size="0.05576 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_right_lens_visual" type="cylinder" pos="1.473 -0.4 0.34" size="0.02584 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="led_bar_channel_visual" type="box" pos="1.462 0 0.332" size="0.004 0.23 0.015" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="led_bar_visual" type="box" pos="1.467 0 0.332" size="0.004 0.22 0.007" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="front_bumper_x_visual" type="box" pos="1.425 0 -0.09" size="0.095 0.55 0.06" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="front_bumper_y_visual" type="box" pos="1.425 0 -0.09" size="0.025 0.62 0.06" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="front_bumper_z_visual" type="box" pos="1.425 0 -0.09" size="0.025 0.55 0.13" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
@@ -233,10 +233,19 @@
       <geom name="front_bumper_edge9_visual" type="capsule" fromto="1.4 0.55 -0.15 1.4 0.55 -0.03" size="0.07" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="front_bumper_edge10_visual" type="capsule" fromto="1.45 -0.55 -0.15 1.45 -0.55 -0.03" size="0.07" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="front_bumper_edge11_visual" type="capsule" fromto="1.45 0.55 -0.15 1.45 0.55 -0.03" size="0.07" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="face_foot_shadow_visual" type="box" pos="1.465 0 0.046" size="0.006 0.56 0.006" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="bumper_recess_visual" type="box" pos="1.522 0 -0.14" size="0.004 0.3 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="front_marker_left_visual" type="box" pos="1.523 0.53 -0.07" size="0.004 0.012 0.06" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="front_marker_right_visual" type="box" pos="1.523 -0.53 -0.07" size="0.004 0.012 0.06" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="face_foot_shadow_visual" type="box" pos="1.465 0 0.046" size="0.006 0.36 0.006" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_recess_visual" type="box" pos="1.521 0 -0.165" size="0.004 0.32 0.045" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_recess_edge_visual" type="box" pos="1.522 0 -0.118" size="0.004 0.32 0.004" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_slant_left_visual" type="box" pos="1.4725 0.508528 0.130397" size="0.0275 0.132098 0.05" euler="1.05635 0 0" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_left_visual" type="box" pos="1.4725 0.57 0.155" size="0.0275 0.04 0.115" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_side_left_visual" type="box" pos="1.43 0.612 0.155" size="0.07 0.012 0.115" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_side_slant_left_visual" type="box" pos="1.35919 0.612 0.161606" size="0.0961769 0.012 0.05" euler="0 -1.0839 0" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_marker_left_visual" type="box" pos="1.503 0.565 0.15" size="0.004 0.012 0.07" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_slant_right_visual" type="box" pos="1.4725 -0.508528 0.130397" size="0.0275 0.132098 0.05" euler="2.08525 0 0" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_right_visual" type="box" pos="1.4725 -0.57 0.155" size="0.0275 0.04 0.115" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_side_right_visual" type="box" pos="1.43 -0.612 0.155" size="0.07 0.012 0.115" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="bumper_wing_side_slant_right_visual" type="box" pos="1.35919 -0.612 0.161606" size="0.0961769 0.012 0.05" euler="0 -1.0839 0" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_marker_right_visual" type="box" pos="1.503 -0.565 0.15" size="0.004 0.012 0.07" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="windshield_foot_visual" type="capsule" fromto="1.1 -0.58 0.6 1.1 0.58 0.6" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="dashboard_x_visual" type="box" pos="0.91 0 0.64" size="0.17 0.52 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="dashboard_y_visual" type="box" pos="0.91 0 0.64" size="0.11 0.58 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
