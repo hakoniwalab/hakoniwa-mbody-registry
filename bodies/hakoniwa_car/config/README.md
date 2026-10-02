@@ -8,8 +8,12 @@ lights), and a roof sensor pod with a LiDAR. It is about the golf cart's size
 Ackermann structure: two independently steered front wheels and two driven
 rear wheels.
 
-- `model.xml`: the visual model (boxes and cylinders, no contact, no mass) and
-  the joint structure; the vehicle frame is 0.42 m above the ground
+- `build_model.py`: writes `model.xml`; the body panels (cab, cargo box, roof
+  pod, nose) are rounded boxes (three boxes and twelve edge capsules each) and
+  the fenders are half circles of capsules over the wheels. Change the model
+  there and run it, then the Forge
+- `model.xml`: the visual model (boxes, cylinders and capsules, no contact,
+  no mass) and the joint structure; the vehicle frame is 0.42 m above the ground
 - `collision_primitives.yaml`: the physical chassis (about 300 kg in all, low
   between the wheels), massless cab/cargo and LiDAR proxies, narrow tire treads
 - `actuators.yaml`: steering (position) and rear-wheel (velocity) actuators
@@ -24,6 +28,7 @@ rear wheels.
 Generate and check every derived file with:
 
 ```bash
+python bodies/hakoniwa_car/config/build_model.py
 python tools/ackermann/forge.py hakoniwa_car
 python tools/ackermann/forge.py hakoniwa_car --verify
 python tools/ackermann/validate.py hakoniwa_car
