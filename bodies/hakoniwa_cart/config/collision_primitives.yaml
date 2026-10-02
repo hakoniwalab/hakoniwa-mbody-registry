@@ -24,8 +24,8 @@ geoms:
     attrs:
       name: body_collision
       type: box
-      pos: "-0.01 0 0.30"
-      size: "1.62 0.62 0.42"
+      pos: "-0.085 0 0.30"
+      size: "1.545 0.62 0.42"
       density: "0"
       rgba: "0 0 0 0"
       condim: "4"

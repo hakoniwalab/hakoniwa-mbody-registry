@@ -1,11 +1,11 @@
 # Hakoniwa Cart body
 
 The Hakoniwa Cart is a four-seat cart authored for Hakoniwa from MuJoCo
-primitives: a rounded white nose with two round head lamps and a white LED
+primitives: a short rounded white nose (its face flush with the bumper, just ahead of the front wheels) with two round head lamps and a white LED
 bar between them over a dark bumper, two rows of seats facing forward (the
 driver on the front left), a grab bar behind the rear row, round red tail
 lamps, and a long white roof with orange lines on black pillars (the
-windshield is an open frame). It is 3.3 m long, 1.4 m wide with the mirrors
+windshield is an open frame). It is 3.1 m long, 1.4 m wide with the mirrors
 and 2.5 m high, and has the same Ackermann structure as the Hakoniwa Car: two
 independently steered front wheels and two driven rear wheels.
 

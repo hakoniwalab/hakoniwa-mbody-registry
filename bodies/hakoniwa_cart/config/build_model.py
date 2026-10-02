@@ -165,7 +165,7 @@ def armrest(name, y, x, z):
 
 
 def steering_wheel():
-    column_base, column_top = (0.78, SEAT_Y, 0.66), (0.58, SEAT_Y, 0.92)
+    column_base, column_top = (0.84, SEAT_Y, 0.66), (0.60, SEAT_Y, 0.92)
     axis = tuple(column_top[i] - column_base[i] for i in range(3))
     return [
         capsule("steering_column", column_base, column_top, 0.028, BLACK),
@@ -177,9 +177,9 @@ def steering_wheel():
 def mirror(name, y):
     sign = 1 if y > 0 else -1
     return [
-        capsule(f"{name}_arm", (0.80, sign * 0.60, 1.05), (0.80, y, 1.05), 0.012, BLACK),
-        box(f"{name}_head", (0.80, y + sign * 0.02, 1.10), (0.02, 0.045, 0.085), BLACK),
-        box(f"{name}_signal", (0.822, y + sign * 0.02, 1.10), (0.003, 0.010, 0.060), AMBER),
+        capsule(f"{name}_arm", (1.00, sign * 0.60, 1.05), (1.00, y, 1.05), 0.012, BLACK),
+        box(f"{name}_head", (1.00, y + sign * 0.02, 1.10), (0.02, 0.045, 0.085), BLACK),
+        box(f"{name}_signal", (1.022, y + sign * 0.02, 1.10), (0.003, 0.010, 0.060), AMBER),
     ]
 
 
@@ -194,16 +194,17 @@ BODY = [
     *(geom for x, end in ((WHEEL_X, "front"), (-WHEEL_X, "rear")) for side, y in (("left", 0.60), ("right", -0.60))
       for geom in fender(f"arch_{end}_{side}", (x, y, WHEEL_Z), 0.31, 0.035, GREY)),
 
-    "      <!-- The nose: a rounded white hood over the front wheels, a dark bumper below -->",
-    *span("hood", 0.78, 1.60, 0.62, 0.12, 0.62, 0.16, WHITE),
-    *span("front_bumper", 1.30, 1.63, 0.58, -0.20, 0.16, 0.09, GREY),
-    *round_lamp("head_lamp_left", 1.605, 0.36, 0.40, 0.11, LAMP, 1),
-    *round_lamp("head_lamp_right", 1.605, -0.36, 0.40, 0.11, LAMP, 1),
-    box("led_bar", (1.603, 0, 0.38), (0.006, 0.26, 0.011), LAMP),
-    box("grille", (1.635, 0, -0.08), (0.006, 0.30, 0.025), BLACK),
-    *both(lambda n, y: box(n, (1.635, y, -0.01), (0.006, 0.012, 0.07), AMBER), "front_marker", 0.45),
-    "      <!-- The dashboard behind the hood, the steering wheel (the driver sits on the left) -->",
-    *span("dashboard", 0.66, 0.90, 0.58, 0.54, 0.70, 0.06, SEAT_DARK),
+    "      <!-- The nose: a short rounded white hood just ahead of the front wheels, its face and the dark bumper below flush -->",
+    *span("hood", 0.78, 1.45, 0.62, 0.12, 0.62, 0.16, WHITE),
+    *span("front_bumper", 1.33, 1.46, 0.58, -0.20, 0.14, 0.055, GREY),
+    *round_lamp("head_lamp_left", 1.455, 0.36, 0.34, 0.11, LAMP, 1),
+    *round_lamp("head_lamp_right", 1.455, -0.36, 0.34, 0.11, LAMP, 1),
+    box("led_bar", (1.453, 0, 0.33), (0.006, 0.26, 0.011), LAMP),
+    box("grille", (1.465, 0, -0.08), (0.006, 0.30, 0.025), BLACK),
+    *both(lambda n, y: box(n, (1.465, y, -0.01), (0.006, 0.012, 0.07), AMBER), "front_marker", 0.45),
+    "      <!-- The windshield's foot on the hood, the dashboard behind it, the steering wheel (the driver sits on the left) -->",
+    capsule("windshield_foot", (1.10, -0.58, 0.635), (1.10, 0.58, 0.635), 0.022, BLACK),
+    *span("dashboard", 0.74, 1.08, 0.58, 0.56, 0.72, 0.06, SEAT_DARK),
     *steering_wheel(),
 
     "      <!-- Seats: the front row on a white pedestal, the rear row on the rear body -->",
@@ -227,9 +228,9 @@ BODY = [
     *both(lambda n, y: box(n, (-1.635, y, -0.02), (0.006, 0.012, 0.06), AMBER), "rear_marker", 0.45),
 
     "      <!-- The roof: black pillars, an open windshield frame, a long white roof with orange lines -->",
-    *both(lambda n, y: capsule(n, (0.86, y, 0.60), (0.70, y, 1.92), 0.035, BLACK), "front_pillar", 0.58),
+    *both(lambda n, y: capsule(n, (1.12, y, 0.62), (0.76, y, 1.92), 0.035, BLACK), "front_pillar", 0.58),
     *both(lambda n, y: capsule(n, (-1.50, y, 0.52), (-1.50, y, 1.92), 0.035, BLACK), "rear_pillar", 0.58),
-    capsule("windshield_top", (0.71, -0.58, 1.86), (0.71, 0.58, 1.86), 0.025, BLACK),
+    capsule("windshield_top", (0.78, -0.58, 1.86), (0.78, 0.58, 1.86), 0.025, BLACK),
     *both(mirror, "mirror", 0.70),
     *span("roof", -1.74, 0.96, 0.68, 1.92, 2.04, 0.05, WHITE),
     box("roof_underside", (-0.39, 0, 1.915), (1.30, 0.62, 0.006), UNDER_ROOF),
