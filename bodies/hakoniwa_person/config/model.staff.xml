@@ -9,86 +9,83 @@
       <geom name="person_collision" type="capsule" fromto="0 0 0.27 0 0 1.36" size="0.22" mass="60" group="3" rgba="0.2 0.6 1 0"/>
       <!-- A round shadow under the feet (the stick's own part in the viewer) -->
       <geom name="shadow_visual" type="cylinder" pos="0 0 0.004" size="0.24 0.002" rgba="0.32 0.33 0.36 1" contype="0" conaffinity="0" density="0" group="1"/>
-      <body name="torso" pos="0 0 0.66">
-        <geom name="torso_x_visual" type="box" pos="0 0 0.24" size="0.12 0.165 0.215" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_y_visual" type="box" pos="0 0 0.24" size="0.085 0.2 0.215" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_z_visual" type="box" pos="0 0 0.24" size="0.085 0.165 0.25" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge0_visual" type="capsule" fromto="-0.085 -0.165 0.025 0.085 -0.165 0.025" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge1_visual" type="capsule" fromto="-0.085 -0.165 0.455 0.085 -0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge2_visual" type="capsule" fromto="-0.085 0.165 0.025 0.085 0.165 0.025" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge3_visual" type="capsule" fromto="-0.085 0.165 0.455 0.085 0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge4_visual" type="capsule" fromto="-0.085 -0.165 0.025 -0.085 0.165 0.025" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge5_visual" type="capsule" fromto="-0.085 -0.165 0.455 -0.085 0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge6_visual" type="capsule" fromto="0.085 -0.165 0.025 0.085 0.165 0.025" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge7_visual" type="capsule" fromto="0.085 -0.165 0.455 0.085 0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge8_visual" type="capsule" fromto="-0.085 -0.165 0.025 -0.085 -0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge9_visual" type="capsule" fromto="-0.085 0.165 0.025 -0.085 0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge10_visual" type="capsule" fromto="0.085 -0.165 0.025 0.085 -0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="torso_edge11_visual" type="capsule" fromto="0.085 0.165 0.025 0.085 0.165 0.455" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="apron_visual" type="box" pos="0.13 0 0.16" size="0.008 0.17 0.25" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="apron_bib_visual" type="box" pos="0.13 0 0.42" size="0.008 0.11 0.06" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="apron_mark_visual" type="box" pos="0.139 0 0.17" size="0.002 0.05 0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="apron_mark_roof_visual" type="box" pos="0.139 0 0.225" size="0.002 0.035 0.018" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="apron_mark_window_visual" type="box" pos="0.141 0 0.165" size="0.002 0.02 0.02" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="apron_tie_left_visual" type="box" pos="0 0.205 0.18" size="0.1 0.006 0.015" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <geom name="apron_tie_right_visual" type="box" pos="0 -0.205 0.18" size="0.1 0.006 0.015" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-        <body name="head" pos="0 0 0.48">
-          <geom name="head_x_visual" type="box" pos="0 0 0.19" size="0.19 0.145 0.135" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_y_visual" type="box" pos="0 0 0.19" size="0.145 0.19 0.135" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_z_visual" type="box" pos="0 0 0.19" size="0.145 0.145 0.18" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge0_visual" type="capsule" fromto="-0.145 -0.145 0.055 0.145 -0.145 0.055" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge1_visual" type="capsule" fromto="-0.145 -0.145 0.325 0.145 -0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge2_visual" type="capsule" fromto="-0.145 0.145 0.055 0.145 0.145 0.055" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge3_visual" type="capsule" fromto="-0.145 0.145 0.325 0.145 0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge4_visual" type="capsule" fromto="-0.145 -0.145 0.055 -0.145 0.145 0.055" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge5_visual" type="capsule" fromto="-0.145 -0.145 0.325 -0.145 0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge6_visual" type="capsule" fromto="0.145 -0.145 0.055 0.145 0.145 0.055" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge7_visual" type="capsule" fromto="0.145 -0.145 0.325 0.145 0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge8_visual" type="capsule" fromto="-0.145 -0.145 0.055 -0.145 -0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge9_visual" type="capsule" fromto="-0.145 0.145 0.055 -0.145 0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge10_visual" type="capsule" fromto="0.145 -0.145 0.055 0.145 -0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="head_edge11_visual" type="capsule" fromto="0.145 0.145 0.055 0.145 0.145 0.325" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="eye_left_visual" type="box" pos="0.192 0.075 0.18" size="0.004 0.026 0.045" rgba="0.10 0.10 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="eye_right_visual" type="box" pos="0.192 -0.075 0.18" size="0.004 0.026 0.045" rgba="0.10 0.10 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_x_visual" type="box" pos="-0.01 0 0.35" size="0.205 0.17 0.025" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_y_visual" type="box" pos="-0.01 0 0.35" size="0.17 0.205 0.025" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_z_visual" type="box" pos="-0.01 0 0.35" size="0.17 0.17 0.06" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge0_visual" type="capsule" fromto="-0.18 -0.17 0.325 0.16 -0.17 0.325" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge1_visual" type="capsule" fromto="-0.18 -0.17 0.375 0.16 -0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge2_visual" type="capsule" fromto="-0.18 0.17 0.325 0.16 0.17 0.325" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge3_visual" type="capsule" fromto="-0.18 0.17 0.375 0.16 0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge4_visual" type="capsule" fromto="-0.18 -0.17 0.325 -0.18 0.17 0.325" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge5_visual" type="capsule" fromto="-0.18 -0.17 0.375 -0.18 0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge6_visual" type="capsule" fromto="0.16 -0.17 0.325 0.16 0.17 0.325" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge7_visual" type="capsule" fromto="0.16 -0.17 0.375 0.16 0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge8_visual" type="capsule" fromto="-0.18 -0.17 0.325 -0.18 -0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge9_visual" type="capsule" fromto="-0.18 0.17 0.325 -0.18 0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge10_visual" type="capsule" fromto="0.16 -0.17 0.325 0.16 -0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_top_edge11_visual" type="capsule" fromto="0.16 0.17 0.325 0.16 0.17 0.375" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_back_visual" type="box" pos="-0.18 0 0.24" size="0.03 0.2 0.13" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_fringe_visual" type="box" pos="0.17 0 0.32" size="0.04 0.2 0.04" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_side_left_visual" type="box" pos="-0.06 0.19 0.27" size="0.12 0.018 0.08" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="hair_side_right_visual" type="box" pos="-0.06 -0.19 0.27" size="0.12 0.018 0.08" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_x_visual" type="box" pos="-0.005 0 0.385" size="0.21 0.17 0.03" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_y_visual" type="box" pos="-0.005 0 0.385" size="0.17 0.21 0.03" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_z_visual" type="box" pos="-0.005 0 0.385" size="0.17 0.17 0.07" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge0_visual" type="capsule" fromto="-0.175 -0.17 0.355 0.165 -0.17 0.355" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge1_visual" type="capsule" fromto="-0.175 -0.17 0.415 0.165 -0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge2_visual" type="capsule" fromto="-0.175 0.17 0.355 0.165 0.17 0.355" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge3_visual" type="capsule" fromto="-0.175 0.17 0.415 0.165 0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge4_visual" type="capsule" fromto="-0.175 -0.17 0.355 -0.175 0.17 0.355" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge5_visual" type="capsule" fromto="-0.175 -0.17 0.415 -0.175 0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge6_visual" type="capsule" fromto="0.165 -0.17 0.355 0.165 0.17 0.355" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge7_visual" type="capsule" fromto="0.165 -0.17 0.415 0.165 0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge8_visual" type="capsule" fromto="-0.175 -0.17 0.355 -0.175 -0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge9_visual" type="capsule" fromto="-0.175 0.17 0.355 -0.175 0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge10_visual" type="capsule" fromto="0.165 -0.17 0.355 0.165 -0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_edge11_visual" type="capsule" fromto="0.165 0.17 0.355 0.165 0.17 0.415" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_front_visual" type="box" pos="0.206 0 0.385" size="0.006 0.12 0.05" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_brim_visual" type="box" pos="0.28 0 0.33" size="0.09 0.17 0.012" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
-          <geom name="cap_mark_visual" type="box" pos="0.213 0 0.385" size="0.002 0.04 0.03" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
-        </body>
-      </body>
+      <!-- The torso and the head are the stick's own (they do not move on it) -->
+      <geom name="torso_x_visual" type="box" pos="0 0 0.9" size="0.12 0.165 0.215" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_y_visual" type="box" pos="0 0 0.9" size="0.085 0.2 0.215" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_z_visual" type="box" pos="0 0 0.9" size="0.085 0.165 0.25" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge0_visual" type="capsule" fromto="-0.085 -0.165 0.685 0.085 -0.165 0.685" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge1_visual" type="capsule" fromto="-0.085 -0.165 1.115 0.085 -0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge2_visual" type="capsule" fromto="-0.085 0.165 0.685 0.085 0.165 0.685" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge3_visual" type="capsule" fromto="-0.085 0.165 1.115 0.085 0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge4_visual" type="capsule" fromto="-0.085 -0.165 0.685 -0.085 0.165 0.685" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge5_visual" type="capsule" fromto="-0.085 -0.165 1.115 -0.085 0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge6_visual" type="capsule" fromto="0.085 -0.165 0.685 0.085 0.165 0.685" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge7_visual" type="capsule" fromto="0.085 -0.165 1.115 0.085 0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge8_visual" type="capsule" fromto="-0.085 -0.165 0.685 -0.085 -0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge9_visual" type="capsule" fromto="-0.085 0.165 0.685 -0.085 0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge10_visual" type="capsule" fromto="0.085 -0.165 0.685 0.085 -0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="torso_edge11_visual" type="capsule" fromto="0.085 0.165 0.685 0.085 0.165 1.115" size="0.035" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="apron_visual" type="box" pos="0.13 0 0.82" size="0.008 0.17 0.25" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="apron_bib_visual" type="box" pos="0.13 0 1.08" size="0.008 0.11 0.06" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="apron_mark_visual" type="box" pos="0.139 0 0.83" size="0.002 0.05 0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="apron_mark_roof_visual" type="box" pos="0.139 0 0.885" size="0.002 0.035 0.018" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="apron_mark_window_visual" type="box" pos="0.141 0 0.825" size="0.002 0.02 0.02" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="apron_tie_left_visual" type="box" pos="0 0.205 0.84" size="0.1 0.006 0.015" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="apron_tie_right_visual" type="box" pos="0 -0.205 0.84" size="0.1 0.006 0.015" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_x_visual" type="box" pos="0 0 1.33" size="0.19 0.145 0.135" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_y_visual" type="box" pos="0 0 1.33" size="0.145 0.19 0.135" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_z_visual" type="box" pos="0 0 1.33" size="0.145 0.145 0.18" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge0_visual" type="capsule" fromto="-0.145 -0.145 1.195 0.145 -0.145 1.195" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge1_visual" type="capsule" fromto="-0.145 -0.145 1.465 0.145 -0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge2_visual" type="capsule" fromto="-0.145 0.145 1.195 0.145 0.145 1.195" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge3_visual" type="capsule" fromto="-0.145 0.145 1.465 0.145 0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge4_visual" type="capsule" fromto="-0.145 -0.145 1.195 -0.145 0.145 1.195" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge5_visual" type="capsule" fromto="-0.145 -0.145 1.465 -0.145 0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge6_visual" type="capsule" fromto="0.145 -0.145 1.195 0.145 0.145 1.195" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge7_visual" type="capsule" fromto="0.145 -0.145 1.465 0.145 0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge8_visual" type="capsule" fromto="-0.145 -0.145 1.195 -0.145 -0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge9_visual" type="capsule" fromto="-0.145 0.145 1.195 -0.145 0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge10_visual" type="capsule" fromto="0.145 -0.145 1.195 0.145 -0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="head_edge11_visual" type="capsule" fromto="0.145 0.145 1.195 0.145 0.145 1.465" size="0.045" rgba="0.98 0.84 0.70 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="eye_left_visual" type="box" pos="0.192 0.075 1.32" size="0.004 0.026 0.045" rgba="0.10 0.10 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="eye_right_visual" type="box" pos="0.192 -0.075 1.32" size="0.004 0.026 0.045" rgba="0.10 0.10 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_x_visual" type="box" pos="-0.01 0 1.49" size="0.205 0.17 0.025" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_y_visual" type="box" pos="-0.01 0 1.49" size="0.17 0.205 0.025" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_z_visual" type="box" pos="-0.01 0 1.49" size="0.17 0.17 0.06" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge0_visual" type="capsule" fromto="-0.18 -0.17 1.465 0.16 -0.17 1.465" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge1_visual" type="capsule" fromto="-0.18 -0.17 1.515 0.16 -0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge2_visual" type="capsule" fromto="-0.18 0.17 1.465 0.16 0.17 1.465" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge3_visual" type="capsule" fromto="-0.18 0.17 1.515 0.16 0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge4_visual" type="capsule" fromto="-0.18 -0.17 1.465 -0.18 0.17 1.465" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge5_visual" type="capsule" fromto="-0.18 -0.17 1.515 -0.18 0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge6_visual" type="capsule" fromto="0.16 -0.17 1.465 0.16 0.17 1.465" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge7_visual" type="capsule" fromto="0.16 -0.17 1.515 0.16 0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge8_visual" type="capsule" fromto="-0.18 -0.17 1.465 -0.18 -0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge9_visual" type="capsule" fromto="-0.18 0.17 1.465 -0.18 0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge10_visual" type="capsule" fromto="0.16 -0.17 1.465 0.16 -0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_top_edge11_visual" type="capsule" fromto="0.16 0.17 1.465 0.16 0.17 1.515" size="0.035" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_back_visual" type="box" pos="-0.18 0 1.38" size="0.03 0.2 0.13" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_fringe_visual" type="box" pos="0.17 0 1.46" size="0.04 0.2 0.04" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_side_left_visual" type="box" pos="-0.06 0.19 1.41" size="0.12 0.018 0.08" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="hair_side_right_visual" type="box" pos="-0.06 -0.19 1.41" size="0.12 0.018 0.08" rgba="0.36 0.23 0.15 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_x_visual" type="box" pos="-0.005 0 1.525" size="0.21 0.17 0.03" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_y_visual" type="box" pos="-0.005 0 1.525" size="0.17 0.21 0.03" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_z_visual" type="box" pos="-0.005 0 1.525" size="0.17 0.17 0.07" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge0_visual" type="capsule" fromto="-0.175 -0.17 1.495 0.165 -0.17 1.495" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge1_visual" type="capsule" fromto="-0.175 -0.17 1.555 0.165 -0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge2_visual" type="capsule" fromto="-0.175 0.17 1.495 0.165 0.17 1.495" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge3_visual" type="capsule" fromto="-0.175 0.17 1.555 0.165 0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge4_visual" type="capsule" fromto="-0.175 -0.17 1.495 -0.175 0.17 1.495" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge5_visual" type="capsule" fromto="-0.175 -0.17 1.555 -0.175 0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge6_visual" type="capsule" fromto="0.165 -0.17 1.495 0.165 0.17 1.495" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge7_visual" type="capsule" fromto="0.165 -0.17 1.555 0.165 0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge8_visual" type="capsule" fromto="-0.175 -0.17 1.495 -0.175 -0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge9_visual" type="capsule" fromto="-0.175 0.17 1.495 -0.175 0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge10_visual" type="capsule" fromto="0.165 -0.17 1.495 0.165 -0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_edge11_visual" type="capsule" fromto="0.165 0.17 1.495 0.165 0.17 1.555" size="0.04" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_front_visual" type="box" pos="0.206 0 1.525" size="0.006 0.12 0.05" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_brim_visual" type="box" pos="0.28 0 1.47" size="0.09 0.17 0.012" rgba="0.95 0.42 0.11 1" contype="0" conaffinity="0" density="0" group="1"/>
+      <geom name="cap_mark_visual" type="box" pos="0.213 0 1.525" size="0.002 0.04 0.03" rgba="0.94 0.94 0.93 1" contype="0" conaffinity="0" density="0" group="1"/>
       <body name="arm_left" pos="0 0.27 1.1">
         <joint name="shoulder_left_joint" type="hinge" axis="0 1 0" range="-75 75" limited="true" stiffness="40" damping="4"/>
         <inertial pos="0 0 -0.25" mass="0.5" diaginertia="0.01 0.01 0.002"/>

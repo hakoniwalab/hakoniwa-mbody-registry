@@ -13,16 +13,6 @@
       "path": "parts/person.glb"
     },
     {
-      "id": "torso",
-      "type": "glb",
-      "path": "parts/torso.glb"
-    },
-    {
-      "id": "head",
-      "type": "glb",
-      "path": "parts/head.glb"
-    },
-    {
       "id": "arm_left",
       "type": "glb",
       "path": "parts/arm_left.glb"
