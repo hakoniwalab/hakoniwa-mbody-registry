@@ -1,0 +1,14 @@
+name: hakoniwa_cart
+origin: hakoniwalab
+license: MIT
+description: >-
+  Hakoniwa Cart: an original four-seat cart authored for Hakoniwa from MuJoCo
+  primitives (boxes, cylinders and capsules; the panels rounded): a white nose
+  with round head lamps and an LED bar, two rows of seats facing forward, and
+  a long white roof with orange lines. Its look follows a Hakoniwa concept
+  drawing; its Ackermann joint structure follows the Hakoniwa Car.
+references:
+  - name: hakoniwa_car
+    url: ../hakoniwa_car
+    license: MIT
+    usage: Joint structure, frames, and MuJoCo preparation inputs as a template.
