@@ -21,6 +21,7 @@ GREY = "0.23 0.25 0.28 1"
 BLACK = "0.07 0.08 0.10 1"
 BLUE = "0.25 0.65 1.00 1"
 RED = "0.85 0.12 0.10 1"
+LAMP = "1 0.97 0.86 1"
 EYE = "0.97 0.98 1.00 1"
 TIRE = "0.08 0.08 0.08 1"
 HUB = "0.45 0.47 0.50 1"
@@ -107,6 +108,8 @@ BODY = [
     box("front_camera", (1.08, 0, 0.76), (0.006, 0.08, 0.03), BLACK),
     box("led_strip", (1.115, 0, 0.17), (0.006, 0.36, 0.018), BLUE),
     *mirrored(box, "headlight", (1.115, 0.46, 0.17), (0.006, 0.05, 0.025), BLUE),
+    *mirrored(box, "head_lamp", (1.112, 0.36, 0.05), (0.006, 0.07, 0.022), LAMP),
+    *mirrored(box, "side_led", (0.0, 0.605, 0.13), (0.95, 0.003, 0.012), BLUE),
     *mirrored(box, "side_camera", (0.97, 0.60, 0.78), (0.05, 0.04, 0.05), BLACK),
     *mirrored(box, "side_marker", (0.55, 0.565, 0.40), (0.04, 0.006, 0.025), BLACK),
     "      <!-- Roof sensor pod (rounded) and LiDAR -->",

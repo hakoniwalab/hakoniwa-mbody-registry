@@ -8,6 +8,7 @@ This directory is the source of truth for the generic Ackermann body.
 - `contact_excludes.yaml`: intentional assembly self-contact exclusions
 - `mujoco_world.yaml`: reproducible minimal test world
 - `viewer.recipe.yaml`: viewer-neutral GLB assembly and movable-joint selection
+- `lights.yaml`: the lights (`tools/glb_add_lights.py`, run by the Forge on the parts GLB): head lamps, tail lamps and amber side LEDs glow, and two head lights (spot lights) light the way at night
 - `provenance.yaml`: origin, license, and design references
 
 Generate all derived MJCF files with:
