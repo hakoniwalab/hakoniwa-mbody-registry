@@ -1,7 +1,7 @@
 # Hakoniwa Cart body
 
 The Hakoniwa Cart is a four-seat cart authored for Hakoniwa from MuJoCo
-primitives: a short rounded white nose (its face flush with the bumper, just ahead of the front wheels) with two round head lamps and a white LED
+primitives: a thin white nose just ahead of the front wheels (a face, a top and two sides, rounded only where they meet; each side's lower edge slants from the face down to the wheel arch over a dark flare) with two round head lamps in dark housings and a white LED
 bar between them over a dark bumper, two rows of seats facing forward (the
 driver on the front left), a grab bar behind the rear row, round red tail
 lamps, and a long white roof with orange lines on black pillars (the
@@ -9,8 +9,9 @@ windshield is an open frame). It is 3.1 m long, 1.4 m wide with the mirrors
 and 2.5 m high, and has the same Ackermann structure as the Hakoniwa Car: two
 independently steered front wheels and two driven rear wheels.
 
-- `build_model.py`: writes `model.xml`; the panels (nose, bumpers, pedestals,
-  rear body, seats, roof) are rounded boxes (three boxes and twelve edge
+- `build_model.py`: writes `model.xml`; the nose is thin plates joined by
+  capsules, the slanted lines tilted boxes; the other panels (bumpers,
+  pedestals, rear body, seats, roof) are rounded boxes (three boxes and twelve edge
   capsules each), the wheel arches half circles of capsules, the steering
   wheel a ring of capsules. Change the model there and run it, then the Forge
 - `model.xml`: the visual model (boxes, cylinders and capsules, no contact,

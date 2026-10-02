@@ -103,6 +103,46 @@ def span(name, x0, x1, y_half, z0, z1, radius, rgba):
     return rounded_box(name, ((x0 + x1) / 2, 0, (z0 + z1) / 2), ((x1 - x0) / 2, y_half, (z1 - z0) / 2), radius, rgba)
 
 
+def slanted(name, front, back, y, half_y, half_thickness, side, rgba):
+    """A plate in the x-z plane whose edge runs from `front` (x, z) to `back`
+    (x, z), lying `side` of it (+1 above, -1 below): a slanted line."""
+    (x0, z0), (x1, z1) = front, back
+    dx, dz = x0 - x1, z0 - z1
+    angle = math.atan2(-dz, dx)  # turning x about y onto the edge
+    normal = (math.sin(angle), math.cos(angle))
+    half_length = math.hypot(dx, dz) / 2
+    centre = ((x0 + x1) / 2 + side * half_thickness * normal[0], y, (z0 + z1) / 2 + side * half_thickness * normal[1])
+    return (f'      <geom name="{name}_visual" type="box" pos="{fmt(centre)}" '
+            f'size="{fmt((half_length, half_y, half_thickness))}" euler="0 {angle:g} 0" rgba="{rgba}" {VISUAL}/>')
+
+
+def nose():
+    """The nose: thin white panels (the face, the top, the sides) rounded only
+    where they meet, a dark bumper flush below the face. The white side's
+    lower edge slants from the face's lower corner back up to the wheel arch
+    over a dark flare, instead of dropping straight down onto the tyre."""
+    face, top, side, joint = 1.40, 0.56, 0.54, 0.06   # the joints' axes (capsules of radius `joint`)
+    bottom, back = 0.0, 0.96                          # the face's foot, the top's back edge
+    slant_front, slant_back = (1.46, bottom), (1.02, 0.19)  # the slanted line on each side
+    geoms = [
+        box("nose_face", (face + joint - 0.0225, 0, (bottom + top) / 2), (0.0225, side, (top - bottom) / 2), WHITE),
+        box("nose_top", ((back + face) / 2, 0, top + joint - 0.015), ((face - back) / 2, side, 0.015), WHITE),
+        capsule("nose_joint_top", (face, -side, top), (face, side, top), joint, WHITE),
+    ]
+    for name, sign in (("left", 1), ("right", -1)):
+        y = sign * side
+        plate = sign * (side + joint - 0.015)
+        geoms += [
+            capsule(f"nose_joint_face_{name}", (face, y, bottom), (face, y, top), joint, WHITE),
+            capsule(f"nose_joint_top_{name}", (face, y, top), (back, y, top), joint, WHITE),
+            box(f"nose_side_{name}", ((0.80 + face) / 2, plate, (0.19 + top) / 2), ((face - 0.80) / 2, 0.015, (top - 0.19) / 2), WHITE),
+            box(f"nose_side_foot_{name}", ((1.33 + face) / 2, plate, (bottom + 0.19) / 2), ((face - 1.33) / 2, 0.015, (0.19 - bottom) / 2), WHITE),
+            slanted(f"nose_side_slant_{name}", (1.38, 0.034), slant_back, plate, 0.015, 0.05, 1, WHITE),
+            slanted(f"nose_flare_{name}", slant_front, slant_back, sign * 0.607, 0.012, 0.03, -1, GREY),
+        ]
+    return geoms
+
+
 def fender(name, centre, radius, thickness, rgba, segments=8):
     """A wheel arch: capsules along a half circle above the wheel centre."""
     x, y, z = centre
@@ -139,7 +179,7 @@ def round_lamp(name, x, y, z, radius, ring_rgba, facing):
     """A round lamp on a face at x: a glowing ring, a dark inside and a lens (facing +1 front, -1 back)."""
     return [
         cylinder(f"{name}_ring", (x, y, z), (radius, 0.010), ring_rgba, ALONG_X),
-        cylinder(f"{name}_inside", (x + facing * 0.004, y, z), (radius * 0.72, 0.010), BLACK, ALONG_X),
+        cylinder(f"{name}_inside", (x + facing * 0.004, y, z), (radius * 0.82, 0.010), BLACK, ALONG_X),
         cylinder(f"{name}_lens", (x + facing * 0.008, y, z), (radius * 0.38, 0.010), LENS, ALONG_X),
     ]
 
@@ -194,14 +234,17 @@ BODY = [
     *(geom for x, end in ((WHEEL_X, "front"), (-WHEEL_X, "rear")) for side, y in (("left", 0.60), ("right", -0.60))
       for geom in fender(f"arch_{end}_{side}", (x, y, WHEEL_Z), 0.31, 0.035, GREY)),
 
-    "      <!-- The nose: a short rounded white hood just ahead of the front wheels, its face and the dark bumper below flush -->",
-    *span("hood", 0.78, 1.45, 0.62, 0.12, 0.62, 0.16, WHITE),
-    *span("front_bumper", 1.33, 1.46, 0.58, -0.20, 0.14, 0.055, GREY),
-    *round_lamp("head_lamp_left", 1.455, 0.36, 0.34, 0.11, LAMP, 1),
-    *round_lamp("head_lamp_right", 1.455, -0.36, 0.34, 0.11, LAMP, 1),
-    box("led_bar", (1.453, 0, 0.33), (0.006, 0.26, 0.011), LAMP),
-    box("grille", (1.465, 0, -0.08), (0.006, 0.30, 0.025), BLACK),
-    *both(lambda n, y: box(n, (1.465, y, -0.01), (0.006, 0.012, 0.07), AMBER), "front_marker", 0.45),
+    "      <!-- The nose: thin white panels just ahead of the front wheels, rounded where they meet; a slanted line down each side to the wheel arch -->",
+    *nose(),
+    *span("front_bumper", 1.34, 1.47, 0.61, -0.20, 0.0, 0.03, GREY),
+    # Dark housings round the lamps, narrowing inwards to the LED bar
+    *both(lambda n, y: cylinder(n, (1.461, y, 0.34), (0.13, 0.004), BLACK, ALONG_X), "lamp_housing", 0.36),
+    *both(lambda n, y: box(n, (1.461, y, 0.333), (0.004, 0.08, 0.032), BLACK), "lamp_housing_inner", 0.25),
+    *round_lamp("head_lamp_left", 1.465, 0.36, 0.34, 0.11, LAMP, 1),
+    *round_lamp("head_lamp_right", 1.465, -0.36, 0.34, 0.11, LAMP, 1),
+    box("led_bar", (1.463, 0, 0.33), (0.006, 0.26, 0.011), LAMP),
+    box("grille", (1.475, 0, -0.12), (0.006, 0.30, 0.025), BLACK),
+    *both(lambda n, y: box(n, (1.475, y, -0.09), (0.006, 0.012, 0.06), AMBER), "front_marker", 0.47),
     "      <!-- The windshield's foot on the hood, the dashboard behind it, the steering wheel (the driver sits on the left) -->",
     capsule("windshield_foot", (1.10, -0.58, 0.635), (1.10, 0.58, 0.635), 0.022, BLACK),
     *span("dashboard", 0.74, 1.08, 0.58, 0.56, 0.72, 0.06, SEAT_DARK),
