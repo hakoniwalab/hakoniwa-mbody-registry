@@ -1,0 +1,168 @@
+{
+  "format": "hako_viewer_model",
+  "version": "0.1",
+  "coordinate_system": "mujoco",
+  "robot": {
+    "name": "hakoniwa_person_child",
+    "root": "person"
+  },
+  "assets": [
+    {
+      "id": "person",
+      "type": "glb",
+      "path": "parts/person.glb"
+    },
+    {
+      "id": "torso",
+      "type": "glb",
+      "path": "parts/torso.glb"
+    },
+    {
+      "id": "head",
+      "type": "glb",
+      "path": "parts/head.glb"
+    },
+    {
+      "id": "arm_left",
+      "type": "glb",
+      "path": "parts/arm_left.glb"
+    },
+    {
+      "id": "arm_right",
+      "type": "glb",
+      "path": "parts/arm_right.glb"
+    },
+    {
+      "id": "leg_left",
+      "type": "glb",
+      "path": "parts/leg_left.glb"
+    },
+    {
+      "id": "leg_right",
+      "type": "glb",
+      "path": "parts/leg_right.glb"
+    }
+  ],
+  "base": {
+    "name": "person",
+    "asset": "person",
+    "mount": {
+      "xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rpy": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "movable_parts": [
+    {
+      "name": "arm_left",
+      "joint": "shoulder_left_joint",
+      "parent": "person",
+      "mount": {
+        "xyz": [
+          0.0,
+          0.189,
+          0.77
+        ],
+        "rpy": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "asset": "arm_left"
+    },
+    {
+      "name": "arm_right",
+      "joint": "shoulder_right_joint",
+      "parent": "person",
+      "mount": {
+        "xyz": [
+          0.0,
+          -0.189,
+          0.77
+        ],
+        "rpy": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "asset": "arm_right"
+    },
+    {
+      "name": "leg_left",
+      "joint": "hip_left_joint",
+      "parent": "person",
+      "mount": {
+        "xyz": [
+          0.0,
+          0.0735,
+          0.462
+        ],
+        "rpy": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "asset": "leg_left"
+    },
+    {
+      "name": "leg_right",
+      "joint": "hip_right_joint",
+      "parent": "person",
+      "mount": {
+        "xyz": [
+          0.0,
+          -0.0735,
+          0.462
+        ],
+        "rpy": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "asset": "leg_right"
+    }
+  ]
+}

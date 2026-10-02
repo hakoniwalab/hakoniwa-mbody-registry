@@ -228,6 +228,17 @@ def parse_geom(
     return None
 
 
+# Segments of a capsule's tessellation ([around, along]); None keeps trimesh's
+# default. --capsule-count sets it for bodies built from many small capsules.
+CAPSULE_COUNT: list[int] | None = None
+
+
+def capsule_mesh(trimesh, height: float, radius: float):
+    if CAPSULE_COUNT is None:
+        return trimesh.creation.capsule(height=height, radius=radius)
+    return trimesh.creation.capsule(height=height, radius=radius, count=CAPSULE_COUNT)
+
+
 def create_geometry(trimesh, geom: GeomSpec, debug_colors: bool):
     color_rgba = debug_rgba_for_name(geom.name) if debug_colors else geom.rgba
 
@@ -271,7 +282,7 @@ def create_geometry(trimesh, geom: GeomSpec, debug_colors: bool):
             length = float(np.linalg.norm(direction))
             if length <= 0.0:
                 fail(f"Capsule geom '{geom.name}' has zero-length fromto")
-            mesh = trimesh.creation.capsule(height=length, radius=radius)
+            mesh = capsule_mesh(trimesh, length, radius)
             align = trimesh.geometry.align_vectors(
                 np.array([0.0, 0.0, 1.0]), direction / length
             )
@@ -279,9 +290,7 @@ def create_geometry(trimesh, geom: GeomSpec, debug_colors: bool):
             mesh.apply_transform(align)
         else:
             half_length = geom.params["half_length"]
-            mesh = trimesh.creation.capsule(
-                height=half_length * 2.0, radius=radius
-            )
+            mesh = capsule_mesh(trimesh, half_length * 2.0, radius)
         apply_material_rgba(trimesh, mesh, color_rgba)
         return mesh
 
@@ -439,7 +448,17 @@ def main() -> None:
         default="mjcf",
         help="Output coordinate frame. 'threejs' maps MJCF FLU axes to Three.js right/up/back axes.",
     )
+    parser.add_argument(
+        "--capsule-count",
+        type=int,
+        help="Segments around (and along) each capsule; fewer make lighter GLBs for bodies of many small capsules. Default: trimesh's.",
+    )
     args = parser.parse_args()
+    global CAPSULE_COUNT
+    if args.capsule_count is not None:
+        if args.capsule_count < 4:
+            fail("--capsule-count must be at least 4")
+        CAPSULE_COUNT = [args.capsule_count, args.capsule_count]
 
     input_file = Path(args.input)
     if not input_file.is_file():

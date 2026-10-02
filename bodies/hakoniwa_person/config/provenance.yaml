@@ -1,0 +1,10 @@
+name: hakoniwa_person
+origin: hakoniwalab
+license: MIT
+description: >-
+  Hakoniwa People: original block-style people authored for Hakoniwa from
+  MuJoCo primitives (boxes, cylinders and capsules; heads, bodies and hair
+  rounded), in four looks (a visitor, a stall's staff, a passer-by with a
+  backpack, a child). In MuJoCo each is a capsule that slides and turns
+  above the ground; the arms and legs are hinged bodies for an animated
+  walk. Their look follows a Hakoniwa concept drawing.
