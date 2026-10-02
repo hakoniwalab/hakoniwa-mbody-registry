@@ -6,6 +6,7 @@ on:
       - 'tools/ackermann/**'
       - 'bodies/generic_ackermann_golf_cart/**'
       - 'bodies/hakoniwa_car/**'
+      - 'bodies/hakoniwa_cart/**'
       - 'bodies/hunter_v2/**'
       - 'sources/hunter_v2.yaml'
       - 'tests/test_ackermann_validation.py'
@@ -16,6 +17,7 @@ on:
       - 'tools/ackermann/**'
       - 'bodies/generic_ackermann_golf_cart/**'
       - 'bodies/hakoniwa_car/**'
+      - 'bodies/hakoniwa_cart/**'
       - 'bodies/hunter_v2/**'
       - 'sources/hunter_v2.yaml'
       - 'tests/test_ackermann_validation.py'
@@ -45,6 +47,9 @@ jobs:
 
       - name: Verify Hakoniwa Car reproduction and dynamics
         run: python tools/ackermann/forge.py hakoniwa_car --verify
+
+      - name: Verify Hakoniwa Cart reproduction and dynamics
+        run: python tools/ackermann/forge.py hakoniwa_cart --verify
 
       - name: Verify Hunter reproduction and dynamics
         run: python tools/ackermann/forge.py hunter_v2 --verify

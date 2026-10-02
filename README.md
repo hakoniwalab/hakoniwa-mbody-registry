@@ -165,6 +165,14 @@ LiDAR, is built the same way from primitives
 python tools/ackermann/forge.py hakoniwa_car --verify
 ```
 
+The Hakoniwa Cart, a four-seat cart (two rows under a long roof, round head
+lamps), is built the same way
+([`bodies/hakoniwa_cart/config/README.md`](bodies/hakoniwa_cart/config/README.md)):
+
+```bash
+python tools/ackermann/forge.py hakoniwa_cart --verify
+```
+
 The same narrow Forge contract also covers an external Xacro/DAE source:
 
 ```bash

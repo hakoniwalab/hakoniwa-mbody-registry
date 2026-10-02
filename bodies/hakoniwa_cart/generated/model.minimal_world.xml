@@ -1,0 +1,453 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="hakoniwa_cart_world">
+  <compiler angle="radian" autolimits="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" />
+  <asset>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1="0.45 0.65 0.95" rgb2="0.95 0.97 1.00" width="512" height="3072" />
+    <texture name="ground_tex" type="2d" builtin="checker" rgb1="0.32 0.42 0.30" rgb2="0.24 0.32 0.22" width="512" height="512" />
+    <material name="ground_mat" texture="ground_tex" texrepeat="12 12" reflectance="0.05" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size="30 30 0.1" material="ground_mat" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+    <light name="sun" directional="true" pos="0 0 100" dir="-0.3 -0.4 -1" diffuse="0.9 0.9 0.9" ambient="0.30 0.30 0.30" specular="0.15 0.15 0.15" />
+    <light name="fill_light" directional="true" pos="0 0 50" dir="0.5 0.4 -1" diffuse="0.25 0.25 0.28" ambient="0.08 0.08 0.10" specular="0.05 0.05 0.05" />
+    <body name="vehicle" pos="0 0 0.45">
+      <freejoint name="base_freejoint" />
+      <geom name="floor_visual" type="box" pos="0 0 -0.12" size="0.8 0.57 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_x_visual" type="box" pos="0 0.585 -0.12" size="0.78 0.01 0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_y_visual" type="box" pos="0 0.585 -0.12" size="0.75 0.04 0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_z_visual" type="box" pos="0 0.585 -0.12" size="0.75 0.01 0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge0_visual" type="capsule" fromto="-0.75 0.575 -0.15 0.75 0.575 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge1_visual" type="capsule" fromto="-0.75 0.575 -0.09 0.75 0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge2_visual" type="capsule" fromto="-0.75 0.595 -0.15 0.75 0.595 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge3_visual" type="capsule" fromto="-0.75 0.595 -0.09 0.75 0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge4_visual" type="capsule" fromto="-0.75 0.575 -0.15 -0.75 0.595 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge5_visual" type="capsule" fromto="-0.75 0.575 -0.09 -0.75 0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge6_visual" type="capsule" fromto="0.75 0.575 -0.15 0.75 0.595 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge7_visual" type="capsule" fromto="0.75 0.575 -0.09 0.75 0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge8_visual" type="capsule" fromto="-0.75 0.575 -0.15 -0.75 0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge9_visual" type="capsule" fromto="-0.75 0.595 -0.15 -0.75 0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge10_visual" type="capsule" fromto="0.75 0.575 -0.15 0.75 0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_left_edge11_visual" type="capsule" fromto="0.75 0.595 -0.15 0.75 0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_x_visual" type="box" pos="0 -0.585 -0.12" size="0.78 0.01 0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_y_visual" type="box" pos="0 -0.585 -0.12" size="0.75 0.04 0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_z_visual" type="box" pos="0 -0.585 -0.12" size="0.75 0.01 0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge0_visual" type="capsule" fromto="-0.75 -0.595 -0.15 0.75 -0.595 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge1_visual" type="capsule" fromto="-0.75 -0.595 -0.09 0.75 -0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge2_visual" type="capsule" fromto="-0.75 -0.575 -0.15 0.75 -0.575 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge3_visual" type="capsule" fromto="-0.75 -0.575 -0.09 0.75 -0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge4_visual" type="capsule" fromto="-0.75 -0.595 -0.15 -0.75 -0.575 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge5_visual" type="capsule" fromto="-0.75 -0.595 -0.09 -0.75 -0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge6_visual" type="capsule" fromto="0.75 -0.595 -0.15 0.75 -0.575 -0.15" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge7_visual" type="capsule" fromto="0.75 -0.595 -0.09 0.75 -0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge8_visual" type="capsule" fromto="-0.75 -0.595 -0.15 -0.75 -0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge9_visual" type="capsule" fromto="-0.75 -0.575 -0.15 -0.75 -0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge10_visual" type="capsule" fromto="0.75 -0.595 -0.15 0.75 -0.595 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_right_edge11_visual" type="capsule" fromto="0.75 -0.575 -0.15 0.75 -0.575 -0.09" size="0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_line_front_left_visual" type="box" pos="0.3 0.627 -0.13" size="0.3 0.004 0.01" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_line_front_right_visual" type="box" pos="0.3 -0.627 -0.13" size="0.3 0.004 0.01" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_line_rear_left_visual" type="box" pos="-0.4 0.627 -0.13" size="0.28 0.004 0.01" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="sill_line_rear_right_visual" type="box" pos="-0.4 -0.627 -0.13" size="0.28 0.004 0.01" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_underbody_visual" type="box" pos="1.05 0 -0.01" size="0.26 0.38 0.13" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_underbody_visual" type="box" pos="-1.05 0 -0.01" size="0.26 0.38 0.13" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_0_visual" type="capsule" fromto="1.36 0.6 -0.18 1.3364 0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_1_visual" type="capsule" fromto="1.3364 0.6 -0.0613681 1.2692 0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_2_visual" type="capsule" fromto="1.2692 0.6 0.0392031 1.16863 0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_3_visual" type="capsule" fromto="1.16863 0.6 0.106403 1.05 0.6 0.13" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_4_visual" type="capsule" fromto="1.05 0.6 0.13 0.931368 0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_5_visual" type="capsule" fromto="0.931368 0.6 0.106403 0.830797 0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_6_visual" type="capsule" fromto="0.830797 0.6 0.0392031 0.763597 0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_7_visual" type="capsule" fromto="0.763597 0.6 -0.0613681 0.74 0.6 -0.18" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_0_visual" type="capsule" fromto="1.36 -0.6 -0.18 1.3364 -0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_1_visual" type="capsule" fromto="1.3364 -0.6 -0.0613681 1.2692 -0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_2_visual" type="capsule" fromto="1.2692 -0.6 0.0392031 1.16863 -0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_3_visual" type="capsule" fromto="1.16863 -0.6 0.106403 1.05 -0.6 0.13" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_4_visual" type="capsule" fromto="1.05 -0.6 0.13 0.931368 -0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_5_visual" type="capsule" fromto="0.931368 -0.6 0.106403 0.830797 -0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_6_visual" type="capsule" fromto="0.830797 -0.6 0.0392031 0.763597 -0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_7_visual" type="capsule" fromto="0.763597 -0.6 -0.0613681 0.74 -0.6 -0.18" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_0_visual" type="capsule" fromto="-0.74 0.6 -0.18 -0.763597 0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_1_visual" type="capsule" fromto="-0.763597 0.6 -0.0613681 -0.830797 0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_2_visual" type="capsule" fromto="-0.830797 0.6 0.0392031 -0.931368 0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_3_visual" type="capsule" fromto="-0.931368 0.6 0.106403 -1.05 0.6 0.13" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_4_visual" type="capsule" fromto="-1.05 0.6 0.13 -1.16863 0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_5_visual" type="capsule" fromto="-1.16863 0.6 0.106403 -1.2692 0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_6_visual" type="capsule" fromto="-1.2692 0.6 0.0392031 -1.3364 0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_7_visual" type="capsule" fromto="-1.3364 0.6 -0.0613681 -1.36 0.6 -0.18" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_0_visual" type="capsule" fromto="-0.74 -0.6 -0.18 -0.763597 -0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_1_visual" type="capsule" fromto="-0.763597 -0.6 -0.0613681 -0.830797 -0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_2_visual" type="capsule" fromto="-0.830797 -0.6 0.0392031 -0.931368 -0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_3_visual" type="capsule" fromto="-0.931368 -0.6 0.106403 -1.05 -0.6 0.13" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_4_visual" type="capsule" fromto="-1.05 -0.6 0.13 -1.16863 -0.6 0.106403" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_5_visual" type="capsule" fromto="-1.16863 -0.6 0.106403 -1.2692 -0.6 0.0392031" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_6_visual" type="capsule" fromto="-1.2692 -0.6 0.0392031 -1.3364 -0.6 -0.0613681" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_7_visual" type="capsule" fromto="-1.3364 -0.6 -0.0613681 -1.36 -0.6 -0.18" size="0.035" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_x_visual" type="box" pos="1.19 0 0.37" size="0.41 0.46 0.09" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_y_visual" type="box" pos="1.19 0 0.37" size="0.25 0.62 0.09" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_z_visual" type="box" pos="1.19 0 0.37" size="0.25 0.46 0.25" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge0_visual" type="capsule" fromto="0.94 -0.46 0.28 1.44 -0.46 0.28" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge1_visual" type="capsule" fromto="0.94 -0.46 0.46 1.44 -0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge2_visual" type="capsule" fromto="0.94 0.46 0.28 1.44 0.46 0.28" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge3_visual" type="capsule" fromto="0.94 0.46 0.46 1.44 0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge4_visual" type="capsule" fromto="0.94 -0.46 0.28 0.94 0.46 0.28" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge5_visual" type="capsule" fromto="0.94 -0.46 0.46 0.94 0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge6_visual" type="capsule" fromto="1.44 -0.46 0.28 1.44 0.46 0.28" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge7_visual" type="capsule" fromto="1.44 -0.46 0.46 1.44 0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge8_visual" type="capsule" fromto="0.94 -0.46 0.28 0.94 -0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge9_visual" type="capsule" fromto="0.94 0.46 0.28 0.94 0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge10_visual" type="capsule" fromto="1.44 -0.46 0.28 1.44 -0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="hood_edge11_visual" type="capsule" fromto="1.44 0.46 0.28 1.44 0.46 0.46" size="0.16" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_x_visual" type="box" pos="1.465 0 -0.02" size="0.165 0.49 0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_y_visual" type="box" pos="1.465 0 -0.02" size="0.075 0.58 0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_z_visual" type="box" pos="1.465 0 -0.02" size="0.075 0.49 0.18" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge0_visual" type="capsule" fromto="1.39 -0.49 -0.11 1.54 -0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge1_visual" type="capsule" fromto="1.39 -0.49 0.07 1.54 -0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge2_visual" type="capsule" fromto="1.39 0.49 -0.11 1.54 0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge3_visual" type="capsule" fromto="1.39 0.49 0.07 1.54 0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge4_visual" type="capsule" fromto="1.39 -0.49 -0.11 1.39 0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge5_visual" type="capsule" fromto="1.39 -0.49 0.07 1.39 0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge6_visual" type="capsule" fromto="1.54 -0.49 -0.11 1.54 0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge7_visual" type="capsule" fromto="1.54 -0.49 0.07 1.54 0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge8_visual" type="capsule" fromto="1.39 -0.49 -0.11 1.39 -0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge9_visual" type="capsule" fromto="1.39 0.49 -0.11 1.39 0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge10_visual" type="capsule" fromto="1.54 -0.49 -0.11 1.54 -0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_edge11_visual" type="capsule" fromto="1.54 0.49 -0.11 1.54 0.49 0.07" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_left_ring_visual" type="cylinder" pos="1.605 0.36 0.4" size="0.11 0.01" euler="0 1.57079632679 0" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_left_inside_visual" type="cylinder" pos="1.609 0.36 0.4" size="0.0792 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_left_lens_visual" type="cylinder" pos="1.613 0.36 0.4" size="0.0418 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_right_ring_visual" type="cylinder" pos="1.605 -0.36 0.4" size="0.11 0.01" euler="0 1.57079632679 0" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_right_inside_visual" type="cylinder" pos="1.609 -0.36 0.4" size="0.0792 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="head_lamp_right_lens_visual" type="cylinder" pos="1.613 -0.36 0.4" size="0.0418 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="led_bar_visual" type="box" pos="1.603 0 0.38" size="0.006 0.26 0.011" rgba="1 0.97 0.86 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grille_visual" type="box" pos="1.635 0 -0.08" size="0.006 0.3 0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_marker_left_visual" type="box" pos="1.635 0.45 -0.01" size="0.006 0.012 0.07" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_marker_right_visual" type="box" pos="1.635 -0.45 -0.01" size="0.006 0.012 0.07" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_x_visual" type="box" pos="0.78 0 0.62" size="0.12 0.52 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_y_visual" type="box" pos="0.78 0 0.62" size="0.06 0.58 0.02" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_z_visual" type="box" pos="0.78 0 0.62" size="0.06 0.52 0.08" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge0_visual" type="capsule" fromto="0.72 -0.52 0.6 0.84 -0.52 0.6" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge1_visual" type="capsule" fromto="0.72 -0.52 0.64 0.84 -0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge2_visual" type="capsule" fromto="0.72 0.52 0.6 0.84 0.52 0.6" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge3_visual" type="capsule" fromto="0.72 0.52 0.64 0.84 0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge4_visual" type="capsule" fromto="0.72 -0.52 0.6 0.72 0.52 0.6" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge5_visual" type="capsule" fromto="0.72 -0.52 0.64 0.72 0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge6_visual" type="capsule" fromto="0.84 -0.52 0.6 0.84 0.52 0.6" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge7_visual" type="capsule" fromto="0.84 -0.52 0.64 0.84 0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge8_visual" type="capsule" fromto="0.72 -0.52 0.6 0.72 -0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge9_visual" type="capsule" fromto="0.72 0.52 0.6 0.72 0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge10_visual" type="capsule" fromto="0.84 -0.52 0.6 0.84 -0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_edge11_visual" type="capsule" fromto="0.84 0.52 0.6 0.84 0.52 0.64" size="0.06" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_column_visual" type="capsule" fromto="0.78 0.26 0.66 0.58 0.26 0.92" size="0.028" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_0_visual" type="capsule" fromto="0.58 0.43 0.92 0.512627 0.407224 0.868175" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_1_visual" type="capsule" fromto="0.512627 0.407224 0.868175 0.463306 0.345 0.830236" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_2_visual" type="capsule" fromto="0.463306 0.345 0.830236 0.445254 0.26 0.816349" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_3_visual" type="capsule" fromto="0.445254 0.26 0.816349 0.463306 0.175 0.830236" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_4_visual" type="capsule" fromto="0.463306 0.175 0.830236 0.512627 0.112776 0.868175" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_5_visual" type="capsule" fromto="0.512627 0.112776 0.868175 0.58 0.09 0.92" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_6_visual" type="capsule" fromto="0.58 0.09 0.92 0.647373 0.112776 0.971825" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_7_visual" type="capsule" fromto="0.647373 0.112776 0.971825 0.696694 0.175 1.00976" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_8_visual" type="capsule" fromto="0.696694 0.175 1.00976 0.714746 0.26 1.02365" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_9_visual" type="capsule" fromto="0.714746 0.26 1.02365 0.696694 0.345 1.00976" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_10_visual" type="capsule" fromto="0.696694 0.345 1.00976 0.647373 0.407224 0.971825" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_wheel_11_visual" type="capsule" fromto="0.647373 0.407224 0.971825 0.58 0.43 0.92" size="0.018" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_spoke_visual" type="capsule" fromto="0.58 0.1 0.92 0.58 0.42 0.92" size="0.014" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_x_visual" type="box" pos="0.2 0 0.08" size="0.25 0.5 0.14" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_y_visual" type="box" pos="0.2 0 0.08" size="0.19 0.56 0.14" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_z_visual" type="box" pos="0.2 0 0.08" size="0.19 0.5 0.2" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge0_visual" type="capsule" fromto="0.01 -0.5 -0.06 0.39 -0.5 -0.06" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge1_visual" type="capsule" fromto="0.01 -0.5 0.22 0.39 -0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge2_visual" type="capsule" fromto="0.01 0.5 -0.06 0.39 0.5 -0.06" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge3_visual" type="capsule" fromto="0.01 0.5 0.22 0.39 0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge4_visual" type="capsule" fromto="0.01 -0.5 -0.06 0.01 0.5 -0.06" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge5_visual" type="capsule" fromto="0.01 -0.5 0.22 0.01 0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge6_visual" type="capsule" fromto="0.39 -0.5 -0.06 0.39 0.5 -0.06" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge7_visual" type="capsule" fromto="0.39 -0.5 0.22 0.39 0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge8_visual" type="capsule" fromto="0.01 -0.5 -0.06 0.01 -0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge9_visual" type="capsule" fromto="0.01 0.5 -0.06 0.01 0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge10_visual" type="capsule" fromto="0.39 -0.5 -0.06 0.39 -0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pedestal_edge11_visual" type="capsule" fromto="0.39 0.5 -0.06 0.39 0.5 0.22" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_base_visual" type="box" pos="0.2 0.26 0.28" size="0.2 0.22 0.03" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_x_visual" type="box" pos="0.2 0.26 0.36" size="0.22 0.18 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_y_visual" type="box" pos="0.2 0.26 0.36" size="0.17 0.23 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_z_visual" type="box" pos="0.2 0.26 0.36" size="0.17 0.18 0.06" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge0_visual" type="capsule" fromto="0.03 0.08 0.35 0.37 0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge1_visual" type="capsule" fromto="0.03 0.08 0.37 0.37 0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge2_visual" type="capsule" fromto="0.03 0.44 0.35 0.37 0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge3_visual" type="capsule" fromto="0.03 0.44 0.37 0.37 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge4_visual" type="capsule" fromto="0.03 0.08 0.35 0.03 0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge5_visual" type="capsule" fromto="0.03 0.08 0.37 0.03 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge6_visual" type="capsule" fromto="0.37 0.08 0.35 0.37 0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge7_visual" type="capsule" fromto="0.37 0.08 0.37 0.37 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge8_visual" type="capsule" fromto="0.03 0.08 0.35 0.03 0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge9_visual" type="capsule" fromto="0.03 0.44 0.35 0.03 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge10_visual" type="capsule" fromto="0.37 0.08 0.35 0.37 0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_cushion_edge11_visual" type="capsule" fromto="0.37 0.44 0.35 0.37 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_x_visual" type="box" pos="-0.03 0.26 0.68" size="0.05 0.18 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_y_visual" type="box" pos="-0.03 0.26 0.68" size="0.01 0.22 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_z_visual" type="box" pos="-0.03 0.26 0.68" size="0.01 0.18 0.27" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge0_visual" type="capsule" fromto="-0.04 0.08 0.45 -0.02 0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge1_visual" type="capsule" fromto="-0.04 0.08 0.91 -0.02 0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge2_visual" type="capsule" fromto="-0.04 0.44 0.45 -0.02 0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge3_visual" type="capsule" fromto="-0.04 0.44 0.91 -0.02 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge4_visual" type="capsule" fromto="-0.04 0.08 0.45 -0.04 0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge5_visual" type="capsule" fromto="-0.04 0.08 0.91 -0.04 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge6_visual" type="capsule" fromto="-0.02 0.08 0.45 -0.02 0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge7_visual" type="capsule" fromto="-0.02 0.08 0.91 -0.02 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge8_visual" type="capsule" fromto="-0.04 0.08 0.45 -0.04 0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge9_visual" type="capsule" fromto="-0.04 0.44 0.45 -0.04 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge10_visual" type="capsule" fromto="-0.02 0.08 0.45 -0.02 0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_edge11_visual" type="capsule" fromto="-0.02 0.44 0.45 -0.02 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_frame_visual" type="box" pos="-0.06 0.26 0.66" size="0.03 0.23 0.28" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_left_back_line_visual" type="box" pos="0.021 0.37 0.7" size="0.004 0.012 0.2" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_base_visual" type="box" pos="0.2 -0.26 0.28" size="0.2 0.22 0.03" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_x_visual" type="box" pos="0.2 -0.26 0.36" size="0.22 0.18 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_y_visual" type="box" pos="0.2 -0.26 0.36" size="0.17 0.23 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_z_visual" type="box" pos="0.2 -0.26 0.36" size="0.17 0.18 0.06" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge0_visual" type="capsule" fromto="0.03 -0.44 0.35 0.37 -0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge1_visual" type="capsule" fromto="0.03 -0.44 0.37 0.37 -0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge2_visual" type="capsule" fromto="0.03 -0.08 0.35 0.37 -0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge3_visual" type="capsule" fromto="0.03 -0.08 0.37 0.37 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge4_visual" type="capsule" fromto="0.03 -0.44 0.35 0.03 -0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge5_visual" type="capsule" fromto="0.03 -0.44 0.37 0.03 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge6_visual" type="capsule" fromto="0.37 -0.44 0.35 0.37 -0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge7_visual" type="capsule" fromto="0.37 -0.44 0.37 0.37 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge8_visual" type="capsule" fromto="0.03 -0.44 0.35 0.03 -0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge9_visual" type="capsule" fromto="0.03 -0.08 0.35 0.03 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge10_visual" type="capsule" fromto="0.37 -0.44 0.35 0.37 -0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_cushion_edge11_visual" type="capsule" fromto="0.37 -0.08 0.35 0.37 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_x_visual" type="box" pos="-0.03 -0.26 0.68" size="0.05 0.18 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_y_visual" type="box" pos="-0.03 -0.26 0.68" size="0.01 0.22 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_z_visual" type="box" pos="-0.03 -0.26 0.68" size="0.01 0.18 0.27" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge0_visual" type="capsule" fromto="-0.04 -0.44 0.45 -0.02 -0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge1_visual" type="capsule" fromto="-0.04 -0.44 0.91 -0.02 -0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge2_visual" type="capsule" fromto="-0.04 -0.08 0.45 -0.02 -0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge3_visual" type="capsule" fromto="-0.04 -0.08 0.91 -0.02 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge4_visual" type="capsule" fromto="-0.04 -0.44 0.45 -0.04 -0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge5_visual" type="capsule" fromto="-0.04 -0.44 0.91 -0.04 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge6_visual" type="capsule" fromto="-0.02 -0.44 0.45 -0.02 -0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge7_visual" type="capsule" fromto="-0.02 -0.44 0.91 -0.02 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge8_visual" type="capsule" fromto="-0.04 -0.44 0.45 -0.04 -0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge9_visual" type="capsule" fromto="-0.04 -0.08 0.45 -0.04 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge10_visual" type="capsule" fromto="-0.02 -0.44 0.45 -0.02 -0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_edge11_visual" type="capsule" fromto="-0.02 -0.08 0.45 -0.02 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_frame_visual" type="box" pos="-0.06 -0.26 0.66" size="0.03 0.23 0.28" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_seat_right_back_line_visual" type="box" pos="0.021 -0.37 0.7" size="0.004 0.012 0.2" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_armrest_left_bar_visual" type="capsule" fromto="0.36 0.54 0.58 0 0.54 0.58" size="0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_armrest_left_post_visual" type="capsule" fromto="0.36 0.54 0.58 0.36 0.54 0.36" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_armrest_right_bar_visual" type="capsule" fromto="0.36 -0.54 0.58 0 -0.54 0.58" size="0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_armrest_right_post_visual" type="capsule" fromto="0.36 -0.54 0.58 0.36 -0.54 0.36" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_x_visual" type="box" pos="-1.2 0 0.21" size="0.42 0.56 0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_y_visual" type="box" pos="-1.2 0 0.21" size="0.36 0.62 0.03" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_z_visual" type="box" pos="-1.2 0 0.21" size="0.36 0.56 0.09" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge0_visual" type="capsule" fromto="-1.56 -0.56 0.18 -0.84 -0.56 0.18" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge1_visual" type="capsule" fromto="-1.56 -0.56 0.24 -0.84 -0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge2_visual" type="capsule" fromto="-1.56 0.56 0.18 -0.84 0.56 0.18" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge3_visual" type="capsule" fromto="-1.56 0.56 0.24 -0.84 0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge4_visual" type="capsule" fromto="-1.56 -0.56 0.18 -1.56 0.56 0.18" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge5_visual" type="capsule" fromto="-1.56 -0.56 0.24 -1.56 0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge6_visual" type="capsule" fromto="-0.84 -0.56 0.18 -0.84 0.56 0.18" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge7_visual" type="capsule" fromto="-0.84 -0.56 0.24 -0.84 0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge8_visual" type="capsule" fromto="-1.56 -0.56 0.18 -1.56 -0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge9_visual" type="capsule" fromto="-1.56 0.56 0.18 -1.56 0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge10_visual" type="capsule" fromto="-0.84 -0.56 0.18 -0.84 -0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_body_edge11_visual" type="capsule" fromto="-0.84 0.56 0.18 -0.84 0.56 0.24" size="0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_x_visual" type="box" pos="-1.44 0 0.32" size="0.18 0.52 0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_y_visual" type="box" pos="-1.44 0 0.32" size="0.08 0.62 0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_z_visual" type="box" pos="-1.44 0 0.32" size="0.08 0.52 0.2" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge0_visual" type="capsule" fromto="-1.52 -0.52 0.22 -1.36 -0.52 0.22" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge1_visual" type="capsule" fromto="-1.52 -0.52 0.42 -1.36 -0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge2_visual" type="capsule" fromto="-1.52 0.52 0.22 -1.36 0.52 0.22" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge3_visual" type="capsule" fromto="-1.52 0.52 0.42 -1.36 0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge4_visual" type="capsule" fromto="-1.52 -0.52 0.22 -1.52 0.52 0.22" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge5_visual" type="capsule" fromto="-1.52 -0.52 0.42 -1.52 0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge6_visual" type="capsule" fromto="-1.36 -0.52 0.22 -1.36 0.52 0.22" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge7_visual" type="capsule" fromto="-1.36 -0.52 0.42 -1.36 0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge8_visual" type="capsule" fromto="-1.52 -0.52 0.22 -1.52 -0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge9_visual" type="capsule" fromto="-1.52 0.52 0.22 -1.52 0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge10_visual" type="capsule" fromto="-1.36 -0.52 0.22 -1.36 -0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_edge11_visual" type="capsule" fromto="-1.36 0.52 0.22 -1.36 0.52 0.42" size="0.1" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_base_visual" type="box" pos="-1 0.26 0.28" size="0.2 0.22 0.03" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_x_visual" type="box" pos="-1 0.26 0.36" size="0.22 0.18 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_y_visual" type="box" pos="-1 0.26 0.36" size="0.17 0.23 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_z_visual" type="box" pos="-1 0.26 0.36" size="0.17 0.18 0.06" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge0_visual" type="capsule" fromto="-1.17 0.08 0.35 -0.83 0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge1_visual" type="capsule" fromto="-1.17 0.08 0.37 -0.83 0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge2_visual" type="capsule" fromto="-1.17 0.44 0.35 -0.83 0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge3_visual" type="capsule" fromto="-1.17 0.44 0.37 -0.83 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge4_visual" type="capsule" fromto="-1.17 0.08 0.35 -1.17 0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge5_visual" type="capsule" fromto="-1.17 0.08 0.37 -1.17 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge6_visual" type="capsule" fromto="-0.83 0.08 0.35 -0.83 0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge7_visual" type="capsule" fromto="-0.83 0.08 0.37 -0.83 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge8_visual" type="capsule" fromto="-1.17 0.08 0.35 -1.17 0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge9_visual" type="capsule" fromto="-1.17 0.44 0.35 -1.17 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge10_visual" type="capsule" fromto="-0.83 0.08 0.35 -0.83 0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_cushion_edge11_visual" type="capsule" fromto="-0.83 0.44 0.35 -0.83 0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_x_visual" type="box" pos="-1.23 0.26 0.68" size="0.05 0.18 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_y_visual" type="box" pos="-1.23 0.26 0.68" size="0.01 0.22 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_z_visual" type="box" pos="-1.23 0.26 0.68" size="0.01 0.18 0.27" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge0_visual" type="capsule" fromto="-1.24 0.08 0.45 -1.22 0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge1_visual" type="capsule" fromto="-1.24 0.08 0.91 -1.22 0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge2_visual" type="capsule" fromto="-1.24 0.44 0.45 -1.22 0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge3_visual" type="capsule" fromto="-1.24 0.44 0.91 -1.22 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge4_visual" type="capsule" fromto="-1.24 0.08 0.45 -1.24 0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge5_visual" type="capsule" fromto="-1.24 0.08 0.91 -1.24 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge6_visual" type="capsule" fromto="-1.22 0.08 0.45 -1.22 0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge7_visual" type="capsule" fromto="-1.22 0.08 0.91 -1.22 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge8_visual" type="capsule" fromto="-1.24 0.08 0.45 -1.24 0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge9_visual" type="capsule" fromto="-1.24 0.44 0.45 -1.24 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge10_visual" type="capsule" fromto="-1.22 0.08 0.45 -1.22 0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_edge11_visual" type="capsule" fromto="-1.22 0.44 0.45 -1.22 0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_frame_visual" type="box" pos="-1.26 0.26 0.66" size="0.03 0.23 0.28" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_left_back_line_visual" type="box" pos="-1.179 0.37 0.7" size="0.004 0.012 0.2" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_base_visual" type="box" pos="-1 -0.26 0.28" size="0.2 0.22 0.03" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_x_visual" type="box" pos="-1 -0.26 0.36" size="0.22 0.18 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_y_visual" type="box" pos="-1 -0.26 0.36" size="0.17 0.23 0.01" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_z_visual" type="box" pos="-1 -0.26 0.36" size="0.17 0.18 0.06" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge0_visual" type="capsule" fromto="-1.17 -0.44 0.35 -0.83 -0.44 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge1_visual" type="capsule" fromto="-1.17 -0.44 0.37 -0.83 -0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge2_visual" type="capsule" fromto="-1.17 -0.08 0.35 -0.83 -0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge3_visual" type="capsule" fromto="-1.17 -0.08 0.37 -0.83 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge4_visual" type="capsule" fromto="-1.17 -0.44 0.35 -1.17 -0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge5_visual" type="capsule" fromto="-1.17 -0.44 0.37 -1.17 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge6_visual" type="capsule" fromto="-0.83 -0.44 0.35 -0.83 -0.08 0.35" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge7_visual" type="capsule" fromto="-0.83 -0.44 0.37 -0.83 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge8_visual" type="capsule" fromto="-1.17 -0.44 0.35 -1.17 -0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge9_visual" type="capsule" fromto="-1.17 -0.08 0.35 -1.17 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge10_visual" type="capsule" fromto="-0.83 -0.44 0.35 -0.83 -0.44 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_cushion_edge11_visual" type="capsule" fromto="-0.83 -0.08 0.35 -0.83 -0.08 0.37" size="0.05" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_x_visual" type="box" pos="-1.23 -0.26 0.68" size="0.05 0.18 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_y_visual" type="box" pos="-1.23 -0.26 0.68" size="0.01 0.22 0.23" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_z_visual" type="box" pos="-1.23 -0.26 0.68" size="0.01 0.18 0.27" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge0_visual" type="capsule" fromto="-1.24 -0.44 0.45 -1.22 -0.44 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge1_visual" type="capsule" fromto="-1.24 -0.44 0.91 -1.22 -0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge2_visual" type="capsule" fromto="-1.24 -0.08 0.45 -1.22 -0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge3_visual" type="capsule" fromto="-1.24 -0.08 0.91 -1.22 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge4_visual" type="capsule" fromto="-1.24 -0.44 0.45 -1.24 -0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge5_visual" type="capsule" fromto="-1.24 -0.44 0.91 -1.24 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge6_visual" type="capsule" fromto="-1.22 -0.44 0.45 -1.22 -0.08 0.45" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge7_visual" type="capsule" fromto="-1.22 -0.44 0.91 -1.22 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge8_visual" type="capsule" fromto="-1.24 -0.44 0.45 -1.24 -0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge9_visual" type="capsule" fromto="-1.24 -0.08 0.45 -1.24 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge10_visual" type="capsule" fromto="-1.22 -0.44 0.45 -1.22 -0.44 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_edge11_visual" type="capsule" fromto="-1.22 -0.08 0.45 -1.22 -0.08 0.91" size="0.04" rgba="0.84 0.84 0.82 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_frame_visual" type="box" pos="-1.26 -0.26 0.66" size="0.03 0.23 0.28" rgba="0.16 0.17 0.19 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_seat_right_back_line_visual" type="box" pos="-1.179 -0.37 0.7" size="0.004 0.012 0.2" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_armrest_left_bar_visual" type="capsule" fromto="-0.84 0.54 0.58 -1.2 0.54 0.58" size="0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_armrest_left_post_visual" type="capsule" fromto="-0.84 0.54 0.58 -0.84 0.54 0.36" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_armrest_right_bar_visual" type="capsule" fromto="-0.84 -0.54 0.58 -1.2 -0.54 0.58" size="0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_armrest_right_post_visual" type="capsule" fromto="-0.84 -0.54 0.58 -0.84 -0.54 0.36" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grab_bar_top_visual" type="capsule" fromto="-1.54 -0.52 0.9 -1.54 0.52 0.9" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grab_bar_post_left_visual" type="capsule" fromto="-1.54 0.52 0.9 -1.54 0.52 0.52" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grab_bar_post_right_visual" type="capsule" fromto="-1.54 -0.52 0.9 -1.54 -0.52 0.52" size="0.022" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grab_bar_side_left_visual" type="capsule" fromto="-1.54 0.56 0.9 -1.3 0.56 0.9" size="0.02" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grab_bar_side_right_visual" type="capsule" fromto="-1.54 -0.56 0.9 -1.3 -0.56 0.9" size="0.02" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_x_visual" type="box" pos="-1.465 0 -0.035" size="0.165 0.49 0.075" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_y_visual" type="box" pos="-1.465 0 -0.035" size="0.075 0.58 0.075" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_z_visual" type="box" pos="-1.465 0 -0.035" size="0.075 0.49 0.165" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge0_visual" type="capsule" fromto="-1.54 -0.49 -0.11 -1.39 -0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge1_visual" type="capsule" fromto="-1.54 -0.49 0.04 -1.39 -0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge2_visual" type="capsule" fromto="-1.54 0.49 -0.11 -1.39 0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge3_visual" type="capsule" fromto="-1.54 0.49 0.04 -1.39 0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge4_visual" type="capsule" fromto="-1.54 -0.49 -0.11 -1.54 0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge5_visual" type="capsule" fromto="-1.54 -0.49 0.04 -1.54 0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge6_visual" type="capsule" fromto="-1.39 -0.49 -0.11 -1.39 0.49 -0.11" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge7_visual" type="capsule" fromto="-1.39 -0.49 0.04 -1.39 0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge8_visual" type="capsule" fromto="-1.54 -0.49 -0.11 -1.54 -0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge9_visual" type="capsule" fromto="-1.54 0.49 -0.11 -1.54 0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge10_visual" type="capsule" fromto="-1.39 -0.49 -0.11 -1.39 -0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_edge11_visual" type="capsule" fromto="-1.39 0.49 -0.11 -1.39 0.49 0.04" size="0.09" rgba="0.22 0.23 0.25 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_lamp_left_ring_visual" type="cylinder" pos="-1.625 0.38 0.32" size="0.07 0.01" euler="0 1.57079632679 0" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_lamp_left_inside_visual" type="cylinder" pos="-1.629 0.38 0.32" size="0.0504 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_lamp_left_lens_visual" type="cylinder" pos="-1.633 0.38 0.32" size="0.0266 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_lamp_right_ring_visual" type="cylinder" pos="-1.625 -0.38 0.32" size="0.07 0.01" euler="0 1.57079632679 0" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_lamp_right_inside_visual" type="cylinder" pos="-1.629 -0.38 0.32" size="0.0504 0.01" euler="0 1.57079632679 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_lamp_right_lens_visual" type="cylinder" pos="-1.633 -0.38 0.32" size="0.0266 0.01" euler="0 1.57079632679 0" rgba="0.72 0.75 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_bar_visual" type="box" pos="-1.623 0 0.31" size="0.006 0.28 0.01" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_marker_left_visual" type="box" pos="-1.635 0.45 -0.02" size="0.006 0.012 0.06" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_marker_right_visual" type="box" pos="-1.635 -0.45 -0.02" size="0.006 0.012 0.06" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pillar_left_visual" type="capsule" fromto="0.86 0.58 0.6 0.7 0.58 1.92" size="0.035" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_pillar_right_visual" type="capsule" fromto="0.86 -0.58 0.6 0.7 -0.58 1.92" size="0.035" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_pillar_left_visual" type="capsule" fromto="-1.5 0.58 0.52 -1.5 0.58 1.92" size="0.035" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_pillar_right_visual" type="capsule" fromto="-1.5 -0.58 0.52 -1.5 -0.58 1.92" size="0.035" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="windshield_top_visual" type="capsule" fromto="0.71 -0.58 1.86 0.71 0.58 1.86" size="0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_left_arm_visual" type="capsule" fromto="0.8 0.6 1.05 0.8 0.7 1.05" size="0.012" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_left_head_visual" type="box" pos="0.8 0.72 1.1" size="0.02 0.045 0.085" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_left_signal_visual" type="box" pos="0.822 0.72 1.1" size="0.003 0.01 0.06" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_right_arm_visual" type="capsule" fromto="0.8 -0.6 1.05 0.8 -0.7 1.05" size="0.012" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_right_head_visual" type="box" pos="0.8 -0.72 1.1" size="0.02 0.045 0.085" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_right_signal_visual" type="box" pos="0.822 -0.72 1.1" size="0.003 0.01 0.06" rgba="1.00 0.62 0.05 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_x_visual" type="box" pos="-0.39 0 1.98" size="1.35 0.63 0.01" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_y_visual" type="box" pos="-0.39 0 1.98" size="1.3 0.68 0.01" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_z_visual" type="box" pos="-0.39 0 1.98" size="1.3 0.63 0.06" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge0_visual" type="capsule" fromto="-1.69 -0.63 1.97 0.91 -0.63 1.97" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge1_visual" type="capsule" fromto="-1.69 -0.63 1.99 0.91 -0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge2_visual" type="capsule" fromto="-1.69 0.63 1.97 0.91 0.63 1.97" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge3_visual" type="capsule" fromto="-1.69 0.63 1.99 0.91 0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge4_visual" type="capsule" fromto="-1.69 -0.63 1.97 -1.69 0.63 1.97" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge5_visual" type="capsule" fromto="-1.69 -0.63 1.99 -1.69 0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge6_visual" type="capsule" fromto="0.91 -0.63 1.97 0.91 0.63 1.97" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge7_visual" type="capsule" fromto="0.91 -0.63 1.99 0.91 0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge8_visual" type="capsule" fromto="-1.69 -0.63 1.97 -1.69 -0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge9_visual" type="capsule" fromto="-1.69 0.63 1.97 -1.69 0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge10_visual" type="capsule" fromto="0.91 -0.63 1.97 0.91 -0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_edge11_visual" type="capsule" fromto="0.91 0.63 1.97 0.91 0.63 1.99" size="0.05" rgba="0.95 0.95 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_underside_visual" type="box" pos="-0.39 0 1.915" size="1.3 0.62 0.006" rgba="0.80 0.80 0.78 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_line_left_visual" type="box" pos="-0.39 0.682 1.985" size="1.1 0.004 0.01" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_line_right_visual" type="box" pos="-0.39 -0.682 1.985" size="1.1 0.004 0.01" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_front_line_visual" type="box" pos="0.962 0 1.985" size="0.004 0.5 0.01" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      <body name="front_left_steer" pos="1.05 0.52 -0.18">
+        <inertial pos="0 0 0" mass="0.3" diaginertia="0.001 0.001 0.001" />
+        <joint name="front_left_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.05" armature="0.01" />
+        <body name="front_left_wheel">
+          <joint name="front_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+          <geom name="front_left_tire_visual" type="cylinder" pos="0 0 0" size="0.27 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_rim_visual" type="cylinder" pos="0 0 0" size="0.17 0.102" euler="1.57079632679 0 0" rgba="0.30 0.31 0.33 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spokes_visual" type="cylinder" pos="0 0 0" size="0.13 0.104" euler="1.57079632679 0 0" rgba="0.70 0.72 0.74 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_cap_visual" type="cylinder" pos="0 0 0" size="0.035 0.106" euler="1.57079632679 0 0" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_tire" type="cylinder" size="0.27 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        </body>
+      </body>
+      <body name="front_right_steer" pos="1.05 -0.52 -0.18">
+        <inertial pos="0 0 0" mass="0.3" diaginertia="0.001 0.001 0.001" />
+        <joint name="front_right_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.05" armature="0.01" />
+        <body name="front_right_wheel">
+          <joint name="front_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+          <geom name="front_right_tire_visual" type="cylinder" pos="0 0 0" size="0.27 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_rim_visual" type="cylinder" pos="0 0 0" size="0.17 0.102" euler="1.57079632679 0 0" rgba="0.30 0.31 0.33 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spokes_visual" type="cylinder" pos="0 0 0" size="0.13 0.104" euler="1.57079632679 0 0" rgba="0.70 0.72 0.74 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_cap_visual" type="cylinder" pos="0 0 0" size="0.035 0.106" euler="1.57079632679 0 0" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_tire" type="cylinder" size="0.27 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        </body>
+      </body>
+      <body name="rear_left_wheel" pos="-1.05 0.52 -0.18">
+        <joint name="rear_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+        <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.27 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_rim_visual" type="cylinder" pos="0 0 0" size="0.17 0.102" euler="1.57079632679 0 0" rgba="0.30 0.31 0.33 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spokes_visual" type="cylinder" pos="0 0 0" size="0.13 0.104" euler="1.57079632679 0 0" rgba="0.70 0.72 0.74 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_cap_visual" type="cylinder" pos="0 0 0" size="0.035 0.106" euler="1.57079632679 0 0" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_tire" type="cylinder" size="0.27 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      </body>
+      <body name="rear_right_wheel" pos="-1.05 -0.52 -0.18">
+        <joint name="rear_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+        <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.27 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_rim_visual" type="cylinder" pos="0 0 0" size="0.17 0.102" euler="1.57079632679 0 0" rgba="0.30 0.31 0.33 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spokes_visual" type="cylinder" pos="0 0 0" size="0.13 0.104" euler="1.57079632679 0 0" rgba="0.70 0.72 0.74 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_cap_visual" type="cylinder" pos="0 0 0" size="0.035 0.106" euler="1.57079632679 0 0" rgba="1.00 0.50 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_tire" type="cylinder" size="0.27 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      </body>
+      <geom name="chassis_collision" type="box" pos="0 0 -0.08" size="1.40 0.42 0.10" mass="320" rgba="0.18 0.22 0.24 1" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      <geom name="body_collision" type="box" pos="-0.01 0 0.30" size="1.62 0.62 0.42" density="0" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      <geom name="roof_collision" type="box" pos="-0.39 0 1.98" size="1.35 0.68 0.06" density="0" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="front_left_steer_motor" joint="front_left_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="1500" kv="70" />
+    <position name="front_right_steer_motor" joint="front_right_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="1500" kv="70" />
+    <velocity name="rear_left_wheel_motor" joint="rear_left_wheel_joint" ctrllimited="true" ctrlrange="-14 14" kv="300" />
+    <velocity name="rear_right_wheel_motor" joint="rear_right_wheel_joint" ctrllimited="true" ctrlrange="-14 14" kv="300" />
+  </actuator>
+  <contact>
+    <exclude body1="vehicle" body2="front_left_wheel" />
+    <exclude body1="vehicle" body2="front_right_wheel" />
+  </contact>
+</mujoco>

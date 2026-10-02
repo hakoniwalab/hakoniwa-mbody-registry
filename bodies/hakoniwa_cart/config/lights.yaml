@@ -1,0 +1,13 @@
+# The Hakoniwa Cart's lights (tools/glb_add_lights.py, run by the Forge on the
+# parts GLBs): the round head lamps and the LED bar between them glow white,
+# the round tail lamps and their bar red, the corner markers and the mirror
+# signals amber, and two head lights light the way at night.
+glow:
+  - {rgba: [1.0, 0.97, 0.86], emissive: [1.0, 0.9, 0.7], strength: 2.0}     # head lamps, LED bar
+  - {rgba: [0.85, 0.12, 0.10], emissive: [1.0, 0.06, 0.03], strength: 2.0}  # tail lamps
+  - {rgba: [1.0, 0.62, 0.05], emissive: [1.0, 0.45, 0.02], strength: 1.6}   # markers, mirror signals
+lights:
+  - {part: vehicle, name: head_light_left, type: spot, position: [1.63, 0.36, 0.40], direction: [1, 0, -0.08],
+     color: [1.0, 0.95, 0.85], intensity: 45, range: 28, inner_cone_deg: 14, outer_cone_deg: 34}
+  - {part: vehicle, name: head_light_right, type: spot, position: [1.63, -0.36, 0.40], direction: [1, 0, -0.08],
+     color: [1.0, 0.95, 0.85], intensity: 45, range: 28, inner_cone_deg: 14, outer_cone_deg: 34}
