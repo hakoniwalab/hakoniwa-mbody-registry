@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="hakoniwa_car_world">
+  <compiler angle="radian" autolimits="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" />
+  <asset>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1="0.45 0.65 0.95" rgb2="0.95 0.97 1.00" width="512" height="3072" />
+    <texture name="ground_tex" type="2d" builtin="checker" rgb1="0.32 0.42 0.30" rgb2="0.24 0.32 0.22" width="512" height="512" />
+    <material name="ground_mat" texture="ground_tex" texrepeat="12 12" reflectance="0.05" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size="30 30 0.1" material="ground_mat" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+    <light name="sun" directional="true" pos="0 0 100" dir="-0.3 -0.4 -1" diffuse="0.9 0.9 0.9" ambient="0.30 0.30 0.30" specular="0.15 0.15 0.15" />
+    <light name="fill_light" directional="true" pos="0 0 50" dir="0.5 0.4 -1" diffuse="0.25 0.25 0.28" ambient="0.08 0.08 0.10" specular="0.05 0.05 0.05" />
+    <body name="vehicle" pos="0 0 0.42">
+      <freejoint name="base_freejoint" />
+      <geom name="chassis_core_visual" type="box" pos="0 0 -0.12" size="1.06 0.38 0.13" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_bumper_visual" type="box" pos="1.04 0 -0.13" size="0.06 0.55 0.12" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_bumper_visual" type="box" pos="-1.04 0 -0.13" size="0.06 0.55 0.12" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_skirt_left_visual" type="box" pos="0 0.53 -0.10" size="0.47 0.05 0.10" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_skirt_right_visual" type="box" pos="0 -0.53 -0.10" size="0.47 0.05 0.10" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_band_left_visual" type="box" pos="0 0.594 0.05" size="1.08 0.008 0.08" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_band_right_visual" type="box" pos="0 -0.594 0.05" size="1.08 0.008 0.08" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_left_visual" type="box" pos="0.75 0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_front_right_visual" type="box" pos="0.75 -0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_left_visual" type="box" pos="-0.75 0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="arch_rear_right_visual" type="box" pos="-0.75 -0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_visual" type="box" pos="0.70 0 0.47" size="0.36 0.56 0.46" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_visual" type="box" pos="1.07 0 0.12" size="0.04 0.52 0.11" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="windshield_visual" type="box" pos="1.065 0 0.55" size="0.012 0.46 0.30" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_window_left_visual" type="box" pos="0.86 0.565 0.60" size="0.17 0.006 0.22" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_window_right_visual" type="box" pos="0.86 -0.565 0.60" size="0.17 0.006 0.22" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="eye_left_visual" type="box" pos="1.08 0.17 0.52" size="0.006 0.055 0.065" rgba="0.97 0.98 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="eye_right_visual" type="box" pos="1.08 -0.17 0.52" size="0.006 0.055 0.065" rgba="0.97 0.98 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_camera_visual" type="box" pos="1.08 0 0.78" size="0.006 0.08 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="led_strip_visual" type="box" pos="1.115 0 0.17" size="0.006 0.36 0.018" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="headlight_left_visual" type="box" pos="1.115 0.48 0.17" size="0.006 0.05 0.025" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="headlight_right_visual" type="box" pos="1.115 -0.48 0.17" size="0.006 0.05 0.025" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_camera_left_visual" type="box" pos="0.98 0.60 0.80" size="0.05 0.04 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_camera_right_visual" type="box" pos="0.98 -0.60 0.80" size="0.05 0.04 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_marker_left_visual" type="box" pos="0.55 0.565 0.40" size="0.04 0.006 0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_marker_right_visual" type="box" pos="0.55 -0.565 0.40" size="0.04 0.006 0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_visual" type="box" pos="0.72 0 0.99" size="0.24 0.36 0.06" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_sensor_left_visual" type="box" pos="0.92 0.30 1.07" size="0.03 0.03 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_sensor_right_visual" type="box" pos="0.92 -0.30 1.07" size="0.03 0.03 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="lidar_base_visual" type="cylinder" pos="0.72 0 1.12" size="0.13 0.07" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="lidar_ring_visual" type="cylinder" pos="0.72 0 1.21" size="0.132 0.02" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="lidar_top_visual" type="cylinder" pos="0.72 0 1.29" size="0.12 0.06" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="pillar_visual" type="box" pos="0.30 0 0.43" size="0.04 0.54 0.42" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_visual" type="box" pos="-0.40 0 0.53" size="0.68 0.58 0.52" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_seam_left_visual" type="box" pos="-0.40 0.582 0.55" size="0.006 0.003 0.44" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_seam_right_visual" type="box" pos="-0.40 -0.582 0.55" size="0.006 0.003 0.44" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_handle_left_visual" type="box" pos="-0.85 0.585 0.32" size="0.07 0.005 0.03" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_handle_right_visual" type="box" pos="-0.85 -0.585 0.32" size="0.07 0.005 0.03" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_door_frame_visual" type="box" pos="-1.082 0 0.55" size="0.003 0.50 0.46" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_door_visual" type="box" pos="-1.086 0 0.55" size="0.003 0.48 0.44" rgba="0.88 0.89 0.90 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_handle_visual" type="box" pos="-1.092 0 0.30" size="0.004 0.08 0.03" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_light_left_visual" type="box" pos="-1.09 0.53 0.55" size="0.004 0.025 0.14" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_light_right_visual" type="box" pos="-1.09 -0.53 0.55" size="0.004 0.025 0.14" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_reflector_left_visual" type="box" pos="-1.10 0.38 -0.10" size="0.004 0.03 0.05" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_reflector_right_visual" type="box" pos="-1.10 -0.38 -0.10" size="0.004 0.03 0.05" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <body name="front_left_steer" pos="0.75 0.5 -0.17">
+        <inertial pos="0 0 0" mass="0.3" diaginertia="0.001 0.001 0.001" />
+        <joint name="front_left_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.05" armature="0.01" />
+        <body name="front_left_wheel">
+          <joint name="front_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+          <geom name="front_left_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_tire" type="cylinder" size="0.25 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        </body>
+      </body>
+      <body name="front_right_steer" pos="0.75 -0.5 -0.17">
+        <inertial pos="0 0 0" mass="0.3" diaginertia="0.001 0.001 0.001" />
+        <joint name="front_right_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.05" armature="0.01" />
+        <body name="front_right_wheel">
+          <joint name="front_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+          <geom name="front_right_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_tire" type="cylinder" size="0.25 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        </body>
+      </body>
+      <body name="rear_left_wheel" pos="-0.75 0.5 -0.17">
+        <joint name="rear_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+        <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_tire" type="cylinder" size="0.25 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      </body>
+      <body name="rear_right_wheel" pos="-0.75 -0.5 -0.17">
+        <joint name="rear_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
+        <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_tire" type="cylinder" size="0.25 0.04" euler="1.57079632679 0 0" mass="7" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      </body>
+      <geom name="chassis_collision" type="box" pos="0 0 -0.12" size="1.06 0.38 0.13" mass="270" rgba="0.18 0.22 0.24 1" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      <geom name="body_collision" type="box" pos="-0.01 0 0.53" size="1.09 0.58 0.52" density="0" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      <geom name="lidar_collision" type="cylinder" pos="0.72 0 1.20" size="0.13 0.15" density="0" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="front_left_steer_motor" joint="front_left_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="1500" kv="70" />
+    <position name="front_right_steer_motor" joint="front_right_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="1500" kv="70" />
+    <velocity name="rear_left_wheel_motor" joint="rear_left_wheel_joint" ctrllimited="true" ctrlrange="-14 14" kv="300" />
+    <velocity name="rear_right_wheel_motor" joint="rear_right_wheel_joint" ctrllimited="true" ctrlrange="-14 14" kv="300" />
+  </actuator>
+  <contact>
+    <exclude body1="vehicle" body2="front_left_wheel" />
+    <exclude body1="vehicle" body2="front_right_wheel" />
+  </contact>
+</mujoco>
