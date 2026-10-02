@@ -33,7 +33,7 @@ class GlbAddLightsTest(unittest.TestCase):
             got = rotate(q, (0.0, 0.0, -1.0))
             norm = math.sqrt(sum(c * c for c in direction))
             for a, b in zip(got, direction):
-                self.assertAlmostEqual(a, b / norm, places=6)
+                self.assertAlmostEqual(a, b / norm, places=5)  # rotations are rounded to 6 decimals
 
     def test_matching_materials_glow_and_lamps_join_their_part(self):
         document = {"asset": {"version": "2.0"}, "scene": 0, "scenes": [{"nodes": [0]}], "nodes": [{"mesh": 0}],
