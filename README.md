@@ -157,6 +157,14 @@ python tools/ackermann/validate.py generic_ackermann_golf_cart --report /tmp/gol
 
 See [`bodies/generic_ackermann_golf_cart/config/README.md`](bodies/generic_ackermann_golf_cart/config/README.md).
 
+The Hakoniwa Car, a small delivery vehicle with a cab, a cargo box and a roof
+LiDAR, is built the same way from primitives
+([`bodies/hakoniwa_car/config/README.md`](bodies/hakoniwa_car/config/README.md)):
+
+```bash
+python tools/ackermann/forge.py hakoniwa_car --verify
+```
+
 The same narrow Forge contract also covers an external Xacro/DAE source:
 
 ```bash

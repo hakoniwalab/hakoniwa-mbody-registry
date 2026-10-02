@@ -1,0 +1,13 @@
+name: hakoniwa_car
+origin: hakoniwalab
+license: MIT
+description: >-
+  Hakoniwa Car: an original small autonomous delivery vehicle authored for
+  Hakoniwa from MuJoCo primitives (boxes and cylinders): a cab in front, a
+  cargo box behind, and a roof LiDAR. Its look follows a Hakoniwa concept
+  drawing; its Ackermann joint structure follows the Hakoniwa golf cart.
+references:
+  - name: generic_ackermann_golf_cart
+    url: ../generic_ackermann_golf_cart
+    license: MIT
+    usage: Joint structure, frames, and MuJoCo preparation inputs as a template.

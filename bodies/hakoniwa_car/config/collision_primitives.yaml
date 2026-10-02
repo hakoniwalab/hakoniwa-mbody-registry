@@ -1,0 +1,75 @@
+disable_existing:
+  - body: "*"
+    type: mesh
+
+geoms:
+  # Nearly all the mass sits low in the chassis between the wheels, so the
+  # tall cargo box does not make the car top-heavy.
+  - body: vehicle
+    attrs:
+      name: chassis_collision
+      type: box
+      pos: "0 0 -0.12"
+      size: "1.06 0.38 0.13"
+      mass: "270"
+      rgba: "0.18 0.22 0.24 1"
+      condim: "4"
+      friction: "1.1 0.01 0.001"
+      solref: "0.01 1"
+      solimp: "0.9 0.95 0.001"
+
+  # The cab and cargo box: massless, so they take part in contacts without
+  # changing the vehicle's mass and inertia.
+  - body: vehicle
+    attrs:
+      name: body_collision
+      type: box
+      pos: "-0.01 0 0.53"
+      size: "1.09 0.58 0.52"
+      density: "0"
+      rgba: "0 0 0 0"
+      condim: "4"
+      friction: "1.1 0.01 0.001"
+      solref: "0.01 1"
+      solimp: "0.9 0.95 0.001"
+
+  # The roof LiDAR, massless as well.
+  - body: vehicle
+    attrs:
+      name: lidar_collision
+      type: cylinder
+      pos: "0.72 0 1.20"
+      size: "0.13 0.15"
+      density: "0"
+      rgba: "0 0 0 0"
+      condim: "4"
+      friction: "1.1 0.01 0.001"
+      solref: "0.01 1"
+      solimp: "0.9 0.95 0.001"
+
+  # Keep the physical tread narrower than the visual tire. A full-width rigid
+  # cylinder creates an unrealistic contact patch that resists kingpin motion.
+  - body: front_left_wheel
+    attrs: &wheel_collision
+      name: front_left_tire
+      type: cylinder
+      size: "0.25 0.04"
+      euler: "1.57079632679 0 0"
+      mass: "7"
+      rgba: "0 0 0 0"
+      condim: "3"
+      friction: "1.6 0.02 0.002"
+      solref: "0.01 1"
+      solimp: "0.9 0.95 0.001"
+  - body: front_right_wheel
+    attrs:
+      <<: *wheel_collision
+      name: front_right_tire
+  - body: rear_left_wheel
+    attrs:
+      <<: *wheel_collision
+      name: rear_left_tire
+  - body: rear_right_wheel
+    attrs:
+      <<: *wheel_collision
+      name: rear_right_tire
