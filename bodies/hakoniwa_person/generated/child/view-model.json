@@ -28,9 +28,19 @@
       "path": "parts/leg_left.glb"
     },
     {
+      "id": "shin_left",
+      "type": "glb",
+      "path": "parts/shin_left.glb"
+    },
+    {
       "id": "leg_right",
       "type": "glb",
       "path": "parts/leg_right.glb"
+    },
+    {
+      "id": "shin_right",
+      "type": "glb",
+      "path": "parts/shin_right.glb"
     }
   ],
   "base": {
@@ -153,6 +163,58 @@
         ]
       },
       "asset": "leg_right"
+    },
+    {
+      "name": "shin_left",
+      "joint": "knee_left_joint",
+      "parent": "leg_left",
+      "mount": {
+        "xyz": [
+          0.0,
+          0.0,
+          -0.224
+        ],
+        "rpy": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "asset": "shin_left"
+    },
+    {
+      "name": "shin_right",
+      "joint": "knee_right_joint",
+      "parent": "leg_right",
+      "mount": {
+        "xyz": [
+          0.0,
+          0.0,
+          -0.224
+        ],
+        "rpy": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "asset": "shin_right"
     }
   ]
 }

@@ -26,11 +26,13 @@ A person is a stick that slides; the walk is an animation.
   measures under the person (the ground, a deck).
 - The torso and the head: geoms of the root itself (the body does not bob; a
   viewer model shows only the root and the jointed bodies).
-- `arm_left` / `arm_right` on `shoulder_*_joint`, `leg_left` / `leg_right`
+- `arm_left` / `arm_right` on `shoulder_*_joint`, `leg_left` / `leg_right` (the thighs)
   on `hip_*_joint` (about y; the frames are at the shoulders and hips).
   Soft springs keep them straight; a runtime animates a walk by sending
   these joint angles to the viewer (legs and arms swinging opposite ways).
-  The hips bend to 100° for a seated pose.
+  The hips bend to 100° for a seated pose. `shin_left` / `shin_right` hang
+  from the thighs on `knee_*_joint` (0° straight to 120° bent back), so a
+  seated person's shins come down and a walker's trailing knee bends.
 - `shadow`: a flat dark disc under the feet, the root's part in the viewer.
 
 Visual geoms are in group 1 with no contact and no mass.

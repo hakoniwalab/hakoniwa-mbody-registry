@@ -113,7 +113,8 @@ LOOKS = {
 STEP_M = 0.32
 
 # Joint and body names every variant shares (the viewer and the runtime use them).
-LIMB_JOINTS = ("shoulder_left_joint", "shoulder_right_joint", "hip_left_joint", "hip_right_joint")
+LIMB_JOINTS = ("shoulder_left_joint", "shoulder_right_joint", "hip_left_joint", "hip_right_joint",
+               "knee_left_joint", "knee_right_joint")
 
 
 def model(variant: str, look: Look) -> str:
@@ -172,13 +173,16 @@ def model(variant: str, look: Look) -> str:
                     "-75 75", geoms)
 
     def leg(side, sign):
-        if look.shorts:
-            geoms = [box(f"shorts_{side}", v(0, 0, -0.12), v(0.085, 0.09, 0.12), look.pants),
-                     box(f"shin_{side}", v(0, 0, -0.40), v(0.07, 0.075, 0.18), SKIN)]
-        else:
-            geoms = [box(f"leg_{side}", v(0, 0, -0.32), v(0.08, 0.085, 0.26), look.pants)]
-        geoms += [*rounded_box(f"shoe_{side}", v(0.025, 0, -0.62), v(0.11, 0.09, 0.04), 0.02 * s, SHOE)]
-        return body(f"leg_{side}", v(0, sign * 0.105, hip_z / s), f"hip_{side}_joint", "0 1 0", "-100 60", geoms)
+        # The thigh from the hip to the knee, the shin (and the shoe) below the knee.
+        thigh_colour, shin_colour = (look.pants, SKIN) if look.shorts else (look.pants, look.pants)
+        thigh = [box(f"thigh_{side}", v(0, 0, -0.16), v(0.085 if look.shorts else 0.08, 0.09 if look.shorts else 0.085,
+                                                         0.16), thigh_colour)]
+        shin = [box(f"shin_{side}", v(0, 0, -0.13), v(0.07 if look.shorts else 0.078, 0.075 if look.shorts else 0.083,
+                                                      0.13), shin_colour),
+                *rounded_box(f"shoe_{side}", v(0.025, 0, -0.30), v(0.11, 0.09, 0.04), 0.02 * s, SHOE)]
+        knee = body(f"shin_{side}", v(0, 0, -0.32), f"knee_{side}_joint", "0 1 0", "0 120", shin, indent=8)
+        return body(f"leg_{side}", v(0, sign * 0.105, hip_z / s), f"hip_{side}_joint", "0 1 0", "-100 60", thigh,
+                    children=[knee])
 
     radius = 0.22 * s
     mass = 60 * s ** 3
