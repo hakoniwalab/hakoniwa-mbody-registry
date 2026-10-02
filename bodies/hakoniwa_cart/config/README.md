@@ -1,7 +1,7 @@
 # Hakoniwa Cart body
 
 The Hakoniwa Cart is a four-seat cart authored for Hakoniwa from MuJoCo
-primitives: a front in three layers just ahead of the front wheels (a black cowl, one thin softly rounded white face, a dark grey bumper with a slot); the round head lamps sit in black eye sockets that narrow inwards into the thin LED bar joining them, and the white sides flow down to the wheel arches in slants over dark grey flares and a white LED
+primitives: a front that, seen from the side, is a trapezoid: as short as the black cowl at the top and widening down to the front wheel (the face leans back above the lamps and stands upright below them, the side's rear edge runs down and back behind the wheel, the white wraps the wheel arch over a wide dark grey fender); the round head lamps sit in black eye sockets narrowing inwards into the thin LED bar that joins them, and a dark grey bumper stands out below the face and a white LED
 bar between them over a dark bumper, two rows of seats facing forward (the
 driver on the front left), a grab bar behind the rear row, round red tail
 lamps, and a long white roof with orange lines on black pillars (the
@@ -9,9 +9,11 @@ windshield is an open frame). It is 3.1 m long, 1.4 m wide with the mirrors
 and 2.5 m high, and has the same Ackermann structure as the Hakoniwa Car: two
 independently steered front wheels and two driven rear wheels.
 
-- `build_model.py`: writes `model.xml`; the panels (face, cowl, bumpers,
-  pedestals, rear body, seats, roof) are rounded boxes, the eye sockets discs
-  and flat ellipsoids, the side lines tilted boxes (three boxes and twelve edge
+- `build_model.py`: writes `model.xml`; the panels (face, forehead, cowl,
+  bumpers, pedestals, rear body, seats, roof) are rounded boxes (the forehead
+  tilted), the eye sockets discs and flat ellipsoids, the side's slanted edge
+  tilted boxes, the bands round the front wheel arches (white side, grey
+  fender) short boxes along the arc (three boxes and twelve edge
   capsules each), the wheel arches half circles of capsules, the steering
   wheel a ring of capsules. Change the model there and run it, then the Forge
 - `model.xml`: the visual model (boxes, cylinders and capsules, no contact,

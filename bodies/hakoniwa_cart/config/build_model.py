@@ -55,8 +55,9 @@ def fmt(values) -> str:
     return " ".join(f"{value:g}" for value in values)
 
 
-def box(name, pos, size, rgba, indent="      "):
-    return f'{indent}<geom name="{name}_visual" type="box" pos="{fmt(pos)}" size="{fmt(size)}" rgba="{rgba}" {VISUAL}/>'
+def box(name, pos, size, rgba, indent="      ", euler=None):
+    turn = f' euler="{euler}"' if euler else ""
+    return f'{indent}<geom name="{name}_visual" type="box" pos="{fmt(pos)}" size="{fmt(size)}"{turn} rgba="{rgba}" {VISUAL}/>'
 
 
 def cylinder(name, pos, size, rgba, euler=None, indent="      "):
@@ -70,33 +71,39 @@ def capsule(name, start, end, radius, rgba, indent="      "):
             f'size="{radius:g}" rgba="{rgba}" {VISUAL}/>')
 
 
-def rounded_box(name, pos, size, radius, rgba, indent="      "):
-    """A box with its edges and corners rounded by `radius` (less than its smallest half size)."""
+def rounded_box(name, pos, size, radius, rgba, indent="      ", pitch=0.0):
+    """A box with its edges and corners rounded by `radius` (less than its
+    smallest half size), turned by `pitch` about y (MuJoCo's sense: positive
+    turns x down) round its centre."""
     (x, y, z), (a, b, c), r = pos, size, radius
     if not 0 < r <= min(size) - 0.005 + 1e-9:  # the edge capsules must keep some length
         raise ValueError(f"{name}: radius {r} must be within (0, {min(size)})")
+    cp, sp = math.cos(pitch), math.sin(pitch)
+
+    def turned(dx, dy, dz):  # an offset from the centre, turned about y
+        return (x + cp * dx + sp * dz, y + dy, z - sp * dx + cp * dz)
+
+    euler = f"0 {pitch:g} 0" if pitch else None
     geoms = [
-        box(f"{name}_x", pos, (a, b - r, c - r), rgba, indent),
-        box(f"{name}_y", pos, (a - r, b, c - r), rgba, indent),
-        box(f"{name}_z", pos, (a - r, b - r, c), rgba, indent),
+        box(f"{name}_x", pos, (a, b - r, c - r), rgba, indent, euler),
+        box(f"{name}_y", pos, (a - r, b, c - r), rgba, indent, euler),
+        box(f"{name}_z", pos, (a - r, b - r, c), rgba, indent, euler),
     ]
     number = 0
+    half = (a, b, c)
     for axis in range(3):
-        half = (a, b, c)
         others = [index for index in range(3) if index != axis]
         for s1 in (-1, 1):
             for s2 in (-1, 1):
-                start, end = [x, y, z], [x, y, z]
+                start, end = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
                 start[axis] -= half[axis] - r
                 end[axis] += half[axis] - r
                 for index, sign in zip(others, (s1, s2)):
-                    offset = sign * (half[index] - r)
-                    start[index] += offset
-                    end[index] += offset
-                geoms.append(capsule(f"{name}_edge{number}", start, end, r, rgba, indent))
+                    start[index] += sign * (half[index] - r)
+                    end[index] += sign * (half[index] - r)
+                geoms.append(capsule(f"{name}_edge{number}", turned(*start), turned(*end), r, rgba, indent))
                 number += 1
     return geoms
-
 
 def span(name, x0, x1, y_half, z0, z1, radius, rgba):
     """A rounded box given by its extent (front/back x, half width, bottom/top z)."""
@@ -124,30 +131,32 @@ FACE_X = 1.46   # the front of the white face
 
 
 def nose():
-    """The front: three layers, a black cowl on top, a white face in the middle
-    and a dark grey bumper below (the bumper is added with the lamps).
-
-    The face is one thin white panel with softly rounded edges (its top edge
-    curves back into the cowl, its sides turn into the white sides). Each white side's lower edge flows from the face's
-    lower corner back up to the wheel arch in two slants over a dark grey
-    flare, instead of dropping straight down onto the tyre."""
-    line = [(1.34, 0.01), (1.20, 0.09), (1.02, 0.165)]  # the side's lower edge, front to back
+    """The front, seen from the side a trapezoid: as short as the cowl at the
+    top, widening down to the front wheel. Forward, the face leans back above
+    the lamps (the forehead) and stands upright below them; backward, the
+    side's rear edge runs from the windshield's foot down and back behind the
+    wheel. The white side wraps the wheel arch from above, a dark grey fender
+    along the arch. On top, a black cowl; below, the bumper (with the lamps)."""
+    wheel = (WHEEL_X, WHEEL_Z)
+    rear_line = [(1.02, 0.58), (0.83, 0.29), (0.64, 0.0)]  # the side's rear edge, top to bottom
     geoms = [
-        *span("face", 1.30, FACE_X, 0.60, 0.0, 0.58, 0.074, WHITE),
-        *span("cowl", 1.00, 1.34, 0.56, 0.50, 0.58, 0.035, SEAT_DARK),
+        *span("face", 1.30, FACE_X, 0.60, 0.0, 0.40, 0.074, WHITE),
+        # The forehead: leaning back 28.6 degrees from the lamps' top up to the cowl
+        *rounded_box("forehead", (1.330, 0, 0.432), (0.08, 0.60, 0.14), 0.074, WHITE, pitch=-0.4995),
+        *span("cowl", 1.00, 1.32, 0.56, 0.50, 0.60, 0.04, SEAT_DARK),
     ]
     for name, sign in (("left", 1), ("right", -1)):
         plate = sign * 0.585
         geoms += [
-            box(f"side_{name}", (1.125, plate, 0.355), (0.175, 0.015, 0.185), WHITE),
-            box(f"side_front_{name}", (1.20, plate, 0.135), (0.10, 0.015, 0.035), WHITE),
-            *(slanted(f"side_slant{index}_{name}", front, back, plate, 0.015, 0.03, 1, WHITE)
-              for index, (front, back) in enumerate(zip(line, line[1:]))),
-            slanted(f"flare0_{name}", (1.32, 0.02), line[1], sign * 0.607, 0.012, 0.025, -1, GREY),
-            slanted(f"flare1_{name}", line[1], line[2], sign * 0.607, 0.012, 0.025, -1, GREY),
+            box(f"side_{name}", (1.18, plate, 0.37), (0.16, 0.015, 0.21), WHITE),
+            slanted(f"side_rear_{name}", rear_line[0], rear_line[1], plate, 0.015, 0.085, -1, WHITE),
+            slanted(f"side_rear_foot_{name}", rear_line[1], rear_line[2], plate, 0.015, 0.05, -1, WHITE),
+            *arch_band(f"side_arch_{name}", wheel, plate, 0.36, 0.45, 0.015, WHITE),
+            # Dark inside the nose, seen from the footwell
+            slanted(f"firewall_{name}", rear_line[0], rear_line[1], sign * 0.30, 0.27, 0.01, -1, SEAT_DARK),
+            slanted(f"firewall_foot_{name}", rear_line[1], rear_line[2], sign * 0.30, 0.27, 0.01, -1, SEAT_DARK),
         ]
     return geoms
-
 
 def eyes():
     """The head lamps in black eye sockets: round round each lamp, narrowing
@@ -156,8 +165,8 @@ def eyes():
     geoms = []
     for name, sign in (("left", 1), ("right", -1)):
         geoms += [
-            cylinder(f"eye_socket_{name}", (x + 0.002, sign * 0.36, z), (0.125, 0.004), BLACK, ALONG_X),
-            ellipsoid(f"eye_socket_inner_{name}", (x + 0.002, sign * 0.25, z - 0.005), (0.004, 0.13, 0.05), BLACK),
+            cylinder(f"eye_socket_{name}", (x - 0.015, sign * 0.36, z), (0.125, 0.025), BLACK, ALONG_X),
+            ellipsoid(f"eye_socket_inner_{name}", (x - 0.015, sign * 0.25, z - 0.005), (0.025, 0.13, 0.05), BLACK),
             *round_lamp(f"head_lamp_{name}", x + 0.005, sign * 0.36, z, 0.10, LAMP, 1),
         ]
     geoms.append(box("led_bar_channel", (x + 0.002, 0, z - 0.005), (0.004, 0.16, 0.016), BLACK))
@@ -171,6 +180,24 @@ def fender(name, centre, radius, thickness, rgba, segments=8):
               for step in range(segments + 1)]
     return [capsule(f"{name}_{index}", start, end, thickness, rgba) for index, (start, end) in enumerate(zip(points, points[1:]))]
 
+
+
+def arch_band(name, centre, y, r_in, r_out, half_y, rgba, segments=24, a0=0.0, a1=math.pi):
+    """A flat band (thin in y) round a wheel arch, from r_in to r_out about the
+    wheel centre (x, z), from angle a0 (front) to a1 (back): boxes along it."""
+    cx, cz = centre
+    step = (a1 - a0) / segments
+    middle = (r_in + r_out) / 2
+    half_length = middle * math.tan(step / 2) + 0.002  # neighbours meet at the middle of the band
+    geoms = []
+    for index in range(segments):
+        angle = a0 + step * (index + 0.5)
+        # Every other piece a hair outwards, so that the overlaps do not flicker
+        offset = 0.0006 * (index % 2) * (1 if y >= 0 else -1)
+        pos = (cx + middle * math.cos(angle), y + offset, cz + middle * math.sin(angle))
+        pitch = math.pi / 2 - angle  # the box's z along the radius
+        geoms.append(box(f"{name}_{index}", pos, (half_length, half_y, (r_out - r_in) / 2), rgba, euler=f"0 {pitch:g} 0"))
+    return geoms
 
 def ring(name, centre, normal, radius, thickness, rgba, segments=12):
     """A torus-like ring of capsules (the steering wheel) around `normal`."""
@@ -252,15 +279,20 @@ BODY = [
     *both(lambda n, y: box(n, (-0.40, y, -0.13), (0.28, 0.004, 0.010), ORANGE), "sill_line_rear", 0.627),
     box("front_underbody", (WHEEL_X, 0, -0.01), (0.26, 0.38, 0.13), GREY),
     box("rear_underbody", (-WHEEL_X, 0, -0.01), (0.26, 0.38, 0.13), GREY),
-    *(geom for x, end in ((WHEEL_X, "front"), (-WHEEL_X, "rear")) for side, y in (("left", 0.60), ("right", -0.60))
-      for geom in fender(f"arch_{end}_{side}", (x, y, WHEEL_Z), 0.31, 0.035, GREY)),
+    # The front fenders: wide dark grey bands along the arches, standing out a little; the rear arches under the rear body
+    *(geom for side, y in (("left", 0.61), ("right", -0.61))
+      for geom in arch_band(f"fender_front_{side}", (WHEEL_X, WHEEL_Z), y, 0.29, 0.37, 0.025, GREY)),
+    *(geom for side, y in (("left", 0.60), ("right", -0.60))
+      for geom in fender(f"arch_rear_{side}", (-WHEEL_X, y, WHEEL_Z), 0.31, 0.035, GREY)),
 
     "      <!-- The front: a black cowl, a white face (black eye sockets, LED bar) and a dark grey bumper; the sides flow down to the wheel arches -->",
     *nose(),
     *eyes(),
-    *span("front_bumper", 1.32, 1.48, 0.61, -0.22, 0.02, 0.07, GREY),
-    box("bumper_slot", (1.481, 0, -0.10), (0.004, 0.28, 0.022), BLACK),
-    *both(lambda n, y: box(n, (1.481, y, -0.09), (0.004, 0.012, 0.06), AMBER), "front_marker", 0.50),
+    # The bumper stands out ahead of the face (its top a ledge), wraps the corners and runs on into the fenders
+    *span("front_bumper", 1.33, 1.52, 0.62, -0.22, 0.04, 0.07, GREY),
+    box("face_foot_shadow", (1.465, 0, 0.046), (0.006, 0.56, 0.006), BLACK),
+    box("bumper_recess", (1.522, 0, -0.14), (0.004, 0.30, 0.05), BLACK),
+    *both(lambda n, y: box(n, (1.523, y, -0.07), (0.004, 0.012, 0.06), AMBER), "front_marker", 0.53),
     "      <!-- The windshield's foot on the cowl, the dashboard behind it, the steering wheel (the driver sits on the left) -->",
     capsule("windshield_foot", (1.10, -0.58, 0.60), (1.10, 0.58, 0.60), 0.022, BLACK),
     *span("dashboard", 0.74, 1.08, 0.58, 0.56, 0.72, 0.06, SEAT_DARK),
