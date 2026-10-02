@@ -23,6 +23,7 @@ rear wheels.
   (wheelbase 1.50 m, track 1.00 m, wheel radius 0.25 m, maximum centre
   steering 0.60 rad, maximum wheel speed 12 rad/s = 3.0 m/s)
 - `viewer.recipe.yaml`: viewer-neutral GLB assembly and movable joints
+- `lights.yaml`: the lights (`tools/glb_add_lights.py`, run by the Forge on the parts GLB): the blue LEDs (front strip, eyes, sides, LiDAR ring), the red tail lamps and two white head lamps glow, and two head lights (spot lights) light the way at night
 - `provenance.yaml`: origin and license
 
 Generate and check every derived file with:
