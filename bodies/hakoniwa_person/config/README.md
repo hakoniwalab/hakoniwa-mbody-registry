@@ -14,12 +14,16 @@ looks share one structure:
 
 A person is a stick that slides; the walk is an animation.
 
-- `person` (root): `slide_x_joint`, `slide_y_joint` (world x, y) and
-  `turn_joint` (about z). Its only collider is `person_collision`, a capsule
-  of radius 0.22 m from 0.05 m to 1.58 m (an adult, 60 kg; a child is 0.7
-  times as big). It floats above the ground, so it never rubs the floor; it
-  stops at walls, cars and other people. Velocity actuators `move_x`,
-  `move_y` (m/s) and `turn` (rad/s) drive it, with limited force.
+- `person` (root, gravity compensated): `slide_x_joint`, `slide_y_joint`,
+  `slide_z_joint` (world x, y, z) and `turn_joint` (about z). Its only
+  collider is `person_collision`, a capsule of radius 0.22 m from 0.32 m to
+  1.58 m above the feet (an adult, 60 kg; a child is 0.7 times as tall, with
+  the same step). It
+  never rubs the floor and steps up onto anything lower than 0.32 m (a deck,
+  a kerb); it stops at walls, cars and other people. Velocity actuators
+  `move_x`, `move_y` (m/s) and `turn` (rad/s) drive it, with limited force;
+  the position actuator `lift` (m) holds the feet at the height a runtime
+  measures under the person (the ground, a deck).
 - The torso and the head: geoms of the root itself (the body does not bob; a
   viewer model shows only the root and the jointed bodies).
 - `arm_left` / `arm_right` on `shoulder_*_joint`, `leg_left` / `leg_right`

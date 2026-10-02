@@ -2,9 +2,10 @@
 """Write model.<variant>.xml: the 箱庭人間 (Hakoniwa People), and generate
 their GLB parts and view models.
 
-In MuJoCo a person is a stick: one capsule that slides on x and y and turns
-about z, a little above the ground (no gravity on it, no feet; it bumps into
-walls, cars and other people). The arms and legs are bodies on hinges
+In MuJoCo a person is a stick: one capsule that slides on x and y, turns
+about z and is lifted to the ground under it (its collider starts 0.32 m
+above the feet, so it steps up onto a deck; it bumps into walls, cars and
+other people). The arms and legs are bodies on hinges
 (shoulders, hips) held straight by soft springs; a walk is an animation of
 those joint angles, not dynamics. Every visual geom is a MuJoCo primitive;
 heads, bodies and hair are rounded boxes (three boxes and twelve edge
@@ -17,6 +18,7 @@ capsules, as the Hakoniwa Car).
 from __future__ import annotations
 
 import argparse
+import math
 import shutil
 import subprocess
 import sys
@@ -106,6 +108,10 @@ LOOKS = {
                   hat_colour=YELLOW, brim_colour=YELLOW),
 }
 
+# The collider starts this far above the feet, so a person steps up onto what
+# is lower (a deck, a kerb); the runtime lifts it to the ground under it.
+STEP_M = 0.32
+
 # Joint and body names every variant shares (the viewer and the runtime use them).
 LIMB_JOINTS = ("shoulder_left_joint", "shoulder_right_joint", "hip_left_joint", "hip_right_joint")
 
@@ -175,17 +181,21 @@ def model(variant: str, look: Look) -> str:
         return body(f"leg_{side}", v(0, sign * 0.105, hip_z / s), f"hip_{side}_joint", "0 1 0", "-100 60", geoms)
 
     radius = 0.22 * s
+    mass = 60 * s ** 3
+    lift_kp = 500 * mass
+    lift_kv = round(2 * math.sqrt(lift_kp * mass))  # critically damped
     lines = [
         f'<mujoco model="hakoniwa_person_{variant}">',
         '  <compiler angle="degree"/>',
         "  <worldbody>",
         f"    <!-- {look.title}: a stick that slides and turns; limbs are animated -->",
-        '    <body name="person" pos="0 0 0">',
+        '    <body name="person" pos="0 0 0" gravcomp="1">',
         '      <joint name="slide_x_joint" type="slide" axis="1 0 0" damping="20"/>',
         '      <joint name="slide_y_joint" type="slide" axis="0 1 0" damping="20"/>',
+        '      <joint name="slide_z_joint" type="slide" axis="0 0 1"/>',
         '      <joint name="turn_joint" type="hinge" axis="0 0 1" damping="5"/>',
-        f'      <geom name="person_collision" type="capsule" fromto="0 0 {0.05 * s + radius:g} 0 0 {1.58 * s - radius:g}" '
-        f'size="{radius:g}" mass="{60 * s ** 3:g}" group="3" rgba="0.2 0.6 1 0"/>',
+        f'      <geom name="person_collision" type="capsule" fromto="0 0 {STEP_M + radius:g} 0 0 {1.58 * s - radius:g}" '
+        f'size="{radius:g}" mass="{mass:g}" group="3" rgba="0.2 0.6 1 0"/>',
         "      <!-- A round shadow under the feet (the stick's own part in the viewer) -->",
         "      " + cylinder("shadow", (0, 0, 0.004), (0.24 * s, 0.002), "0.32 0.33 0.36 1"),
         "      <!-- The torso and the head are the stick's own (they do not move on it) -->",
@@ -197,6 +207,7 @@ def model(variant: str, look: Look) -> str:
         "  <actuator>",
         '    <velocity name="move_x" joint="slide_x_joint" kv="400" ctrlrange="-3 3" forcerange="-150 150" forcelimited="true"/>',
         '    <velocity name="move_y" joint="slide_y_joint" kv="400" ctrlrange="-3 3" forcerange="-150 150" forcelimited="true"/>',
+        f'    <position name="lift" joint="slide_z_joint" kp="{lift_kp:g}" kv="{lift_kv:g}" ctrlrange="-10 50"/>',
         '    <velocity name="turn" joint="turn_joint" kv="60" ctrlrange="-3.14 3.14" forcerange="-40 40" forcelimited="true"/>',
         "  </actuator>",
         "</mujoco>",
