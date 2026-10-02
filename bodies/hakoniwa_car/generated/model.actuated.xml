@@ -5,54 +5,134 @@
       <geom name="chassis_core_visual" type="box" pos="0 0 -0.12" size="1.06 0.38 0.13" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="front_bumper_visual" type="box" pos="1.04 0 -0.13" size="0.06 0.55 0.12" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="rear_bumper_visual" type="box" pos="-1.04 0 -0.13" size="0.06 0.55 0.12" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_skirt_left_visual" type="box" pos="0 0.53 -0.10" size="0.47 0.05 0.10" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_skirt_right_visual" type="box" pos="0 -0.53 -0.10" size="0.47 0.05 0.10" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_skirt_left_visual" type="box" pos="0 0.53 -0.1" size="0.47 0.05 0.1" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_skirt_right_visual" type="box" pos="0 -0.53 -0.1" size="0.47 0.05 0.1" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="side_band_left_visual" type="box" pos="0 0.594 0.05" size="1.08 0.008 0.08" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="side_band_right_visual" type="box" pos="0 -0.594 0.05" size="1.08 0.008 0.08" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="arch_front_left_visual" type="box" pos="0.75 0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="arch_front_right_visual" type="box" pos="0.75 -0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="arch_rear_left_visual" type="box" pos="-0.75 0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="arch_rear_right_visual" type="box" pos="-0.75 -0.603 0.12" size="0.33 0.008 0.09" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="cab_visual" type="box" pos="0.70 0 0.47" size="0.36 0.56 0.46" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="cab_nose_visual" type="box" pos="1.07 0 0.12" size="0.04 0.52 0.11" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="windshield_visual" type="box" pos="1.065 0 0.55" size="0.012 0.46 0.30" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_window_left_visual" type="box" pos="0.86 0.565 0.60" size="0.17 0.006 0.22" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_window_right_visual" type="box" pos="0.86 -0.565 0.60" size="0.17 0.006 0.22" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_left_0_visual" type="capsule" fromto="1.06 0.6 -0.17 1.0293 0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_left_1_visual" type="capsule" fromto="1.0293 0.6 -0.035496 0.943282 0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_left_2_visual" type="capsule" fromto="0.943282 0.6 0.0723678 0.818981 0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_left_3_visual" type="capsule" fromto="0.818981 0.6 0.132228 0.681019 0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_left_4_visual" type="capsule" fromto="0.681019 0.6 0.132228 0.556718 0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_left_5_visual" type="capsule" fromto="0.556718 0.6 0.0723678 0.4707 0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_left_6_visual" type="capsule" fromto="0.4707 0.6 -0.035496 0.44 0.6 -0.17" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_right_0_visual" type="capsule" fromto="1.06 -0.6 -0.17 1.0293 -0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_right_1_visual" type="capsule" fromto="1.0293 -0.6 -0.035496 0.943282 -0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_right_2_visual" type="capsule" fromto="0.943282 -0.6 0.0723678 0.818981 -0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_right_3_visual" type="capsule" fromto="0.818981 -0.6 0.132228 0.681019 -0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_right_4_visual" type="capsule" fromto="0.681019 -0.6 0.132228 0.556718 -0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_right_5_visual" type="capsule" fromto="0.556718 -0.6 0.0723678 0.4707 -0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_front_right_6_visual" type="capsule" fromto="0.4707 -0.6 -0.035496 0.44 -0.6 -0.17" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_left_0_visual" type="capsule" fromto="-0.44 0.6 -0.17 -0.4707 0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_left_1_visual" type="capsule" fromto="-0.4707 0.6 -0.035496 -0.556718 0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_left_2_visual" type="capsule" fromto="-0.556718 0.6 0.0723678 -0.681019 0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_left_3_visual" type="capsule" fromto="-0.681019 0.6 0.132228 -0.818981 0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_left_4_visual" type="capsule" fromto="-0.818981 0.6 0.132228 -0.943282 0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_left_5_visual" type="capsule" fromto="-0.943282 0.6 0.0723678 -1.0293 0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_left_6_visual" type="capsule" fromto="-1.0293 0.6 -0.035496 -1.06 0.6 -0.17" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_right_0_visual" type="capsule" fromto="-0.44 -0.6 -0.17 -0.4707 -0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_right_1_visual" type="capsule" fromto="-0.4707 -0.6 -0.035496 -0.556718 -0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_right_2_visual" type="capsule" fromto="-0.556718 -0.6 0.0723678 -0.681019 -0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_right_3_visual" type="capsule" fromto="-0.681019 -0.6 0.132228 -0.818981 -0.6 0.132228" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_right_4_visual" type="capsule" fromto="-0.818981 -0.6 0.132228 -0.943282 -0.6 0.0723678" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_right_5_visual" type="capsule" fromto="-0.943282 -0.6 0.0723678 -1.0293 -0.6 -0.035496" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fender_rear_right_6_visual" type="capsule" fromto="-1.0293 -0.6 -0.035496 -1.06 -0.6 -0.17" size="0.04" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_x_visual" type="box" pos="0.7 0 0.47" size="0.36 0.42 0.32" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_y_visual" type="box" pos="0.7 0 0.47" size="0.22 0.56 0.32" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_z_visual" type="box" pos="0.7 0 0.47" size="0.22 0.42 0.46" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge0_visual" type="capsule" fromto="0.48 -0.42 0.15 0.92 -0.42 0.15" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge1_visual" type="capsule" fromto="0.48 -0.42 0.79 0.92 -0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge2_visual" type="capsule" fromto="0.48 0.42 0.15 0.92 0.42 0.15" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge3_visual" type="capsule" fromto="0.48 0.42 0.79 0.92 0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge4_visual" type="capsule" fromto="0.48 -0.42 0.15 0.48 0.42 0.15" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge5_visual" type="capsule" fromto="0.48 -0.42 0.79 0.48 0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge6_visual" type="capsule" fromto="0.92 -0.42 0.15 0.92 0.42 0.15" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge7_visual" type="capsule" fromto="0.92 -0.42 0.79 0.92 0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge8_visual" type="capsule" fromto="0.48 -0.42 0.15 0.48 -0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge9_visual" type="capsule" fromto="0.48 0.42 0.15 0.48 0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge10_visual" type="capsule" fromto="0.92 -0.42 0.15 0.92 -0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_edge11_visual" type="capsule" fromto="0.92 0.42 0.15 0.92 0.42 0.79" size="0.14" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_x_visual" type="box" pos="1.07 0 0.12" size="0.04 0.49 0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_y_visual" type="box" pos="1.07 0 0.12" size="0.01 0.52 0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_z_visual" type="box" pos="1.07 0 0.12" size="0.01 0.49 0.11" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge0_visual" type="capsule" fromto="1.06 -0.49 0.04 1.08 -0.49 0.04" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge1_visual" type="capsule" fromto="1.06 -0.49 0.2 1.08 -0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge2_visual" type="capsule" fromto="1.06 0.49 0.04 1.08 0.49 0.04" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge3_visual" type="capsule" fromto="1.06 0.49 0.2 1.08 0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge4_visual" type="capsule" fromto="1.06 -0.49 0.04 1.06 0.49 0.04" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge5_visual" type="capsule" fromto="1.06 -0.49 0.2 1.06 0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge6_visual" type="capsule" fromto="1.08 -0.49 0.04 1.08 0.49 0.04" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge7_visual" type="capsule" fromto="1.08 -0.49 0.2 1.08 0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge8_visual" type="capsule" fromto="1.06 -0.49 0.04 1.06 -0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge9_visual" type="capsule" fromto="1.06 0.49 0.04 1.06 0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge10_visual" type="capsule" fromto="1.08 -0.49 0.04 1.08 -0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cab_nose_edge11_visual" type="capsule" fromto="1.08 0.49 0.04 1.08 0.49 0.2" size="0.03" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="windshield_visual" type="box" pos="1.065 0 0.52" size="0.012 0.4 0.27" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_window_left_visual" type="box" pos="0.8 0.565 0.58" size="0.11 0.006 0.2" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_window_right_visual" type="box" pos="0.8 -0.565 0.58" size="0.11 0.006 0.2" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="eye_left_visual" type="box" pos="1.08 0.17 0.52" size="0.006 0.055 0.065" rgba="0.97 0.98 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="eye_right_visual" type="box" pos="1.08 -0.17 0.52" size="0.006 0.055 0.065" rgba="0.97 0.98 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="front_camera_visual" type="box" pos="1.08 0 0.78" size="0.006 0.08 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_camera_visual" type="box" pos="1.08 0 0.76" size="0.006 0.08 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="led_strip_visual" type="box" pos="1.115 0 0.17" size="0.006 0.36 0.018" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="headlight_left_visual" type="box" pos="1.115 0.48 0.17" size="0.006 0.05 0.025" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="headlight_right_visual" type="box" pos="1.115 -0.48 0.17" size="0.006 0.05 0.025" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_camera_left_visual" type="box" pos="0.98 0.60 0.80" size="0.05 0.04 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_camera_right_visual" type="box" pos="0.98 -0.60 0.80" size="0.05 0.04 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_marker_left_visual" type="box" pos="0.55 0.565 0.40" size="0.04 0.006 0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="side_marker_right_visual" type="box" pos="0.55 -0.565 0.40" size="0.04 0.006 0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="roof_pod_visual" type="box" pos="0.72 0 0.99" size="0.24 0.36 0.06" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="roof_sensor_left_visual" type="box" pos="0.92 0.30 1.07" size="0.03 0.03 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="roof_sensor_right_visual" type="box" pos="0.92 -0.30 1.07" size="0.03 0.03 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="headlight_left_visual" type="box" pos="1.115 0.46 0.17" size="0.006 0.05 0.025" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="headlight_right_visual" type="box" pos="1.115 -0.46 0.17" size="0.006 0.05 0.025" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_camera_left_visual" type="box" pos="0.97 0.6 0.78" size="0.05 0.04 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_camera_right_visual" type="box" pos="0.97 -0.6 0.78" size="0.05 0.04 0.05" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_marker_left_visual" type="box" pos="0.55 0.565 0.4" size="0.04 0.006 0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="side_marker_right_visual" type="box" pos="0.55 -0.565 0.4" size="0.04 0.006 0.025" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_x_visual" type="box" pos="0.72 0 0.99" size="0.24 0.31 0.01" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_y_visual" type="box" pos="0.72 0 0.99" size="0.19 0.36 0.01" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_z_visual" type="box" pos="0.72 0 0.99" size="0.19 0.31 0.06" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge0_visual" type="capsule" fromto="0.53 -0.31 0.98 0.91 -0.31 0.98" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge1_visual" type="capsule" fromto="0.53 -0.31 1 0.91 -0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge2_visual" type="capsule" fromto="0.53 0.31 0.98 0.91 0.31 0.98" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge3_visual" type="capsule" fromto="0.53 0.31 1 0.91 0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge4_visual" type="capsule" fromto="0.53 -0.31 0.98 0.53 0.31 0.98" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge5_visual" type="capsule" fromto="0.53 -0.31 1 0.53 0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge6_visual" type="capsule" fromto="0.91 -0.31 0.98 0.91 0.31 0.98" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge7_visual" type="capsule" fromto="0.91 -0.31 1 0.91 0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge8_visual" type="capsule" fromto="0.53 -0.31 0.98 0.53 -0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge9_visual" type="capsule" fromto="0.53 0.31 0.98 0.53 0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge10_visual" type="capsule" fromto="0.91 -0.31 0.98 0.91 -0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_pod_edge11_visual" type="capsule" fromto="0.91 0.31 0.98 0.91 0.31 1" size="0.05" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_sensor_left_visual" type="box" pos="0.9 0.28 1.07" size="0.03 0.03 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="roof_sensor_right_visual" type="box" pos="0.9 -0.28 1.07" size="0.03 0.03 0.03" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="lidar_base_visual" type="cylinder" pos="0.72 0 1.12" size="0.13 0.07" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="lidar_ring_visual" type="cylinder" pos="0.72 0 1.21" size="0.132 0.02" rgba="0.25 0.65 1.00 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="lidar_top_visual" type="cylinder" pos="0.72 0 1.29" size="0.12 0.06" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="pillar_visual" type="box" pos="0.30 0 0.43" size="0.04 0.54 0.42" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="cargo_visual" type="box" pos="-0.40 0 0.53" size="0.68 0.58 0.52" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="cargo_seam_left_visual" type="box" pos="-0.40 0.582 0.55" size="0.006 0.003 0.44" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="cargo_seam_right_visual" type="box" pos="-0.40 -0.582 0.55" size="0.006 0.003 0.44" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="pillar_visual" type="box" pos="0.3 0 0.43" size="0.04 0.54 0.42" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_x_visual" type="box" pos="-0.4 0 0.53" size="0.68 0.5 0.44" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_y_visual" type="box" pos="-0.4 0 0.53" size="0.6 0.58 0.44" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_z_visual" type="box" pos="-0.4 0 0.53" size="0.6 0.5 0.52" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge0_visual" type="capsule" fromto="-1 -0.5 0.09 0.2 -0.5 0.09" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge1_visual" type="capsule" fromto="-1 -0.5 0.97 0.2 -0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge2_visual" type="capsule" fromto="-1 0.5 0.09 0.2 0.5 0.09" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge3_visual" type="capsule" fromto="-1 0.5 0.97 0.2 0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge4_visual" type="capsule" fromto="-1 -0.5 0.09 -1 0.5 0.09" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge5_visual" type="capsule" fromto="-1 -0.5 0.97 -1 0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge6_visual" type="capsule" fromto="0.2 -0.5 0.09 0.2 0.5 0.09" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge7_visual" type="capsule" fromto="0.2 -0.5 0.97 0.2 0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge8_visual" type="capsule" fromto="-1 -0.5 0.09 -1 -0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge9_visual" type="capsule" fromto="-1 0.5 0.09 -1 0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge10_visual" type="capsule" fromto="0.2 -0.5 0.09 0.2 -0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_edge11_visual" type="capsule" fromto="0.2 0.5 0.09 0.2 0.5 0.97" size="0.08" rgba="0.93 0.94 0.94 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_seam_left_visual" type="box" pos="-0.4 0.582 0.55" size="0.006 0.003 0.42" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="cargo_seam_right_visual" type="box" pos="-0.4 -0.582 0.55" size="0.006 0.003 0.42" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="cargo_handle_left_visual" type="box" pos="-0.85 0.585 0.32" size="0.07 0.005 0.03" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="cargo_handle_right_visual" type="box" pos="-0.85 -0.585 0.32" size="0.07 0.005 0.03" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="rear_door_frame_visual" type="box" pos="-1.082 0 0.55" size="0.003 0.50 0.46" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="rear_door_visual" type="box" pos="-1.086 0 0.55" size="0.003 0.48 0.44" rgba="0.88 0.89 0.90 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="rear_handle_visual" type="box" pos="-1.092 0 0.30" size="0.004 0.08 0.03" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="tail_light_left_visual" type="box" pos="-1.09 0.53 0.55" size="0.004 0.025 0.14" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="tail_light_right_visual" type="box" pos="-1.09 -0.53 0.55" size="0.004 0.025 0.14" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="rear_reflector_left_visual" type="box" pos="-1.10 0.38 -0.10" size="0.004 0.03 0.05" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
-      <geom name="rear_reflector_right_visual" type="box" pos="-1.10 -0.38 -0.10" size="0.004 0.03 0.05" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_door_frame_visual" type="box" pos="-1.082 0 0.55" size="0.003 0.44 0.42" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_door_visual" type="box" pos="-1.086 0 0.55" size="0.003 0.42 0.4" rgba="0.88 0.89 0.90 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_handle_visual" type="box" pos="-1.092 0 0.3" size="0.004 0.08 0.03" rgba="0.23 0.25 0.28 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_light_left_visual" type="box" pos="-1.09 0.475 0.55" size="0.004 0.02 0.14" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_light_right_visual" type="box" pos="-1.09 -0.475 0.55" size="0.004 0.02 0.14" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_reflector_left_visual" type="box" pos="-1.1 0.38 -0.1" size="0.004 0.03 0.05" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_reflector_right_visual" type="box" pos="-1.1 -0.38 -0.1" size="0.004 0.03 0.05" rgba="0.85 0.12 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       <body name="front_left_steer" pos="0.75 0.5 -0.17">
         <inertial pos="0 0 0" mass="0.3" diaginertia="0.001 0.001 0.001" />
         <joint name="front_left_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.05" armature="0.01" />
         <body name="front_left_wheel">
           <joint name="front_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
-          <geom name="front_left_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_left_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_left_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
         </body>
@@ -62,20 +142,20 @@
         <joint name="front_right_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.05" armature="0.01" />
         <body name="front_right_wheel">
           <joint name="front_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
-          <geom name="front_right_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_right_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_right_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
         </body>
       </body>
       <body name="rear_left_wheel" pos="-0.75 0.5 -0.17">
         <joint name="rear_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
-        <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_left_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_left_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       </body>
       <body name="rear_right_wheel" pos="-0.75 -0.5 -0.17">
         <joint name="rear_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.05" armature="0.01" />
-        <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.10" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.25 0.1" euler="1.57079632679 0 0" rgba="0.08 0.08 0.08 1" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_right_hub_visual" type="cylinder" pos="0 0 0" size="0.13 0.102" euler="1.57079632679 0 0" rgba="0.45 0.47 0.50 1" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_right_cap_visual" type="cylinder" pos="0 0 0" size="0.05 0.104" euler="1.57079632679 0 0" rgba="0.07 0.08 0.10 1" contype="0" conaffinity="0" density="0" group="1" />
       </body>
