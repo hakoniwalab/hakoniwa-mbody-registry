@@ -30,6 +30,7 @@ import yaml
 
 LIGHTS = "KHR_lights_punctual"
 STRENGTH = "KHR_materials_emissive_strength"
+DIGITS = 6  # decimals of computed angles and rotations
 
 
 class LightsError(ValueError):
@@ -101,7 +102,9 @@ def rotation_to(direction) -> list[float]:
     length = math.sqrt(axis[0] ** 2 + axis[1] ** 2)
     half = math.acos(max(-1.0, min(1.0, dot))) / 2
     s = math.sin(half) / length
-    return [axis[0] * s, axis[1] * s, 0.0, math.cos(half)]
+    # Rounded: libm's last digits differ between platforms, and the GLB must
+    # come out byte for byte the same everywhere (forge.py --verify).
+    return [round(axis[0] * s, DIGITS), round(axis[1] * s, DIGITS), 0.0, round(math.cos(half), DIGITS)]
 
 
 def add_lights(document: dict, lights: list[dict]) -> None:
@@ -116,8 +119,8 @@ def add_lights(document: dict, lights: list[dict]) -> None:
         node = {"name": light.get("name", f"light_{len(store['lights'])}"),
                 "translation": [float(v) for v in light["position"]]}
         if entry["type"] == "spot":
-            entry["spot"] = {"innerConeAngle": math.radians(float(light.get("inner_cone_deg", 15))),
-                             "outerConeAngle": math.radians(float(light.get("outer_cone_deg", 35)))}
+            entry["spot"] = {"innerConeAngle": round(math.radians(float(light.get("inner_cone_deg", 15))), DIGITS),
+                             "outerConeAngle": round(math.radians(float(light.get("outer_cone_deg", 35))), DIGITS)}
             node["rotation"] = rotation_to(light.get("direction", [1, 0, 0]))
         store["lights"].append(entry)
         node["extensions"] = {LIGHTS: {"light": len(store["lights"]) - 1}}
