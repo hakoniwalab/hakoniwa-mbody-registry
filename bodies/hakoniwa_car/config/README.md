@@ -21,7 +21,8 @@ rear wheels.
 - `mujoco_world.yaml`: the minimal test world
 - `ackermann-forge.yaml`: the Forge input and the acceptance contract
   (wheelbase 1.50 m, track 1.00 m, wheel radius 0.25 m, maximum centre
-  steering 0.60 rad, maximum wheel speed 12 rad/s = 3.0 m/s)
+  steering 0.60 rad, maximum wheel speed 112 rad/s = 28 m/s, about 100 km/h, for experiments: a
+  route or RC sets the speed it actually drives at)
 - `viewer.recipe.yaml`: viewer-neutral GLB assembly and movable joints
 - `lights.yaml`: the lights (`tools/glb_add_lights.py`, run by the Forge on the parts GLB): the blue LEDs (front strip, eyes, sides, LiDAR ring), the red tail lamps and two white head lamps glow, and two head lights (spot lights) light the way at night
 - `provenance.yaml`: origin and license
