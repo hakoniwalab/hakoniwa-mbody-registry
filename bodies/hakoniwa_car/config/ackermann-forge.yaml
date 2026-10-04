@@ -29,7 +29,7 @@ validation:
     track_width_m: 1.00
     wheel_radius_m: 0.25
     max_center_steering_rad: 0.60
-    max_wheel_angular_velocity_rad_s: 12.0
+    max_wheel_angular_velocity_rad_s: 112.0
   scenarios:
     settle_sec: 1.0
     idle_sec: 3.0

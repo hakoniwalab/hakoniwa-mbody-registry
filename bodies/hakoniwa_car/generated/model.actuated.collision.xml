@@ -175,7 +175,7 @@
   <actuator>
     <position name="front_left_steer_motor" joint="front_left_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="1500" kv="70" />
     <position name="front_right_steer_motor" joint="front_right_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="1500" kv="70" />
-    <velocity name="rear_left_wheel_motor" joint="rear_left_wheel_joint" ctrllimited="true" ctrlrange="-14 14" kv="300" />
-    <velocity name="rear_right_wheel_motor" joint="rear_right_wheel_joint" ctrllimited="true" ctrlrange="-14 14" kv="300" />
+    <velocity name="rear_left_wheel_motor" joint="rear_left_wheel_joint" ctrllimited="true" ctrlrange="-120 120" kv="300" />
+    <velocity name="rear_right_wheel_motor" joint="rear_right_wheel_joint" ctrllimited="true" ctrlrange="-120 120" kv="300" />
   </actuator>
 </mujoco>

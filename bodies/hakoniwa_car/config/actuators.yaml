@@ -19,12 +19,12 @@ actuators:
     name: rear_left_wheel_motor
     joint: rear_left_wheel_joint
     ctrllimited: true
-    ctrlrange: [-14, 14]
+    ctrlrange: [-120, 120]
     kv: 300
 
   - type: velocity
     name: rear_right_wheel_motor
     joint: rear_right_wheel_joint
     ctrllimited: true
-    ctrlrange: [-14, 14]
+    ctrlrange: [-120, 120]
     kv: 300
