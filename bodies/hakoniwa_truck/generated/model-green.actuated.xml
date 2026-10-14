@@ -83,6 +83,7 @@
       <geom name="reflector_red_right_visual" type="box" pos="-4.05 -0.58 0.38" size="0.018 0.2 0.055" material="tail_red" contype="0" conaffinity="0" density="0" group="1" />
       <body name="front_left_steer" pos="2.15 0.925 0">
         <inertial pos="0 0 0" mass="1" diaginertia="0.02 0.02 0.02" />
+        <joint name="front_left_suspension" type="slide" axis="0 0 1" range="-0.1 0.1" limited="true" stiffness="122351.076" damping="8018.20291" springref="-0.0859827692" />
         <joint name="front_left_steer_joint" type="hinge" axis="0 0 1" range="-0.65 0.65" damping="0.5" armature="0.05" />
         <body name="front_left_wheel">
           <joint name="front_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.25" armature="0.08" />
@@ -93,6 +94,7 @@
       </body>
       <body name="front_right_steer" pos="2.15 -0.925 0">
         <inertial pos="0 0 0" mass="1" diaginertia="0.02 0.02 0.02" />
+        <joint name="front_right_suspension" type="slide" axis="0 0 1" range="-0.1 0.1" limited="true" stiffness="122351.076" damping="8018.20291" springref="-0.0859827692" />
         <joint name="front_right_steer_joint" type="hinge" axis="0 0 1" range="-0.65 0.65" damping="0.5" armature="0.05" />
         <body name="front_right_wheel">
           <joint name="front_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.25" armature="0.08" />
@@ -102,12 +104,14 @@
         </body>
       </body>
       <body name="rear_left_wheel" pos="-2.15 0.85 0">
+        <joint name="rear_left_suspension" type="slide" axis="0 0 1" range="-0.1 0.1" limited="true" stiffness="217074.489" damping="14225.8439" springref="-0.0859827692" />
         <joint name="rear_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.25" armature="0.08" />
         <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.45 0.18" euler="1.57079632679 0 0" material="tire" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_left_rim_visual" type="cylinder" pos="0 0 0" size="0.25 0.184" euler="1.57079632679 0 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_left_hub_visual" type="cylinder" pos="0 0 0" size="0.075 0.188" euler="1.57079632679 0 0" material="black_matte" contype="0" conaffinity="0" density="0" group="1" />
       </body>
       <body name="rear_right_wheel" pos="-2.15 -0.85 0">
+        <joint name="rear_right_suspension" type="slide" axis="0 0 1" range="-0.1 0.1" limited="true" stiffness="217074.489" damping="14225.8439" springref="-0.0859827692" />
         <joint name="rear_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.25" armature="0.08" />
         <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.45 0.18" euler="1.57079632679 0 0" material="tire" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_right_rim_visual" type="cylinder" pos="0 0 0" size="0.25 0.184" euler="1.57079632679 0 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />

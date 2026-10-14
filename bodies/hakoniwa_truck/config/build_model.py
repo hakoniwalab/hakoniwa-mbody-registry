@@ -2,6 +2,7 @@
 """Build colour variants of the generic Hakoniwa medium box truck."""
 
 from pathlib import Path
+import math
 
 CAB_COLORS = {
     "default": "0.035 0.25 0.58 1",
@@ -19,6 +20,55 @@ AMBER = "1 0.35 0.01 1"
 YELLOW = "0.95 0.72 0.02 1"
 VISUAL = 'contype="0" conaffinity="0" density="0" group="1"'
 WHEEL_TURN = "1.57079632679 0 0"
+
+# Empty-cargo-box suspension baseline.  The model's 5,950 kg vehicle body is
+# sprung; the four 12 kg tires and two 1 kg steering carriers are unsprung.
+# The longitudinal CG is rearward, so front and rear corner rates are derived
+# separately from static axle load instead of splitting the mass equally.
+SUSPENSION_NATURAL_FREQUENCY_HZ = 1.70
+SUSPENSION_DAMPING_RATIO = 0.35
+SUSPENSION_TRAVEL_M = 0.10
+GRAVITY_M_S2 = 9.81
+SPRUNG_MASS_KG = 5950.0
+FRONT_AXLE_X_M = 2.15
+REAR_AXLE_X_M = -2.15
+SPRUNG_CG_X_M = -0.60
+
+
+def corner_sprung_masses() -> tuple[float, float]:
+    """Return front and rear sprung mass per wheel from static axle loads."""
+    wheelbase = FRONT_AXLE_X_M - REAR_AXLE_X_M
+    front_axle_mass = SPRUNG_MASS_KG * (
+        (SPRUNG_CG_X_M - REAR_AXLE_X_M) / wheelbase
+    )
+    rear_axle_mass = SPRUNG_MASS_KG - front_axle_mass
+    return front_axle_mass / 2.0, rear_axle_mass / 2.0
+
+
+def suspension_parameters(axle: str) -> tuple[float, float, float]:
+    """Return stiffness, damping and preload reference for one corner."""
+    front_mass, rear_mass = corner_sprung_masses()
+    if axle == "front":
+        corner_mass = front_mass
+    elif axle == "rear":
+        corner_mass = rear_mass
+    else:
+        raise ValueError(f"unknown axle: {axle}")
+    omega = 2 * math.pi * SUSPENSION_NATURAL_FREQUENCY_HZ
+    stiffness = corner_mass * omega**2
+    damping = 2 * SUSPENSION_DAMPING_RATIO * math.sqrt(stiffness * corner_mass)
+    springref = -GRAVITY_M_S2 / omega**2
+    return stiffness, damping, springref
+
+
+def suspension_joint(name: str, axle: str, indent: str = "        ") -> str:
+    stiffness, damping, springref = suspension_parameters(axle)
+    return (
+        f'{indent}<joint name="{name}_suspension" type="slide" axis="0 0 1" '
+        f'range="{-SUSPENSION_TRAVEL_M:g} {SUSPENSION_TRAVEL_M:g}" limited="true" '
+        f'stiffness="{stiffness:.9g}" damping="{damping:.9g}" '
+        f'springref="{springref:.9g}"/>'
+    )
 
 
 def fmt(values):
@@ -75,6 +125,7 @@ def wheel(name, width, indent="          "):
 def steered(side, y):
     return f'''      <body name="front_{side}_steer" pos="2.15 {y:g} 0">
         <inertial pos="0 0 0" mass="1" diaginertia="0.02 0.02 0.02"/>
+{suspension_joint(f"front_{side}", "front")}
         <joint name="front_{side}_steer_joint" type="hinge" axis="0 0 1" range="-0.65 0.65" damping="0.5" armature="0.05"/>
         <body name="front_{side}_wheel">
           <joint name="front_{side}_wheel_joint" type="hinge" axis="0 1 0" damping="0.25" armature="0.08"/>
@@ -85,6 +136,7 @@ def steered(side, y):
 
 def driven(side, y):
     return f'''      <body name="rear_{side}_wheel" pos="-2.15 {y:g} 0">
+{suspension_joint(f"rear_{side}", "rear")}
         <joint name="rear_{side}_wheel_joint" type="hinge" axis="0 1 0" damping="0.25" armature="0.08"/>
 {wheel(f"rear_{side}", 0.18, "        ")}
       </body>'''
