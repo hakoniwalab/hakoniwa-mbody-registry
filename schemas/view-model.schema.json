@@ -170,6 +170,14 @@
           "type": "string",
           "minLength": 1
         },
+        "source_joint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "multiplier": {
+          "type": "number",
+          "not": {"const": 0}
+        },
         "parent": {
           "type": [
             "string",

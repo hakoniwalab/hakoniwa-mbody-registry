@@ -97,12 +97,19 @@ However, a runtime adapter may use the following default convention when synchro
 
 ```text
 base pose        -> robot.root / base.name
-joint state name -> movable_parts[].joint
+joint state name -> movable_parts[].source_joint, or movable_parts[].joint when omitted
 ```
 
 In other words, the view-model provides stable view targets. The runtime adapter is responsible for reading or writing PDU data and applying it to those targets.
 
 For the common case, no additional binding file is required if the joint names in the runtime data match `movable_parts[].joint`.
+
+A display-only part may instead declare `source_joint` and `multiplier`. The
+viewer then applies `source_joint`'s runtime value multiplied by `multiplier`
+to that part. This permits one physical joint to animate an additional visual
+part, such as a steering wheel, without adding a fake joint to the physics
+model or to the runtime state. When these fields are omitted, the existing
+one-to-one `joint` mapping and multiplier `1` remain unchanged.
 
 If a runtime uses different names or a non-standard transport, that runtime may provide its own adapter-specific overlay. Such overlays should stay outside the view-model.
 

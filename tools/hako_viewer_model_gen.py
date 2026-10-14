@@ -349,6 +349,66 @@ def build_viewer_model(recipe: Dict[str, Any], recipe_path: Path) -> Dict[str, A
             part["asset"] = make_asset_id(body.name)
         movable_parts.append(part)
 
+    existing_part_names = {part["name"] for part in movable_parts}
+    existing_joint_names = {part["joint"] for part in movable_parts}
+    display_joints = recipe.get("display_joints", []) or []
+    if not isinstance(display_joints, list):
+        raise RecipeError("display_joints must be an array")
+    for item in display_joints:
+        if not isinstance(item, dict):
+            raise RecipeError("each display_joints entry must be an object")
+        try:
+            name = str(item["name"]).strip()
+            body_name = str(item["body"]).strip()
+            source_joint_name = str(item["source_joint"]).strip()
+            multiplier = float(item["multiplier"])
+            axis_values = item["axis"]
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RecipeError(f"invalid display_joints entry: {item!r}") from exc
+        if not name or not body_name or not source_joint_name:
+            raise RecipeError("display joint name, body, and source_joint must be non-empty")
+        if not math.isfinite(multiplier) or multiplier == 0.0:
+            raise RecipeError(f"display joint '{name}' multiplier must be finite and non-zero")
+        if (
+            not isinstance(axis_values, list)
+            or len(axis_values) != 3
+            or any(not isinstance(value, (int, float)) or not math.isfinite(value) for value in axis_values)
+            or all(float(value) == 0.0 for value in axis_values)
+        ):
+            raise RecipeError(f"display joint '{name}' axis must be a non-zero finite vec3")
+        if body_name not in body_name_set:
+            raise RecipeError(
+                f"display joint '{name}' body '{body_name}' is outside base subtree '{base_name}'"
+            )
+        if body_name in existing_part_names or name in existing_joint_names:
+            raise RecipeError(f"duplicate display joint part or name: {name}")
+        source_joint = index.get_joint(source_joint_name)
+        if source_joint.body not in body_name_set:
+            raise RecipeError(
+                f"display joint '{name}' source '{source_joint_name}' is outside "
+                f"base subtree '{base_name}'"
+            )
+        body = index.get_body(body_name)
+        require_asset(asset_body_names, body.name, f"display joint '{name}'")
+        movable_parts.append({
+            "name": body.name,
+            "joint": name,
+            "source_joint": source_joint.name,
+            "multiplier": multiplier,
+            "parent": body.parent,
+            "asset": make_asset_id(body.name),
+            "mount": {
+                "xyz": round_vec(body.pos),
+                "rpy": round_vec(body.rpy),
+            },
+            "motion": {
+                "type": motion_type_from_joint(source_joint),
+                "axis": round_vec(tuple(float(value) for value in axis_values)),
+            },
+        })
+        existing_part_names.add(body.name)
+        existing_joint_names.add(name)
+
     fixed_parts = []
     for body_name in recipe.get("fixed_bodies", []) or []:
         if body_name not in body_name_set:

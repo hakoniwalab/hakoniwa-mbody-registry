@@ -38,9 +38,17 @@ def render_driver_eye(
     width: int = 640,
     height: int = 360,
     hidden_geom_prefixes: tuple[str, ...] = (),
+    joint_positions: dict[str, float] | None = None,
+    display_body_angles: dict[str, float] | None = None,
 ) -> Image.Image:
     """Render from Urban Mobility's vehicle-local driver eye toward +x."""
     root = ET.parse(model_path).getroot()
+    # from_xml_string has no source-directory context; preserve relative asset
+    # semantics by resolving file references before compiling the temporary view.
+    for asset in root.findall("./asset/*[@file]"):
+        path = Path(asset.get("file", ""))
+        if not path.is_absolute():
+            asset.set("file", str((model_path.parent / path).resolve()))
     vehicle = root.find(".//body[@name='vehicle']")
     if vehicle is None:
         raise RuntimeError("vehicle body not found")
@@ -48,6 +56,17 @@ def render_driver_eye(
         name = geom.get("name", "")
         if name.startswith(hidden_geom_prefixes):
             vehicle.remove(geom)
+    for body_name, angle in (display_body_angles or {}).items():
+        body = root.find(f".//body[@name='{body_name}']")
+        if body is None:
+            raise RuntimeError(f"display body not found: {body_name}")
+        base_euler = [float(value) for value in body.get("euler", "0 0 0").split()]
+        if len(base_euler) != 3:
+            raise RuntimeError(f"display body has invalid euler: {body_name}")
+        # The Three.js viewer applies display motion about the body's local X
+        # axis after its fixed mount transform.
+        base_euler[0] += angle
+        body.set("euler", " ".join(f"{value:.9g}" for value in base_euler))
     worldbody = root.find("./worldbody")
     if worldbody is None:
         raise RuntimeError("worldbody not found")
@@ -63,13 +82,18 @@ def render_driver_eye(
         })
     ET.SubElement(vehicle, "camera", {
         "name": "driver_eye_validation",
-        "pos": "0.45 -0.38 0.84",
+        "pos": "-0.05 -0.38 0.84",
         # camera -Z looks forward (+vehicle X), camera +Y is world up.
         "xyaxes": "0 -1 0 0 0 1",
         "fovy": "72",
     })
     model = mujoco.MjModel.from_xml_string(ET.tostring(root, encoding="unicode"))
     data = mujoco.MjData(model)
+    for joint_name, value in (joint_positions or {}).items():
+        joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
+        if joint_id < 0:
+            raise RuntimeError(f"joint not found: {joint_name}")
+        data.qpos[model.jnt_qposadr[joint_id]] = value
     mujoco.mj_forward(model, data)
     camera = mujoco.MjvCamera()
     camera.type = mujoco.mjtCamera.mjCAMERA_FIXED
@@ -126,7 +150,17 @@ def main() -> None:
         for name, path in variants
     ]
     montage(car_rear_images).save(RESULTS / f"car2-{args.label}-rear-oblique.png")
-    render_driver_eye(variants[0][1]).save(RESULTS / f"car2-{args.label}-driver-eye.png")
+    render_driver_eye(variants[0][1]).save(
+        RESULTS / f"car2-{args.label}-driver-eye-straight.png"
+    )
+    left_steer_rad = 0.25
+    render_driver_eye(
+        variants[0][1],
+        joint_positions={
+            "front_left_steer_joint": left_steer_rad,
+        },
+        display_body_angles={"steering_wheel": left_steer_rad * 15.0},
+    ).save(RESULTS / f"car2-{args.label}-driver-eye-left.png")
 
     truck = ROOT / "bodies/hakoniwa_truck/generated/model.minimal_world.xml"
     truck_result = ROOT / "bodies/hakoniwa_truck/validation/results"
@@ -137,7 +171,8 @@ def main() -> None:
     print(RESULTS / f"car2-{args.label}-oblique.png")
     print(RESULTS / f"car2-{args.label}-side.png")
     print(RESULTS / f"car2-{args.label}-rear-oblique.png")
-    print(RESULTS / f"car2-{args.label}-driver-eye.png")
+    print(RESULTS / f"car2-{args.label}-driver-eye-straight.png")
+    print(RESULTS / f"car2-{args.label}-driver-eye-left.png")
     print(truck_result / f"truck-{args.label}-oblique.png")
 
 

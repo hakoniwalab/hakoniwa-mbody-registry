@@ -13,6 +13,11 @@
       "path": "parts/vehicle.glb"
     },
     {
+      "id": "steering_wheel",
+      "type": "glb",
+      "path": "parts/steering_wheel.glb"
+    },
+    {
       "id": "front_left_wheel",
       "type": "glb",
       "path": "parts/front_left_wheel.glb"
@@ -203,6 +208,34 @@
         ]
       },
       "asset": "rear_right_wheel"
+    },
+    {
+      "name": "steering_wheel",
+      "joint": "steering_wheel_joint",
+      "source_joint": "front_left_steer_joint",
+      "multiplier": 15.0,
+      "parent": "vehicle",
+      "asset": "steering_wheel",
+      "mount": {
+        "xyz": [
+          0.45,
+          -0.38,
+          0.59
+        ],
+        "rpy": [
+          0.0,
+          0.436332,
+          0.0
+        ]
+      },
+      "motion": {
+        "type": "continuous",
+        "axis": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      }
     }
   ]
 }

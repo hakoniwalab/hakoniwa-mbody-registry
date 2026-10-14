@@ -193,6 +193,27 @@ pivots with separately rotating wheel children.
 
 The resulting motion metadata is derived from the MJCF joint type and axis. It is for view-side reconstruction only and does not define actuator or control behavior.
 
+### `display_joints`
+
+Optional. Defines a visual-only moving body whose angle is derived from an
+existing state joint. It does not add a MuJoCo joint, actuator, constraint, or
+runtime PDU.
+
+```yaml
+display_joints:
+  - name: steering_wheel_joint
+    body: steering_wheel
+    source_joint: front_left_steer_joint
+    multiplier: 15
+    axis: [1, 0, 0]
+```
+
+`body` must identify a visual body below `base`, and `source_joint` must be an
+MJCF joint in the same subtree. The generated movable part listens for the
+source joint's state, multiplies its position by `multiplier`, and applies the
+result around `axis`. This is presentation metadata only; physical coupling
+belongs in MJCF when it is physically required.
+
 ### `fixed_bodies`
 
 Optional.

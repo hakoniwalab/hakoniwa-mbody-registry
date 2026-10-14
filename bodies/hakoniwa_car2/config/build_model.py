@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import math
 
 COLORS = {
     "default": "0.20 0.22 0.24 1",
@@ -12,6 +13,7 @@ COLORS = {
     "blue": "0.08 0.22 0.48 1",
 }
 BLACK = "0.035 0.045 0.055 1"
+STEERING_BLACK = "0.10 0.11 0.12 1"
 GLASS = "0.10 0.16 0.19 0.28"
 CHROME = "0.66 0.68 0.70 1"
 TIRE = "0.035 0.035 0.038 1"
@@ -21,6 +23,7 @@ TAIL = "0.75 0.025 0.02 1"
 PLATE = "0.94 0.94 0.92 1"
 MATERIAL_RGBA = {
     "black_matte": BLACK,
+    "steering_black": STEERING_BLACK,
     "glass": GLASS,
     "trim": CHROME,
     "wheel_metal": CHROME,
@@ -33,6 +36,44 @@ MATERIAL_RGBA = {
 CURRENT_COLOR = "default"
 VISUAL = 'contype="0" conaffinity="0" density="0" group="1"'
 WHEEL_TURN = "1.57079632679 0 0"
+
+# Suspension specification.  The chassis collider carries the complete sprung
+# mass.  The four 12 kg wheels and the two 1 kg front steering carriers are
+# below their suspension joints, so they are unsprung and must not contribute
+# to the spring/damper calculation.
+SUSPENSION_NATURAL_FREQUENCY_HZ = 1.35
+SUSPENSION_DAMPING_RATIO = 0.35
+SUSPENSION_TRAVEL_M = 0.08
+GRAVITY_M_S2 = 9.81
+CHASSIS_MASS_KG = 1152.0
+SPRUNG_MASS_KG = CHASSIS_MASS_KG
+
+# The wheel is a view-only part.  Its 15:1 animation mapping is intentionally
+# owned by viewer.recipe.yaml, not by the physical MuJoCo model.
+STEERING_WHEEL_RADIUS_M = 0.185
+STEERING_WHEEL_TILT_RAD = math.radians(25.0)
+
+
+def suspension_parameters() -> tuple[float, float, float]:
+    """Return per-corner stiffness, damping and static-load spring reference."""
+    omega = 2 * math.pi * SUSPENSION_NATURAL_FREQUENCY_HZ
+    corner_mass = SPRUNG_MASS_KG / 4
+    stiffness = corner_mass * omega * omega
+    damping = 2 * SUSPENSION_DAMPING_RATIO * math.sqrt(stiffness * corner_mass)
+    # A negative spring reference preloads the wheel downward and applies the
+    # equal upward reaction to the sprung body at the nominal qpos of zero.
+    springref = -GRAVITY_M_S2 / (omega * omega)
+    return stiffness, damping, springref
+
+
+def suspension_joint(name: str, indent: str = "        ") -> str:
+    stiffness, damping, springref = suspension_parameters()
+    return (
+        f'{indent}<joint name="{name}_suspension" type="slide" axis="0 0 1" '
+        f'range="{-SUSPENSION_TRAVEL_M:g} {SUSPENSION_TRAVEL_M:g}" limited="true" '
+        f'stiffness="{stiffness:.9g}" damping="{damping:.9g}" '
+        f'springref="{springref:.9g}"/>'
+    )
 
 
 def fmt(values) -> str:
@@ -57,6 +98,45 @@ def capsule(name, start, end, radius, material, indent="      ") -> str:
     rgba = COLORS[CURRENT_COLOR] if material == "body_paint" else MATERIAL_RGBA.get(material)
     tint = f' rgba="{rgba}"' if rgba else ""
     return f'{indent}<geom name="{name}_visual" type="capsule" fromto="{fmt((*start, *end))}" size="{radius:g}" material="{material}"{tint} {VISUAL}/>'
+
+
+def steering_wheel(indent: str = "      ") -> str:
+    """Return a right-hand-drive steering wheel in its rotating local body."""
+    segments = 16
+    radius = STEERING_WHEEL_RADIUS_M
+    parts = [
+        f'{indent}<body name="steering_wheel" pos="0.45 -0.38 0.59" '
+        f'euler="0 {STEERING_WHEEL_TILT_RAD:.9g} 0">',
+    ]
+    # The local YZ plane is normal to the tilted steering column.
+    points = [
+        (0.0, radius * math.cos(2 * math.pi * index / segments),
+         radius * math.sin(2 * math.pi * index / segments))
+        for index in range(segments)
+    ]
+    for index, start in enumerate(points):
+        parts.append(capsule(
+            f"steering_wheel_rim_{index}", start,
+            points[(index + 1) % segments], 0.012, "steering_black", indent + "  ",
+        ))
+    # Passenger-car layout: horizontal spokes at 3 and 9 o'clock and one at
+    # 6 o'clock.  Keep the upper half clear for the driver's road view.
+    for index, angle in enumerate((0.0, math.pi, 1.5 * math.pi)):
+        end = (0.0, radius * 0.82 * math.cos(angle), radius * 0.82 * math.sin(angle))
+        parts.append(capsule(
+            f"steering_wheel_spoke_{index}", (0.0, 0.0, 0.0), end,
+            0.010, "steering_black", indent + "  ",
+        ))
+    parts.append(cylinder(
+        "steering_wheel_hub", (0.0, 0.0, 0.0), (0.045, 0.018),
+        "steering_black", "0 1.57079632679 0", indent + "  ",
+    ))
+    parts.append(box(
+        "steering_wheel_airbag_pad", (0.0, 0.0, -0.012),
+        (0.020, 0.072, 0.050), "steering_black", indent=indent + "  ",
+    ))
+    parts.append(f"{indent}</body>")
+    return "\n".join(parts)
 
 
 def rounded_box(name, pos, size, radius, material, indent="      ") -> list[str]:
@@ -122,6 +202,7 @@ def wheel(name, indent="          ") -> str:
 def steered(side, y) -> str:
     return f'''      <body name="front_{side}_steer" pos="1.30 {y:g} 0">
         <inertial pos="0 0 0" mass="1" diaginertia="0.01 0.01 0.01"/>
+{suspension_joint(f"front_{side}")}
         <joint name="front_{side}_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.2" armature="0.02"/>
         <body name="front_{side}_wheel">
           <joint name="front_{side}_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02"/>
@@ -132,6 +213,7 @@ def steered(side, y) -> str:
 
 def driven(side, y) -> str:
     return f'''      <body name="rear_{side}_wheel" pos="-1.30 {y:g} 0">
+{suspension_joint(f"rear_{side}", "        ")}
         <joint name="rear_{side}_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02"/>
 {wheel(f"rear_{side}", "        ")}
       </body>'''
@@ -194,6 +276,7 @@ def body_geoms() -> list[str]:
         box("firewall", (0.78, 0, 0.495), (0.06, 0.82, 0.205), "black_matte"),
         box("dashboard_lower", (0.45, 0, 0.37), (0.20, 0.80, 0.17), "black_matte"),
         box("steering_column", (0.26, -0.38, 0.58), (0.08, 0.03, 0.03), "black_matte", (0, 0.45, 0)),
+        steering_wheel(),
         # The driver-assist camera behind the windshield top.
         box("adas_camera", (0.14, 0, 1.085), (0.04, 0.06, 0.03), "black_matte"),
     ]
@@ -209,6 +292,7 @@ def model(color_name: str) -> str:
   <asset>
     <material name="body_paint" rgba="{color}" specular="0.45" shininess="0.55" reflectance="0.12"/>
     <material name="black_matte" rgba="{BLACK}" specular="0.04" shininess="0.08"/>
+    <material name="steering_black" rgba="{STEERING_BLACK}" specular="0.22" shininess="0.3"/>
     <material name="glass" rgba="{GLASS}" specular="0.55" shininess="0.65" reflectance="0.12"/>
     <material name="trim" rgba="{CHROME}" specular="0.35" shininess="0.45"/>
     <material name="wheel_metal" rgba="{CHROME}" specular="0.55" shininess="0.6"/>
