@@ -8,6 +8,7 @@ import argparse
 import filecmp
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -290,12 +291,14 @@ def generate_view_assets(
     canonical_config: Path,
     structural: Path,
     output_dir: Path,
+    variant: str = "",
 ) -> list[Path]:
     recipe_path = canonical_config / "viewer.recipe.yaml"
     if not recipe_path.is_file():
         return []
 
-    parts_dir = output_dir / "parts"
+    suffix = f"-{variant}" if variant else ""
+    parts_dir = output_dir / f"parts{suffix}"
     run_tool("mjcf2glb.py", structural, "--output-dir", parts_dir, "--split-by", "body", "--digits", "7")
     lights = canonical_config / "lights.yaml"
     if lights.is_file():  # glowing lamps and head lights in the parts GLB
@@ -306,6 +309,7 @@ def generate_view_assets(
         "viewer.recipe",
     )
     recipe["mjcf"] = str(structural.resolve())
+    recipe.setdefault("assets", {})["glb_dir"] = parts_dir.name
     with tempfile.NamedTemporaryFile(
         mode="w",
         suffix=".viewer.recipe.yaml",
@@ -315,7 +319,7 @@ def generate_view_assets(
         yaml.safe_dump(recipe, temporary_recipe, sort_keys=False)
         generated_recipe = Path(temporary_recipe.name)
     try:
-        view_model = output_dir / "view-model.json"
+        view_model = output_dir / f"view-model{suffix}.json"
         run_tool(
             "hako_viewer_model_gen.py",
             generated_recipe,
@@ -350,6 +354,26 @@ def forge_to(body: str, recipe: dict, body_root: Path, output_dir: Path) -> list
     apply_visual_materials(canonical_config / "visual_materials.yaml", structural)
     outputs.extend(apply_overlays(canonical_config, structural, output_dir))
     outputs.extend(generate_view_assets(canonical_config, structural, output_dir))
+    variants = require_mapping(recipe.get("variants", {}), "variants")
+    for variant, raw_variant in variants.items():
+        if (
+            not isinstance(variant, str)
+            or variant == "default"
+            or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", variant) is None
+        ):
+            raise ForgeError(f"invalid variant name: {variant!r}")
+        variant_config = require_mapping(raw_variant, f"variants.{variant}")
+        variant_path = Path(str(variant_config.get("path", "")))
+        variant_source = canonical_body_root / variant_path
+        if not variant_source.is_file():
+            raise ForgeError(f"Variant MJCF source not found: {variant_source}")
+        variant_structural = output_dir / f"model-{variant}.xml"
+        shutil.copy2(variant_source, variant_structural)
+        outputs.append(variant_structural)
+        apply_joint_dynamics(canonical_config / "joint_dynamics.yaml", variant_structural)
+        apply_visual_materials(canonical_config / "visual_materials.yaml", variant_structural)
+        outputs.extend(apply_overlays(canonical_config, variant_structural, output_dir))
+        outputs.extend(generate_view_assets(canonical_config, variant_structural, output_dir, variant))
     print(f"Ackermann Forge complete: {body}")
     for output in outputs:
         print(f"  - {output}")
@@ -360,21 +384,27 @@ def verify(body: str, recipe: dict) -> None:
     expected_dir = REPO_ROOT / "bodies" / body / "generated"
     with tempfile.TemporaryDirectory(prefix=f"hakoniwa-ackermann-{body}-") as temporary:
         temp_body = Path(temporary) / "bodies" / body
+        # Generated MJCF may reference files under the body's config (for example
+        # visual meshes as ../config/meshes/*.obj); give the temporary tree a copy.
+        canonical_config = REPO_ROOT / "bodies" / body / "config"
+        if canonical_config.is_dir():
+            shutil.copytree(canonical_config, temp_body / "config")
         actual = forge_to(body, recipe, temp_body, temp_body / "generated")
         world_models = [path for path in actual if path.name.endswith(".minimal_world.xml")]
-        if len(world_models) != 1:
-            raise ForgeError("Forge verification requires exactly one minimal-world MJCF")
+        if not world_models:
+            raise ForgeError("Forge verification requires at least one minimal-world MJCF")
         try:
             import mujoco
         except ModuleNotFoundError as exc:
             raise ForgeError("MuJoCo Python package is required for verification") from exc
-        model = mujoco.MjModel.from_xml_path(str(world_models[0]))
-        print(
-            "MuJoCo load passed: "
-            f"nq={model.nq} nv={model.nv} nu={model.nu} ngeom={model.ngeom}"
-        )
-        if model.nu != 4:
-            raise ForgeError(f"Ackermann model must expose four actuators, got {model.nu}")
+        for world_model in world_models:
+            model = mujoco.MjModel.from_xml_path(str(world_model))
+            print(
+                f"MuJoCo load passed ({world_model.name}): "
+                f"nq={model.nq} nv={model.nv} nu={model.nu} ngeom={model.ngeom}"
+            )
+            if model.nu != 4:
+                raise ForgeError(f"Ackermann model must expose four actuators, got {model.nu}")
         run_tool(
             "ackermann/validate.py",
             body,

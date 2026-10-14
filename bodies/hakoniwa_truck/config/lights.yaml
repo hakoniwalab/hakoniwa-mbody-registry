@@ -1,0 +1,8 @@
+glow:
+  - {rgba: [0.95, 0.96, 1.0], emissive: [0.9, 0.95, 1.0], strength: 2.0}
+  - {rgba: [0.8, 0.02, 0.01], emissive: [1.0, 0.02, 0.01], strength: 2.0}
+lights:
+  - {part: vehicle, name: head_light_left, type: spot, position: [4.0, 0.76, 0.77], direction: [1, 0, -0.05],
+     color: [0.95, 0.98, 1.0], intensity: 65, range: 55, inner_cone_deg: 12, outer_cone_deg: 30}
+  - {part: vehicle, name: head_light_right, type: spot, position: [4.0, -0.76, 0.77], direction: [1, 0, -0.05],
+     color: [0.95, 0.98, 1.0], intensity: 65, range: 55, inner_cone_deg: 12, outer_cone_deg: 30}

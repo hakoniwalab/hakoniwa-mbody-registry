@@ -1,0 +1,9 @@
+actuators:
+  - {type: position, name: front_left_steer_motor, joint: front_left_steer_joint, ctrllimited: true,
+     ctrlrange: [-0.65, 0.65], kp: 50000, kv: 1000}
+  - {type: position, name: front_right_steer_motor, joint: front_right_steer_joint, ctrllimited: true,
+     ctrlrange: [-0.65, 0.65], kp: 50000, kv: 1000}
+  - {type: velocity, name: rear_left_wheel_motor, joint: rear_left_wheel_joint, ctrllimited: true,
+     ctrlrange: [-75, 75], forcelimited: true, forcerange: [-7600, 1200], kv: 5000}
+  - {type: velocity, name: rear_right_wheel_motor, joint: rear_right_wheel_joint, ctrllimited: true,
+     ctrlrange: [-75, 75], forcelimited: true, forcerange: [-7600, 1200], kv: 5000}

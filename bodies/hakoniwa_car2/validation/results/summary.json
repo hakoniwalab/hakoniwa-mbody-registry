@@ -1,0 +1,8 @@
+{
+  "zero_to_100_kmh_sec": 11.6,
+  "maximum_speed_kmh": 153.55649686774728,
+  "braking_mean_deceleration_m_s2": 7.5610479867668605,
+  "hold_80_spread_kmh": 8.772753403718526e-08,
+  "lane_change_lateral_m": 3.0037568247914135,
+  "lane_change_peak_lateral_acceleration_m_s2": 0.5696158192339151
+}

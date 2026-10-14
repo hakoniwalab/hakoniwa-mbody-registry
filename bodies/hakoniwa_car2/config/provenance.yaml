@@ -1,0 +1,6 @@
+name: hakoniwa_car2
+origin: hakoniwalab
+license: MIT
+description: An original generic five-door compact hatchback built from MuJoCo primitives for Hakoniwa highway simulations.
+references:
+  - {name: hakoniwa_car, url: ../hakoniwa_car, license: MIT, usage: Ackermann joint and Forge configuration template.}

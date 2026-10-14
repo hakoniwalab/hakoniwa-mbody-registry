@@ -1,0 +1,55 @@
+version: 1
+kind: ackermann_vehicle
+body: hakoniwa_car2
+source:
+  type: local_mjcf
+  path: config/model.xml
+  output: {basename: model}
+adaptations: {}
+variants:
+  white: {path: config/model-white.xml}
+  red: {path: config/model-red.xml}
+  blue: {path: config/model-blue.xml}
+validation:
+  interface:
+    base_freejoint: base_freejoint
+    joints:
+      steering_left: front_left_steer_joint
+      steering_right: front_right_steer_joint
+      drive_left: front_left_wheel_joint
+      drive_right: front_right_wheel_joint
+    actuators:
+      steering_left: front_left_steer_motor
+      steering_right: front_right_steer_motor
+      drive_left: front_left_wheel_motor
+      drive_right: front_right_wheel_motor
+  geometry:
+    wheelbase_m: 2.60
+    track_width_m: 1.52
+    wheel_radius_m: 0.31
+    max_center_steering_rad: 0.60
+    max_wheel_angular_velocity_rad_s: 150.0
+  scenarios:
+    settle_sec: 1.0
+    idle_sec: 3.0
+    straight: {speed_m_s: 5.0, duration_sec: 3.0}
+    turn: {speed_m_s: 4.0, center_steering_rad: 0.25, duration_sec: 3.0}
+  tolerances:
+    idle_horizontal_drift_m: 0.03
+    idle_vertical_drift_m: 0.03
+    straight_min_forward_m: 8.0
+    straight_max_lateral_m: 0.15
+    straight_max_yaw_rad: 0.06
+    steering_tracking_error_rad: 0.05
+    drive_tracking_error_rad_s: 1.5
+    turn_min_forward_m: 3.0
+    turn_min_abs_yaw_rad: 0.5
+    turn_max_yaw_asymmetry_ratio: 0.20
+    max_step_translation_m: 0.10
+    rtf_required_min: 1.0
+    rtf_advisory_min: 1.0
+  evaluation:
+    score:
+      method: weighted_tolerance_ratio
+      weights: {idle_horizontal_drift_m: 1, straight_lateral_drift_m: 1, straight_yaw_drift_rad: 1,
+                steering_tracking_rmse_rad: 2, drive_tracking_rmse_rad_s: 1, turn_yaw_asymmetry_ratio: 1}
