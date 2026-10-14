@@ -3,6 +3,6 @@ glow:
   - {rgba: [0.75, 0.025, 0.02], emissive: [1.0, 0.02, 0.01], strength: 2.0}
 lights:
   - {part: vehicle, name: head_light_left, type: spot, position: [2.10, 0.63, 0.37], direction: [1, 0, -0.05],
-     color: [0.95, 0.98, 1.0], intensity: 55, range: 45, inner_cone_deg: 12, outer_cone_deg: 30}
+     color: [0.95, 0.98, 1.0], intensity: 250, range: 70, inner_cone_deg: 12, outer_cone_deg: 30}
   - {part: vehicle, name: head_light_right, type: spot, position: [2.10, -0.63, 0.37], direction: [1, 0, -0.05],
-     color: [0.95, 0.98, 1.0], intensity: 55, range: 45, inner_cone_deg: 12, outer_cone_deg: 30}
+     color: [0.95, 0.98, 1.0], intensity: 250, range: 70, inner_cone_deg: 12, outer_cone_deg: 30}
