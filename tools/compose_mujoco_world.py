@@ -22,6 +22,7 @@ FILE_BASE_ATTRS = {
     "mesh": "meshdir",
     "texture": "texturedir",
 }
+WORLD_REQUIRED_COLLISION_FLAGS = {"multiccd"}
 
 
 def parse_args() -> argparse.Namespace:
@@ -130,6 +131,49 @@ def _merge_size(robot_root: ET.Element, world_root: ET.Element) -> dict[str, str
         robot_size.set(key, formatted)
         merged[key] = formatted
     return merged
+
+
+def _merge_world_collision_flags(
+    robot_root: ET.Element,
+    world_root: ET.Element,
+) -> dict[str, str]:
+    """Preserve collision features which the composed world requires.
+
+    The robot remains authoritative for general runtime options.  A world made
+    from adjacent convex road columns, however, is not physically equivalent
+    when its explicit multiccd requirement is discarded.  Keep this allowlist
+    deliberately narrow so unrelated world options cannot silently alter a
+    vehicle runtime.
+    """
+    world_option = world_root.find("option")
+    world_flag = world_option.find("flag") if world_option is not None else None
+    if world_flag is None:
+        return {}
+    requested = {
+        name: world_flag.get(name)
+        for name in WORLD_REQUIRED_COLLISION_FLAGS
+        if world_flag.get(name) == "enable"
+    }
+    if not requested:
+        return {}
+
+    robot_option = robot_root.find("option")
+    if robot_option is None:
+        robot_option = ET.Element("option")
+        _insert_root_section_before_model_content(robot_root, robot_option)
+    robot_flag = robot_option.find("flag")
+    if robot_flag is None:
+        robot_flag = ET.SubElement(robot_option, "flag")
+    for name, value in requested.items():
+        robot_value = robot_flag.get(name)
+        if robot_value == "disable":
+            raise ComposeError(
+                f"world requires MuJoCo collision flag {name}=enable, "
+                "but robot explicitly sets it to disable"
+            )
+        if robot_value is None:
+            robot_flag.set(name, value)
+    return requested
 
 
 def _parse_robot_position(raw: str | None) -> str | None:
@@ -351,6 +395,7 @@ def compose_mujoco_world(
     robot_position_override = _apply_robot_position(robot_worldbody, robot_pos)
     _reject_name_collisions(robot_asset, robot_worldbody, world_asset, world_worldbody)
     merged_size = _merge_size(robot_root, world_root)
+    merged_world_collision_flags = _merge_world_collision_flags(robot_root, world_root)
 
     output.parent.mkdir(parents=True, exist_ok=True)
     robot_asset_rewrites = _normalize_asset_file_paths(
@@ -396,6 +441,7 @@ def compose_mujoco_world(
         "removed_robot_ground_geoms": removed_ground,
         "robot_position_override": robot_position_override,
         "merged_size": merged_size,
+        "merged_world_collision_flags": merged_world_collision_flags,
         "added_world_assets": added_assets,
         "added_worldbody_children": added_worldbody_children,
         "angle_units": {"robot": robot_unit, "world": world_unit},

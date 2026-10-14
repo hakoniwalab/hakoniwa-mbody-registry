@@ -8,6 +8,7 @@
     <material name="ground_mat" texture="ground_tex" texrepeat="20 20" reflectance="0.05" />
     <material name="body_paint" rgba="0.20 0.22 0.24 1" specular="0.45" shininess="0.55" reflectance="0.12" />
     <material name="black_matte" rgba="0.035 0.045 0.055 1" specular="0.04" shininess="0.08" />
+    <material name="steering_black" rgba="0.10 0.11 0.12 1" specular="0.22" shininess="0.3" />
     <material name="glass" rgba="0.10 0.16 0.19 0.28" specular="0.55" shininess="0.65" reflectance="0.12" />
     <material name="trim" rgba="0.66 0.68 0.70 1" specular="0.35" shininess="0.45" />
     <material name="wheel_metal" rgba="0.66 0.68 0.70 1" specular="0.55" shininess="0.6" />
@@ -61,9 +62,33 @@
       <geom name="firewall_visual" type="box" pos="0.78 0 0.495" size="0.06 0.82 0.205" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="dashboard_lower_visual" type="box" pos="0.45 0 0.37" size="0.2 0.8 0.17" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
       <geom name="steering_column_visual" type="box" pos="0.26 -0.38 0.58" size="0.08 0.03 0.03" euler="0 0.45 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <body name="steering_wheel" pos="0.45 -0.38 0.59" euler="0 0.436332313 0">
+        <geom name="steering_wheel_rim_0_visual" type="capsule" fromto="0 0.185 0 0 0.170918 0.0707964" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_1_visual" type="capsule" fromto="0 0.170918 0.0707964 0 0.130815 0.130815" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_2_visual" type="capsule" fromto="0 0.130815 0.130815 0 0.0707964 0.170918" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_3_visual" type="capsule" fromto="0 0.0707964 0.170918 0 1.1328e-17 0.185" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_4_visual" type="capsule" fromto="0 1.1328e-17 0.185 0 -0.0707964 0.170918" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_5_visual" type="capsule" fromto="0 -0.0707964 0.170918 0 -0.130815 0.130815" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_6_visual" type="capsule" fromto="0 -0.130815 0.130815 0 -0.170918 0.0707964" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_7_visual" type="capsule" fromto="0 -0.170918 0.0707964 0 -0.185 2.2656e-17" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_8_visual" type="capsule" fromto="0 -0.185 2.2656e-17 0 -0.170918 -0.0707964" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_9_visual" type="capsule" fromto="0 -0.170918 -0.0707964 0 -0.130815 -0.130815" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_10_visual" type="capsule" fromto="0 -0.130815 -0.130815 0 -0.0707964 -0.170918" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_11_visual" type="capsule" fromto="0 -0.0707964 -0.170918 0 -3.39839e-17 -0.185" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_12_visual" type="capsule" fromto="0 -3.39839e-17 -0.185 0 0.0707964 -0.170918" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_13_visual" type="capsule" fromto="0 0.0707964 -0.170918 0 0.130815 -0.130815" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_14_visual" type="capsule" fromto="0 0.130815 -0.130815 0 0.170918 -0.0707964" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_rim_15_visual" type="capsule" fromto="0 0.170918 -0.0707964 0 0.185 0" size="0.012" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_spoke_0_visual" type="capsule" fromto="0 0 0 0 0.1517 0" size="0.01" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_spoke_1_visual" type="capsule" fromto="0 0 0 0 -0.1517 1.85779e-17" size="0.01" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_spoke_2_visual" type="capsule" fromto="0 0 0 0 -2.78668e-17 -0.1517" size="0.01" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_hub_visual" type="cylinder" pos="0 0 0" size="0.045 0.018" euler="0 1.57079632679 0" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="steering_wheel_airbag_pad_visual" type="box" pos="0 0 -0.012" size="0.02 0.072 0.05" material="steering_black" rgba="0.10 0.11 0.12 1" contype="0" conaffinity="0" density="0" group="1" />
+      </body>
       <geom name="adas_camera_visual" type="box" pos="0.14 0 1.085" size="0.04 0.06 0.03" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
       <body name="front_left_steer" pos="1.30 0.76 0">
         <inertial pos="0 0 0" mass="1" diaginertia="0.01 0.01 0.01" />
+        <joint name="front_left_suspension" type="slide" axis="0 0 1" range="-0.08 0.08" limited="true" stiffness="20721.4318" damping="1710.03171" springref="-0.13634579" />
         <joint name="front_left_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.2" armature="0.02" />
         <body name="front_left_wheel">
           <joint name="front_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
@@ -115,6 +140,7 @@
       </body>
       <body name="front_right_steer" pos="1.30 -0.76 0">
         <inertial pos="0 0 0" mass="1" diaginertia="0.01 0.01 0.01" />
+        <joint name="front_right_suspension" type="slide" axis="0 0 1" range="-0.08 0.08" limited="true" stiffness="20721.4318" damping="1710.03171" springref="-0.13634579" />
         <joint name="front_right_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.2" armature="0.02" />
         <body name="front_right_wheel">
           <joint name="front_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
@@ -165,6 +191,7 @@
         </body>
       </body>
       <body name="rear_left_wheel" pos="-1.30 0.76 0">
+        <joint name="rear_left_suspension" type="slide" axis="0 0 1" range="-0.08 0.08" limited="true" stiffness="20721.4318" damping="1710.03171" springref="-0.13634579" />
         <joint name="rear_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
         <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.31 0.105" euler="1.57079632679 0 0" material="tire" rgba="0.035 0.035 0.038 1" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_left_well_visual" type="cylinder" pos="0 0 0" size="0.205 0.108" euler="1.57079632679 0 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
@@ -212,6 +239,7 @@
         <geom name="rear_left_tire" type="cylinder" size="0.31 0.055" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
       </body>
       <body name="rear_right_wheel" pos="-1.30 -0.76 0">
+        <joint name="rear_right_suspension" type="slide" axis="0 0 1" range="-0.08 0.08" limited="true" stiffness="20721.4318" damping="1710.03171" springref="-0.13634579" />
         <joint name="rear_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
         <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.31 0.105" euler="1.57079632679 0 0" material="tire" rgba="0.035 0.035 0.038 1" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_right_well_visual" type="cylinder" pos="0 0 0" size="0.205 0.108" euler="1.57079632679 0 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />

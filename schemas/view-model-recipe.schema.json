@@ -71,6 +71,12 @@
         "minLength": 1
       }
     },
+    "display_joints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/display_joint"
+      }
+    },
     "fixed_bodies": {
       "type": "array",
       "items": {
@@ -87,5 +93,30 @@
       "minLength": 1
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "prefixItems": [
+        {"type": "number"},
+        {"type": "number"},
+        {"type": "number"}
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "display_joint": {
+      "type": "object",
+      "required": ["name", "body", "source_joint", "multiplier", "axis"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "body": {"type": "string", "minLength": 1},
+        "source_joint": {"type": "string", "minLength": 1},
+        "multiplier": {"type": "number", "not": {"const": 0}},
+        "axis": {"$ref": "#/$defs/vec3"}
+      },
+      "additionalProperties": false
+    }
+  }
 }

@@ -574,6 +574,16 @@ MJCF で joint が属している body 名。
 
 可動部に対応する MJCF joint 名。
 
+#### `movable_parts[].source_joint`
+
+Optional. 表示値を受け取る joint 名。省略時は `joint` と同じ。
+物理 joint を増やさず、既存 joint の状態から表示専用部品を動かす場合に使う。
+
+#### `movable_parts[].multiplier`
+
+Optional. `source_joint` から受け取った値へ掛ける有限・非ゼロの倍率。
+省略時は `1.0`。表示専用であり、MuJoCo の拘束や制御値は変更しない。
+
 #### `movable_parts[].parent`
 
 可動部 body の parent body 名。

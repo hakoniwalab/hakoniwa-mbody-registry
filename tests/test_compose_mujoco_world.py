@@ -63,6 +63,7 @@ class ComposeMujocoWorldTest(unittest.TestCase):
 
             self.assertEqual(receipt["removed_robot_ground_geoms"], 1)
             self.assertEqual(receipt["merged_size"], {"nstack": "5000", "njmax": "10000"})
+            self.assertEqual(receipt["merged_world_collision_flags"], {})
             self.assertEqual(receipt["added_world_assets"], 1)
             self.assertEqual(receipt["added_worldbody_children"], 2)
             self.assertEqual(receipt["ignored_world_sections"], ["option"])
@@ -95,6 +96,50 @@ class ComposeMujocoWorldTest(unittest.TestCase):
             self.assertIsNotNone(worldbody.find("body[@name='vehicle']"))
             self.assertIsNotNone(composed.find("actuator"))
             self.assertIsNotNone(composed.find("contact"))
+
+    def test_world_multiccd_requirement_is_merged_into_robot_option(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            robot = root / "robot.xml"
+            world = root / "world.xml"
+            output = root / "composed.xml"
+            robot.write_text(
+                "<mujoco><option timestep='0.002'/><worldbody>"
+                "<body name='vehicle'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+            world.write_text(
+                "<mujoco><option><flag multiccd='enable'/></option>"
+                "<worldbody><geom name='road'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+
+            receipt = COMPOSE.compose_mujoco_world(robot, world, output)
+
+            self.assertEqual(receipt["merged_world_collision_flags"], {"multiccd": "enable"})
+            self.assertEqual(
+                ET.parse(output).getroot().find("./option/flag").get("multiccd"),
+                "enable",
+            )
+
+    def test_explicit_robot_multiccd_disable_conflicts_with_world_requirement(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            robot = root / "robot.xml"
+            world = root / "world.xml"
+            robot.write_text(
+                "<mujoco><option><flag multiccd='disable'/></option>"
+                "<worldbody><body name='vehicle'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+            world.write_text(
+                "<mujoco><option><flag multiccd='enable'/></option>"
+                "<worldbody><geom name='road'/></worldbody></mujoco>",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(COMPOSE.ComposeError, "explicitly sets it to disable"):
+                COMPOSE.compose_mujoco_world(robot, world, root / "composed.xml")
 
     def compose_units(self, robot_compiler: str, world_compiler: str):
         tmp = tempfile.TemporaryDirectory()

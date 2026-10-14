@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -143,7 +144,20 @@ def validate_part(value: Any, path: str, asset_ids: set[str]) -> None:
 def validate_movable_part(value: Any, path: str, asset_ids: set[str]) -> None:
     obj = expect_object(value, path)
     require_keys(obj, path, ["name", "joint", "mount", "motion"])
-    reject_extra_keys(obj, path, {"name", "joint", "parent", "asset", "mount", "motion"})
+    reject_extra_keys(
+        obj,
+        path,
+        {
+            "name",
+            "joint",
+            "source_joint",
+            "multiplier",
+            "parent",
+            "asset",
+            "mount",
+            "motion",
+        },
+    )
 
     expect_string(obj["name"], f"{path}.name", min_length=1)
     if "parent" in obj and obj["parent"] is not None:
@@ -154,6 +168,14 @@ def validate_movable_part(value: Any, path: str, asset_ids: set[str]) -> None:
             raise ValidationError(f"{path}.asset: unknown asset id '{asset}'")
     validate_mount(obj["mount"], f"{path}.mount")
     expect_string(obj["joint"], f"{path}.joint", min_length=1)
+    if "source_joint" in obj:
+        expect_string(obj["source_joint"], f"{path}.source_joint", min_length=1)
+    if "multiplier" in obj:
+        multiplier = obj["multiplier"]
+        if not isinstance(multiplier, (int, float)) or isinstance(multiplier, bool):
+            raise ValidationError(f"{path}.multiplier: expected number")
+        if not math.isfinite(multiplier) or multiplier == 0:
+            raise ValidationError(f"{path}.multiplier: expected finite non-zero number")
     validate_motion(obj["motion"], f"{path}.motion")
 
 
