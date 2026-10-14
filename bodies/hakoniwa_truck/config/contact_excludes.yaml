@@ -1,0 +1,3 @@
+excludes:
+  - {body1: vehicle, body2: front_left_wheel}
+  - {body1: vehicle, body2: front_right_wheel}

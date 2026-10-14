@@ -38,7 +38,7 @@ def apply_material_rgba(trimesh, mesh, rgba: np.ndarray | None) -> None:
         baseColorFactor=rgba_to_uchar(rgba),
         metallicFactor=0.0,
         roughnessFactor=0.9,
+        alphaMode="BLEND" if rgba[3] < 1.0 else None,
     )
     mesh.visual.vertex_colors = None
     mesh.visual.face_colors = None
-

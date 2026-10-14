@@ -1,0 +1,11 @@
+{
+  "zero_to_80_kmh_sec": 25.38,
+  "maximum_speed_kmh": 107.98593310394128,
+  "braking_mean_deceleration_m_s2": 5.72658728676944,
+  "braking_stop_time_sec": 3.879999999999999,
+  "post_stop_max_commanded_speed_m_s": 0.0,
+  "post_stop_max_vehicle_speed_m_s": 0.0006941732263478099,
+  "hold_80_spread_kmh": 5.1159076974727215e-14,
+  "lane_change_lateral_m": 3.6266446642352426,
+  "lane_change_peak_lateral_acceleration_m_s2": 1.005808999145656
+}

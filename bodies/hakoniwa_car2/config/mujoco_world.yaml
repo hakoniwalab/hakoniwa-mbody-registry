@@ -1,0 +1,15 @@
+name: hakoniwa_car2_world
+option: {timestep: "0.002", gravity: "0 0 -9.81", integrator: implicitfast, cone: elliptic}
+textures:
+  - {name: skybox, type: skybox, builtin: gradient, rgb1: "0.45 0.65 0.95", rgb2: "0.95 0.97 1.00", width: 512, height: 3072}
+  - {name: ground_tex, type: 2d, builtin: checker, rgb1: "0.32 0.34 0.32", rgb2: "0.24 0.26 0.24", width: 512, height: 512}
+materials:
+  - {name: ground_mat, texture: ground_tex, texrepeat: "20 20", reflectance: 0.05}
+world_geoms:
+  - {name: ground, type: plane, size: "100 100 0.1", material: ground_mat, condim: 4,
+     friction: "1.1 0.01 0.001", solref: "0.01 1", solimp: "0.9 0.95 0.001"}
+lights:
+  - {name: sun, directional: true, pos: "0 0 100", dir: "-0.3 -0.4 -1", diffuse: "0.9 0.9 0.9", ambient: "0.3 0.3 0.3", specular: "0.15 0.15 0.15"}
+robot: {pos: "0 0 0.31", add_freejoint: true, freejoint_name: base_freejoint}
+copy_actuators: true
+copy_contacts: true

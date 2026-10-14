@@ -1,0 +1,275 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="hakoniwa_car2_world">
+  <compiler angle="radian" autolimits="true" />
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" cone="elliptic" />
+  <asset>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1="0.45 0.65 0.95" rgb2="0.95 0.97 1.00" width="512" height="3072" />
+    <texture name="ground_tex" type="2d" builtin="checker" rgb1="0.32 0.34 0.32" rgb2="0.24 0.26 0.24" width="512" height="512" />
+    <material name="ground_mat" texture="ground_tex" texrepeat="20 20" reflectance="0.05" />
+    <material name="body_paint" rgba="0.20 0.22 0.24 1" specular="0.45" shininess="0.55" reflectance="0.12" />
+    <material name="black_matte" rgba="0.035 0.045 0.055 1" specular="0.04" shininess="0.08" />
+    <material name="glass" rgba="0.10 0.16 0.19 0.28" specular="0.55" shininess="0.65" reflectance="0.12" />
+    <material name="trim" rgba="0.66 0.68 0.70 1" specular="0.35" shininess="0.45" />
+    <material name="wheel_metal" rgba="0.66 0.68 0.70 1" specular="0.55" shininess="0.6" />
+    <material name="tire" rgba="0.035 0.035 0.038 1" specular="0.02" shininess="0.04" />
+    <material name="headlight" rgba="0.94 0.97 1 1" specular="0.7" shininess="0.8" />
+    <material name="amber" rgba="1 0.34 0.015 1" specular="0.45" shininess="0.55" />
+    <material name="tail" rgba="0.75 0.025 0.02 1" specular="0.45" shininess="0.55" />
+    <material name="plate" rgba="0.94 0.94 0.92 1" specular="0.15" shininess="0.2" />
+    <mesh name="car2_body_paint" file="../config/meshes/body_body_paint.obj" inertia="shell" />
+    <mesh name="car2_body_black_matte" file="../config/meshes/body_black_matte.obj" inertia="shell" />
+    <mesh name="car2_body_glass" file="../config/meshes/body_glass.obj" inertia="shell" />
+  </asset>
+  <worldbody>
+    <geom name="ground" type="plane" size="100 100 0.1" material="ground_mat" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+    <light name="sun" directional="true" pos="0 0 100" dir="-0.3 -0.4 -1" diffuse="0.9 0.9 0.9" ambient="0.3 0.3 0.3" specular="0.15 0.15 0.15" />
+    <body name="vehicle" pos="0 0 0.31">
+      <freejoint name="base_freejoint" />
+      <geom name="body_paint_visual" type="mesh" mesh="car2_body_paint" material="body_paint" rgba="0.20 0.22 0.24 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="body_black_visual" type="mesh" mesh="car2_body_black_matte" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="body_glass_visual" type="mesh" mesh="car2_body_glass" material="glass" rgba="0.10 0.16 0.19 0.28" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="headlight_left_visual" type="box" pos="2.1461 0.41 0.383162" size="0.0588303 0.165 0.008" euler="0 -2.12579 0" material="headlight" rgba="0.94 0.97 1 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="headlight_right_visual" type="box" pos="2.1461 -0.41 0.383162" size="0.0588303 0.165 0.008" euler="0 -2.12579 0" material="headlight" rgba="0.94 0.97 1 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="indicator_left_visual" type="box" pos="2.118 0.6 0.4" size="0.012 0.03 0.016" material="amber" rgba="1 0.34 0.015 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="indicator_right_visual" type="box" pos="2.118 -0.6 0.4" size="0.012 0.03 0.016" material="amber" rgba="1 0.34 0.015 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grille_upper_visual" type="box" pos="2.18 0 0.3" size="0.012 0.24 0.035" euler="0 -0.2 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grille_bar_visual" type="box" pos="2.19 0 0.3" size="0.004 0.22 0.005" euler="0 -0.2 0" material="trim" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="grille_lower_visual" type="box" pos="2.193 0 0.06" size="0.01 0.38 0.06" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="front_plate_visual" type="box" pos="2.2 0 0.19" size="0.006 0.165 0.048" material="plate" rgba="0.94 0.94 0.92 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fog_left_visual" type="box" pos="2.192 0.5 0.07" size="0.01 0.07 0.03" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="fog_right_visual" type="box" pos="2.192 -0.5 0.07" size="0.01 0.07 0.03" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_light_left_visual" type="box" pos="-2.07992 0.58 0.678441" size="0.0610328 0.16 0.008" euler="0 2.18152 0" material="tail" rgba="0.75 0.025 0.02 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_light_right_visual" type="box" pos="-2.07992 -0.58 0.678441" size="0.0610328 0.16 0.008" euler="0 2.18152 0" material="tail" rgba="0.75 0.025 0.02 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_side_left_visual" type="box" pos="-1.98 0.864828 0.69" size="0.07 0.005 0.04" material="tail" rgba="0.75 0.025 0.02 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="tail_side_right_visual" type="box" pos="-1.98 -0.864828 0.69" size="0.07 0.005 0.04" material="tail" rgba="0.75 0.025 0.02 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_plate_recess_visual" type="box" pos="-2.193 0 0.36" size="0.006 0.2 0.075" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_plate_visual" type="box" pos="-2.197 0 0.36" size="0.006 0.17 0.055" material="plate" rgba="0.94 0.94 0.92 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_lower_visual" type="box" pos="-2.192 0 0.04" size="0.01 0.62 0.06" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="high_stop_lamp_visual" type="box" pos="-1.79 0 1.12" size="0.012 0.18 0.01" material="tail" rgba="0.75 0.025 0.02 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="rear_wiper_visual" type="box" pos="-1.95 0.08 0.9" size="0.008 0.22 0.006" euler="0.45 0 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_left_visual" type="box" pos="0.74 0.962513 0.695" size="0.07 0.062 0.045" material="body_paint" rgba="0.20 0.22 0.24 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_right_visual" type="box" pos="0.74 -0.962513 0.695" size="0.07 0.062 0.045" material="body_paint" rgba="0.20 0.22 0.24 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_glass_left_visual" type="box" pos="0.668 0.962513 0.695" size="0.004 0.055 0.037" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_glass_right_visual" type="box" pos="0.668 -0.962513 0.695" size="0.004 0.055 0.037" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_arm_left_visual" type="box" pos="0.76 0.902513 0.66" size="0.035 0.02 0.015" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="mirror_arm_right_visual" type="box" pos="0.76 -0.902513 0.66" size="0.035 0.02 0.015" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="handle_front_left_visual" type="box" pos="0.02 0.899514 0.55" size="0.075 0.01 0.014" material="trim" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="handle_front_right_visual" type="box" pos="0.02 -0.899514 0.55" size="0.075 0.01 0.014" material="trim" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="handle_rear_left_visual" type="box" pos="-1.02 0.902 0.55" size="0.075 0.01 0.014" material="trim" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="handle_rear_right_visual" type="box" pos="-1.02 -0.902 0.55" size="0.075 0.01 0.014" material="trim" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_visual" type="box" pos="0.56 0 0.565" size="0.3 0.82 0.02" euler="0 -0.06 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="firewall_visual" type="box" pos="0.78 0 0.495" size="0.06 0.82 0.205" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="dashboard_lower_visual" type="box" pos="0.45 0 0.37" size="0.2 0.8 0.17" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="steering_column_visual" type="box" pos="0.26 -0.38 0.58" size="0.08 0.03 0.03" euler="0 0.45 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <geom name="adas_camera_visual" type="box" pos="0.14 0 1.085" size="0.04 0.06 0.03" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+      <body name="front_left_steer" pos="1.30 0.76 0">
+        <inertial pos="0 0 0" mass="1" diaginertia="0.01 0.01 0.01" />
+        <joint name="front_left_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.2" armature="0.02" />
+        <body name="front_left_wheel">
+          <joint name="front_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
+          <geom name="front_left_tire_visual" type="cylinder" pos="0 0 0" size="0.31 0.105" euler="1.57079632679 0 0" material="tire" rgba="0.035 0.035 0.038 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_well_visual" type="cylinder" pos="0 0 0" size="0.205 0.108" euler="1.57079632679 0 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_hub_visual" type="cylinder" pos="0 0 0" size="0.055 0.118" euler="1.57079632679 0 0" material="wheel_metal" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_0_visual" type="box" pos="0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_1_visual" type="box" pos="0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_2_visual" type="box" pos="0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_3_visual" type="box" pos="-0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_4_visual" type="box" pos="-0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_5_visual" type="box" pos="-0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_6_visual" type="box" pos="-0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_7_visual" type="box" pos="-0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_8_visual" type="box" pos="0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_out_9_visual" type="box" pos="0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_0_a_visual" type="box" pos="0.1239 0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_0_b_visual" type="box" pos="0.1239 0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_1_a_visual" type="box" pos="0.0537 0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_1_b_visual" type="box" pos="0.0229 0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_2_a_visual" type="box" pos="-0.0907 0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_2_b_visual" type="box" pos="-0.1098 0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_3_a_visual" type="box" pos="-0.1098 0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_3_b_visual" type="box" pos="-0.0907 0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_4_a_visual" type="box" pos="0.0229 0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_out_4_b_visual" type="box" pos="0.0537 0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_0_visual" type="box" pos="0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_1_visual" type="box" pos="0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_2_visual" type="box" pos="0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_3_visual" type="box" pos="-0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_4_visual" type="box" pos="-0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_5_visual" type="box" pos="-0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_6_visual" type="box" pos="-0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_7_visual" type="box" pos="-0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_8_visual" type="box" pos="0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_lip_in_9_visual" type="box" pos="0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_0_a_visual" type="box" pos="0.1239 -0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_0_b_visual" type="box" pos="0.1239 -0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_1_a_visual" type="box" pos="0.0537 -0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_1_b_visual" type="box" pos="0.0229 -0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_2_a_visual" type="box" pos="-0.0907 -0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_2_b_visual" type="box" pos="-0.1098 -0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_3_a_visual" type="box" pos="-0.1098 -0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_3_b_visual" type="box" pos="-0.0907 -0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_4_a_visual" type="box" pos="0.0229 -0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_spoke_in_4_b_visual" type="box" pos="0.0537 -0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_left_tire" type="cylinder" size="0.31 0.055" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        </body>
+      </body>
+      <body name="front_right_steer" pos="1.30 -0.76 0">
+        <inertial pos="0 0 0" mass="1" diaginertia="0.01 0.01 0.01" />
+        <joint name="front_right_steer_joint" type="hinge" axis="0 0 1" range="-0.80 0.80" damping="0.2" armature="0.02" />
+        <body name="front_right_wheel">
+          <joint name="front_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
+          <geom name="front_right_tire_visual" type="cylinder" pos="0 0 0" size="0.31 0.105" euler="1.57079632679 0 0" material="tire" rgba="0.035 0.035 0.038 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_well_visual" type="cylinder" pos="0 0 0" size="0.205 0.108" euler="1.57079632679 0 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_hub_visual" type="cylinder" pos="0 0 0" size="0.055 0.118" euler="1.57079632679 0 0" material="wheel_metal" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_0_visual" type="box" pos="0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_1_visual" type="box" pos="0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_2_visual" type="box" pos="0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_3_visual" type="box" pos="-0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_4_visual" type="box" pos="-0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_5_visual" type="box" pos="-0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_6_visual" type="box" pos="-0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_7_visual" type="box" pos="-0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_8_visual" type="box" pos="0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_out_9_visual" type="box" pos="0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_0_a_visual" type="box" pos="0.1239 0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_0_b_visual" type="box" pos="0.1239 0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_1_a_visual" type="box" pos="0.0537 0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_1_b_visual" type="box" pos="0.0229 0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_2_a_visual" type="box" pos="-0.0907 0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_2_b_visual" type="box" pos="-0.1098 0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_3_a_visual" type="box" pos="-0.1098 0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_3_b_visual" type="box" pos="-0.0907 0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_4_a_visual" type="box" pos="0.0229 0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_out_4_b_visual" type="box" pos="0.0537 0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_0_visual" type="box" pos="0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_1_visual" type="box" pos="0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_2_visual" type="box" pos="0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_3_visual" type="box" pos="-0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_4_visual" type="box" pos="-0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_5_visual" type="box" pos="-0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_6_visual" type="box" pos="-0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_7_visual" type="box" pos="-0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_8_visual" type="box" pos="0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_lip_in_9_visual" type="box" pos="0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_0_a_visual" type="box" pos="0.1239 -0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_0_b_visual" type="box" pos="0.1239 -0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_1_a_visual" type="box" pos="0.0537 -0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_1_b_visual" type="box" pos="0.0229 -0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_2_a_visual" type="box" pos="-0.0907 -0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_2_b_visual" type="box" pos="-0.1098 -0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_3_a_visual" type="box" pos="-0.1098 -0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_3_b_visual" type="box" pos="-0.0907 -0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_4_a_visual" type="box" pos="0.0229 -0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_spoke_in_4_b_visual" type="box" pos="0.0537 -0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+          <geom name="front_right_tire" type="cylinder" size="0.31 0.055" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        </body>
+      </body>
+      <body name="rear_left_wheel" pos="-1.30 0.76 0">
+        <joint name="rear_left_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
+        <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.31 0.105" euler="1.57079632679 0 0" material="tire" rgba="0.035 0.035 0.038 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_well_visual" type="cylinder" pos="0 0 0" size="0.205 0.108" euler="1.57079632679 0 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_hub_visual" type="cylinder" pos="0 0 0" size="0.055 0.118" euler="1.57079632679 0 0" material="wheel_metal" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_0_visual" type="box" pos="0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_1_visual" type="box" pos="0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_2_visual" type="box" pos="0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_3_visual" type="box" pos="-0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_4_visual" type="box" pos="-0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_5_visual" type="box" pos="-0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_6_visual" type="box" pos="-0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_7_visual" type="box" pos="-0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_8_visual" type="box" pos="0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_out_9_visual" type="box" pos="0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_0_a_visual" type="box" pos="0.1239 0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_0_b_visual" type="box" pos="0.1239 0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_1_a_visual" type="box" pos="0.0537 0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_1_b_visual" type="box" pos="0.0229 0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_2_a_visual" type="box" pos="-0.0907 0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_2_b_visual" type="box" pos="-0.1098 0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_3_a_visual" type="box" pos="-0.1098 0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_3_b_visual" type="box" pos="-0.0907 0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_4_a_visual" type="box" pos="0.0229 0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_out_4_b_visual" type="box" pos="0.0537 0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_0_visual" type="box" pos="0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_1_visual" type="box" pos="0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_2_visual" type="box" pos="0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_3_visual" type="box" pos="-0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_4_visual" type="box" pos="-0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_5_visual" type="box" pos="-0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_6_visual" type="box" pos="-0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_7_visual" type="box" pos="-0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_8_visual" type="box" pos="0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_lip_in_9_visual" type="box" pos="0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_0_a_visual" type="box" pos="0.1239 -0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_0_b_visual" type="box" pos="0.1239 -0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_1_a_visual" type="box" pos="0.0537 -0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_1_b_visual" type="box" pos="0.0229 -0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_2_a_visual" type="box" pos="-0.0907 -0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_2_b_visual" type="box" pos="-0.1098 -0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_3_a_visual" type="box" pos="-0.1098 -0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_3_b_visual" type="box" pos="-0.0907 -0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_4_a_visual" type="box" pos="0.0229 -0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_spoke_in_4_b_visual" type="box" pos="0.0537 -0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_left_tire" type="cylinder" size="0.31 0.055" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      </body>
+      <body name="rear_right_wheel" pos="-1.30 -0.76 0">
+        <joint name="rear_right_wheel_joint" type="hinge" axis="0 1 0" damping="0.1" armature="0.02" />
+        <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.31 0.105" euler="1.57079632679 0 0" material="tire" rgba="0.035 0.035 0.038 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_well_visual" type="cylinder" pos="0 0 0" size="0.205 0.108" euler="1.57079632679 0 0" material="black_matte" rgba="0.035 0.045 0.055 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_hub_visual" type="cylinder" pos="0 0 0" size="0.055 0.118" euler="1.57079632679 0 0" material="wheel_metal" rgba="0.66 0.68 0.70 1" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_0_visual" type="box" pos="0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_1_visual" type="box" pos="0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_2_visual" type="box" pos="0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_3_visual" type="box" pos="-0.0612 0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_4_visual" type="box" pos="-0.1602 0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_5_visual" type="box" pos="-0.1980 0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_6_visual" type="box" pos="-0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_7_visual" type="box" pos="-0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_8_visual" type="box" pos="0.0612 0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_out_9_visual" type="box" pos="0.1602 0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_0_a_visual" type="box" pos="0.1239 0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_0_b_visual" type="box" pos="0.1239 0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_1_a_visual" type="box" pos="0.0537 0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_1_b_visual" type="box" pos="0.0229 0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_2_a_visual" type="box" pos="-0.0907 0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_2_b_visual" type="box" pos="-0.1098 0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_3_a_visual" type="box" pos="-0.1098 0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_3_b_visual" type="box" pos="-0.0907 0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_4_a_visual" type="box" pos="0.0229 0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_out_4_b_visual" type="box" pos="0.0537 0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_0_visual" type="box" pos="0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_1_visual" type="box" pos="0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_2_visual" type="box" pos="0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_3_visual" type="box" pos="-0.0612 -0.112 0.1883" size="0.066 0.008 0.012" euler="0 -0.3142 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_4_visual" type="box" pos="-0.1602 -0.112 0.1164" size="0.066 0.008 0.012" euler="0 -0.9425 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_5_visual" type="box" pos="-0.1980 -0.112 0.0000" size="0.066 0.008 0.012" euler="0 -1.5708 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_6_visual" type="box" pos="-0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -2.1991 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_7_visual" type="box" pos="-0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -2.8274 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_8_visual" type="box" pos="0.0612 -0.112 -0.1883" size="0.066 0.008 0.012" euler="0 -3.4558 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_lip_in_9_visual" type="box" pos="0.1602 -0.112 -0.1164" size="0.066 0.008 0.012" euler="0 -4.0841 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_0_a_visual" type="box" pos="0.1239 -0.112 -0.0162" size="0.072 0.009 0.013" euler="0 0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_0_b_visual" type="box" pos="0.1239 -0.112 0.0162" size="0.072 0.009 0.013" euler="0 -0.1300 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_1_a_visual" type="box" pos="0.0537 -0.112 0.1129" size="0.072 0.009 0.013" euler="0 -1.1266 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_1_b_visual" type="box" pos="0.0229 -0.112 0.1229" size="0.072 0.009 0.013" euler="0 -1.3866 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_2_a_visual" type="box" pos="-0.0907 -0.112 0.0860" size="0.072 0.009 0.013" euler="0 -2.3833 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_2_b_visual" type="box" pos="-0.1098 -0.112 0.0597" size="0.072 0.009 0.013" euler="0 -2.6433 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_3_a_visual" type="box" pos="-0.1098 -0.112 -0.0597" size="0.072 0.009 0.013" euler="0 -3.6399 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_3_b_visual" type="box" pos="-0.0907 -0.112 -0.0860" size="0.072 0.009 0.013" euler="0 -3.8999 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_4_a_visual" type="box" pos="0.0229 -0.112 -0.1229" size="0.072 0.009 0.013" euler="0 -4.8965 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_spoke_in_4_b_visual" type="box" pos="0.0537 -0.112 -0.1129" size="0.072 0.009 0.013" euler="0 -5.1565 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
+        <geom name="rear_right_tire" type="cylinder" size="0.31 0.055" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      </body>
+      <geom name="chassis_collision" type="box" pos="0 0 0.12" size="2.10 0.78 0.25" mass="1152" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+      <geom name="cabin_collision" type="box" pos="-0.15 0 0.72" size="1.65 0.84 0.48" density="0" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="front_left_steer_motor" joint="front_left_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="5000" kv="180" />
+    <position name="front_right_steer_motor" joint="front_right_steer_joint" ctrllimited="true" ctrlrange="-0.8 0.8" kp="5000" kv="180" />
+    <velocity name="front_left_wheel_motor" joint="front_left_wheel_joint" ctrllimited="true" ctrlrange="-150 150" forcelimited="true" forcerange="-1400 465" kv="1800" />
+    <velocity name="front_right_wheel_motor" joint="front_right_wheel_joint" ctrllimited="true" ctrlrange="-150 150" forcelimited="true" forcerange="-1400 465" kv="1800" />
+  </actuator>
+  <contact>
+    <exclude body1="vehicle" body2="front_left_wheel" />
+    <exclude body1="vehicle" body2="front_right_wheel" />
+  </contact>
+</mujoco>

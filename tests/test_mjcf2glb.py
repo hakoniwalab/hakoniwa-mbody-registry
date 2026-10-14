@@ -46,6 +46,20 @@ class Mjcf2GlbTest(unittest.TestCase):
             MJCF2GLB.parse_geom(transparent, 0, "body", {}, True)
         )
 
+    def test_partial_alpha_exports_as_blended_pbr_material(self):
+        geom = MJCF2GLB.parse_geom(
+            ET.fromstring('<geom name="glass" type="box" rgba="0.1 0.2 0.3 0.28"/>'),
+            0,
+            "body",
+            {},
+            True,
+        )
+
+        mesh = MJCF2GLB.create_geometry(trimesh, geom, False)
+
+        self.assertEqual(mesh.visual.material.alphaMode, "BLEND")
+        self.assertEqual(mesh.visual.material.baseColorFactor[3], 71)
+
     def test_capsule_count_makes_coarser_capsules(self):
         geom = MJCF2GLB.parse_geom(
             ET.fromstring('<geom name="edge" type="capsule" fromto="0 0 0 0 0 0.2" size="0.02"/>'),

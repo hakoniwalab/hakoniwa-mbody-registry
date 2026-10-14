@@ -1,0 +1,6 @@
+name: hakoniwa_truck
+origin: hakoniwalab
+license: MIT
+description: An original generic medium cab-over box truck built from MuJoCo primitives for Hakoniwa highway simulations.
+references:
+  - {name: hakoniwa_car2, url: ../hakoniwa_car2, license: MIT, usage: Ackermann and colour-variant Forge template.}
