@@ -10,10 +10,10 @@ geoms:
   - body: front_left_wheel
     attrs: &front_wheel {name: front_left_tire, type: cylinder, size: "0.45 0.075", euler: "1.57079632679 0 0",
                          mass: "12", rgba: "0 0 0 0", condim: "3", friction: "1.6 0.02 0.002",
-                         solref: "0.01 1", solimp: "0.9 0.95 0.001"}
+                         solref: "0.01 1", solimp: "0.9 0.95 0.001", priority: "1"}
   - {body: front_right_wheel, attrs: {<<: *front_wheel, name: front_right_tire}}
   - body: rear_left_wheel
     attrs: &rear_wheel {name: rear_left_tire, type: cylinder, size: "0.45 0.095", euler: "1.57079632679 0 0",
                         mass: "12", rgba: "0 0 0 0", condim: "3", friction: "1.8 0.02 0.002",
-                        solref: "0.01 1", solimp: "0.9 0.95 0.001"}
+                        solref: "0.01 1", solimp: "0.9 0.95 0.001", priority: "1"}
   - {body: rear_right_wheel, attrs: {<<: *rear_wheel, name: rear_right_tire}}

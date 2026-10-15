@@ -36,6 +36,7 @@ geoms:
   - body: front_left_wheel
     attrs: &wheel_collision
       name: front_left_tire
+      priority: "1"
       type: cylinder
       size: "0.25 0.04"
       euler: "1.57079632679 0 0"
@@ -49,11 +50,14 @@ geoms:
     attrs:
       <<: *wheel_collision
       name: front_right_tire
+      priority: "1"
   - body: rear_left_wheel
     attrs:
       <<: *wheel_collision
       name: rear_left_tire
+      priority: "1"
   - body: rear_right_wheel
     attrs:
       <<: *wheel_collision
       name: rear_right_tire
+      priority: "1"
