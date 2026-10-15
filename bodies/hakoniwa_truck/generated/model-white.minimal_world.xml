@@ -98,7 +98,7 @@
           <geom name="front_left_tire_visual" type="cylinder" pos="0 0 0" size="0.45 0.14" euler="1.57079632679 0 0" material="tire" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_left_rim_visual" type="cylinder" pos="0 0 0" size="0.25 0.144" euler="1.57079632679 0 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_left_hub_visual" type="cylinder" pos="0 0 0" size="0.075 0.148" euler="1.57079632679 0 0" material="black_matte" contype="0" conaffinity="0" density="0" group="1" />
-          <geom name="front_left_tire" type="cylinder" size="0.45 0.075" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+          <geom name="front_left_tire" type="cylinder" size="0.45 0.075" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" priority="1" />
         </body>
       </body>
       <body name="front_right_steer" pos="2.15 -0.925 0">
@@ -110,7 +110,7 @@
           <geom name="front_right_tire_visual" type="cylinder" pos="0 0 0" size="0.45 0.14" euler="1.57079632679 0 0" material="tire" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_right_rim_visual" type="cylinder" pos="0 0 0" size="0.25 0.144" euler="1.57079632679 0 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
           <geom name="front_right_hub_visual" type="cylinder" pos="0 0 0" size="0.075 0.148" euler="1.57079632679 0 0" material="black_matte" contype="0" conaffinity="0" density="0" group="1" />
-          <geom name="front_right_tire" type="cylinder" size="0.45 0.075" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+          <geom name="front_right_tire" type="cylinder" size="0.45 0.075" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.6 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" priority="1" />
         </body>
       </body>
       <body name="rear_left_wheel" pos="-2.15 0.85 0">
@@ -119,7 +119,7 @@
         <geom name="rear_left_tire_visual" type="cylinder" pos="0 0 0" size="0.45 0.18" euler="1.57079632679 0 0" material="tire" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_left_rim_visual" type="cylinder" pos="0 0 0" size="0.25 0.184" euler="1.57079632679 0 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_left_hub_visual" type="cylinder" pos="0 0 0" size="0.075 0.188" euler="1.57079632679 0 0" material="black_matte" contype="0" conaffinity="0" density="0" group="1" />
-        <geom name="rear_left_tire" type="cylinder" size="0.45 0.095" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.8 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        <geom name="rear_left_tire" type="cylinder" size="0.45 0.095" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.8 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" priority="1" />
       </body>
       <body name="rear_right_wheel" pos="-2.15 -0.85 0">
         <joint name="rear_right_suspension" type="slide" axis="0 0 1" range="-0.1 0.1" limited="true" stiffness="217074.489" damping="14225.8439" springref="-0.0859827692" />
@@ -127,7 +127,7 @@
         <geom name="rear_right_tire_visual" type="cylinder" pos="0 0 0" size="0.45 0.18" euler="1.57079632679 0 0" material="tire" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_right_rim_visual" type="cylinder" pos="0 0 0" size="0.25 0.184" euler="1.57079632679 0 0" material="wheel_metal" contype="0" conaffinity="0" density="0" group="1" />
         <geom name="rear_right_hub_visual" type="cylinder" pos="0 0 0" size="0.075 0.188" euler="1.57079632679 0 0" material="black_matte" contype="0" conaffinity="0" density="0" group="1" />
-        <geom name="rear_right_tire" type="cylinder" size="0.45 0.095" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.8 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" />
+        <geom name="rear_right_tire" type="cylinder" size="0.45 0.095" euler="1.57079632679 0 0" mass="12" rgba="0 0 0 0" condim="3" friction="1.8 0.02 0.002" solref="0.01 1" solimp="0.9 0.95 0.001" priority="1" />
       </body>
       <geom name="chassis_collision" type="box" pos="0 0 0.35" size="3.75 0.90 0.25" density="0" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
       <geom name="cargo_collision" type="box" pos="-0.80 0 1.42" size="2.95 1.10 1.30" density="0" rgba="0 0 0 0" condim="4" friction="1.1 0.01 0.001" solref="0.01 1" solimp="0.9 0.95 0.001" />
