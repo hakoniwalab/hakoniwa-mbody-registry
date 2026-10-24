@@ -6,7 +6,7 @@ y left, z up, wheel centres at z = 0, the ground at z = -0.31). Each section
 is the right half of the outline (bottom centre -> side -> greenhouse -> roof
 centre); the left half mirrors it. A side profile (top and bottom), a belt
 line, a plan width and a tumblehome give the shape of a modern five-door
-hatchback (docs: hakoniwa-scenario docs/requests/img/car2-reference.webp):
+hatchback (docs: hakoniwa-scenario-pro docs/requests/img/car2-reference.webp):
 a short hood falling to the nose, a raked windshield, a roof highest over the
 front seats, a steep rear hatch, wheel arches cut out of the side.
 
