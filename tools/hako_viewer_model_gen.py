@@ -61,6 +61,10 @@ def parse_quat(value: Optional[str], default: Quat = (1.0, 0.0, 0.0, 0.0)) -> Qu
     return (parts[0], parts[1], parts[2], parts[3])
 
 
+# How close to +-1 sin(pitch) counts as gimbal lock (pitch +-90 deg).
+GIMBAL_LOCK_EPS = 1e-9
+
+
 def quat_to_rpy(q: Quat) -> Vec3:
     """
     Convert quaternion in MJCF order (w, x, y, z) to roll/pitch/yaw radians.
@@ -75,10 +79,19 @@ def quat_to_rpy(q: Quat) -> Vec3:
 
     # pitch: y-axis rotation
     sinp = 2.0 * (w * y - z * x)
-    if abs(sinp) >= 1.0:
+    if abs(sinp) >= 1.0 - GIMBAL_LOCK_EPS:
+        # Gimbal lock (pitch +-90 deg): roll and yaw turn about the same axis,
+        # and the formulas above and below both give atan2(0, 0) = 0, losing
+        # the turn. Keep roll 0 and give the whole turn to yaw, read from the
+        # rotation matrix (R = Rz(yaw) Ry(pitch) Rx(roll)): with roll 0,
+        # R01 = -sin(yaw) and R11 = cos(yaw).
         pitch = math.copysign(math.pi / 2.0, sinp)
-    else:
-        pitch = math.asin(sinp)
+        roll = 0.0
+        r01 = 2.0 * (x * y - w * z)
+        r11 = 1.0 - 2.0 * (x * x + z * z)
+        yaw = math.atan2(-r01, r11)
+        return (roll, pitch, yaw)
+    pitch = math.asin(sinp)
 
     # yaw: z-axis rotation
     siny_cosp = 2.0 * (w * z + x * y)
