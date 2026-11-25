@@ -269,6 +269,7 @@ Current tools include preparation such as:
 - primitive collision overlay with `tools/mjcf_apply_collision_primitives.py`
 - contact excludes with `tools/mjcf_add_contact_excludes.py`
 - minimal-world composition with `tools/mjcf_compose_world.py`
+- kinematic URDF export from MJCF with `tools/mjcf2urdf.py`
 
 These artifacts can make a body usable by a downstream MuJoCo runner, but runtime actuation, control loops, PDU command handling, and simulation lifecycle belong downstream, for example in `hakoniwa-mujoco-robots`.
 
